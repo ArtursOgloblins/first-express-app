@@ -1,4 +1,6 @@
 import express, {Request, Response} from 'express'
+import bodyParser from "body-parser";
+
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -29,7 +31,7 @@ const videos = [
         ]
     }
 ]
-
+app.use(bodyParser())
 app.get('/videos', (req: Request, res: Response) => {
     res.send(videos)
 })
@@ -52,6 +54,22 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
         }
     }
     res.send(404)
+})
+
+app.post('/videos', (req: Request, res: Response) => {
+    const newVideo = {
+        id: +(new Date()),
+        title: req.body.title,
+        author: req.body.author,
+        canBeDownloaded: true,
+        minAgeRestriction: null,
+        createdAt: (new Date()).toISOString(),
+        publicationDate: (new Date().toISOString()),
+        availableResolutions: req.body.availableResolutions
+    }
+    videos.push(newVideo)
+
+    res.status(201).send(newVideo)
 })
 
 app.listen(PORT, () => {
