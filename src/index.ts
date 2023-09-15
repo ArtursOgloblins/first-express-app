@@ -39,11 +39,11 @@ const videos = [
 ]
 app.use(bodyParser())
 
-app.get('/hometask_01/api/videos', (req: Request, res: Response) => {
+app.get('/videos', (req: Request, res: Response) => {
     res.send(videos)
 })
 
-app.get('/hometask_01/api/videos/:id', (req: Request, res: Response) => {
+app.get('/videos/:id', (req: Request, res: Response) => {
     let video = videos.find(p => p.id === +req.params.id)
     if (video){
         res.send(video)
@@ -52,7 +52,7 @@ app.get('/hometask_01/api/videos/:id', (req: Request, res: Response) => {
     }
 })
 
-app.delete('/hometask_01/api/videos/:id', (req: Request, res: Response) => {
+app.delete('/videos/:id', (req: Request, res: Response) => {
     for (let i=0; i<videos.length; i++){
         if (videos[i].id === +req.params.id) {
             videos.splice(i, 1)
@@ -63,12 +63,12 @@ app.delete('/hometask_01/api/videos/:id', (req: Request, res: Response) => {
     res.send(404)
 })
 
-app.delete('/hometask_01/api/testing/all-data',(req: Request, res: Response) => {
+app.delete('/testing/all-data',(req: Request, res: Response) => {
     videos.length = 0
     res.sendStatus(204)
 })
 
-app.post('/hometask_01/api/videos', (req: Request, res: Response) => {
+app.post('/videos', (req: Request, res: Response) => {
 
     const validation = validateInputPost(req.body);
 
@@ -99,7 +99,7 @@ app.post('/hometask_01/api/videos', (req: Request, res: Response) => {
 })
 
 
-app.put('/hometask_01/api/videos/:id', (req: Request, res: Response) => {
+app.put('/videos/:id', (req: Request, res: Response) => {
 
     const validation = validateInputPut(req.body);
 
