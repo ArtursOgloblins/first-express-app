@@ -35,3 +35,5 @@ const videos: video[] = [
         ]
     }
 ];
+
+export default videos;

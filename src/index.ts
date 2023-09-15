@@ -5,38 +5,6 @@ const app: Express = express();
 
 const PORT = process.env.PORT || 3000;
 
-// interface VideoInput {
-//     title: string;
-//     author: string;
-//     availableResolutions: string[];
-// }
-
-const videos = [
-    {
-        "id": 0,
-        "title": "string",
-        "author": "string",
-        "canBeDownloaded": false,
-        "minAgeRestriction": null,
-        "createdAt": "2023-09-12T16:19:12.783Z",
-        "publicationDate": "2023-09-12T16:19:12.783Z",
-        "availableResolutions": [
-            "P144"
-        ]
-    },
-    {
-        "id": 1,
-        "title": "Video1",
-        "author": "author1",
-        "canBeDownloaded": false,
-        "minAgeRestriction": null,
-        "createdAt": "2023-09-12T16:19:12.783Z",
-        "publicationDate": "2023-09-12T16:19:12.783Z",
-        "availableResolutions": [
-            "P144"
-        ]
-    }
-]
 app.use(bodyParser())
 
 app.get('/videos', (req: Request, res: Response) => {
