@@ -48,7 +48,7 @@ app.get('/videos/:id', (req: Request, res: Response) => {
     if (video){
         res.send(video)
     } else {
-        res.send(404)
+        res.status(404)
     }
 })
 
@@ -60,12 +60,12 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
             return;
         }
     }
-    res.send(404)
+    res.sendStatus(404)
 })
 
 app.delete('/testing/all-data',(req: Request, res: Response) => {
     videos.length = 0
-    res.sendStatus(204)
+    res.status(204)
 })
 
 app.post('/videos', (req: Request, res: Response) => {
@@ -119,9 +119,9 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         video.publicationDate = (new Date().toISOString())
         video.availableResolutions = req.body.availableResolutions
 
-        res.send(video)
+        res.status(204).send(video)
     } else {
-        res.send(400)
+        res.sendStatus(400)
     }
 })
 
