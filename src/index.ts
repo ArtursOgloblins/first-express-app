@@ -1,7 +1,7 @@
-import express, {Request, Response} from 'express'
+import express, {Express, Request, Response} from 'express'
 import bodyParser from "body-parser";
 
-const app = express();
+const app: Express = express();
 
 const PORT = process.env.PORT || 3000;
 
@@ -70,7 +70,7 @@ app.delete('/testing/all-data',(req: Request, res: Response) => {
 
 app.post('/videos', (req: Request, res: Response) => {
 
-    const validation = validateInput(req.body);
+    const validation = validateInputPost(req.body);
 
     if (!validation.isValid) {
         return res.status(400).send({
@@ -101,7 +101,7 @@ app.post('/videos', (req: Request, res: Response) => {
 
 app.put('/videos/:id', (req: Request, res: Response) => {
 
-    const validation = validateInput(req.body);
+    const validation = validateInputPut(req.body);
 
     if (!validation.isValid) {
         return res.status(400).send({
@@ -130,30 +130,97 @@ const a = (a: any) => {
     return errors.length ? errors : null
 }
 
-const b = (b: any) => {
+const validateInputPost = (input: any): { isValid: boolean, errors: Array<{ message: string, field: string }> } => {
+    const errors = []
+    const validResolutions: string[] = ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160"];
 
-    const errors: {field: string, message: string}[] = []
-    const aErr = a({})
-    if(aErr){
-        for (const aErrElement of aErr) {
-            errors.push(aErrElement)
+    // Validate title
+    if (input.title === undefined) {
+        errors.push({ field: 'title', message: 'Title is required' });
+    }
+    else if (typeof input.title !== 'string') {
+        errors.push({ field: 'title', message: 'Title should be of type string' });
+    }
+    else if (!input.title.trim()) {
+        errors.push({ field: 'title', message: 'Title should not be just whitespace' });
+    }
+    else if (input.title.length > 40) {
+        errors.push({ field: 'title', message: 'Title length should not exceed 40 characters' });
+    }
+
+    // Validate author
+    if (input.author === undefined) {
+        errors.push({ field: 'author', message: 'Author is required' });
+    }
+    else if (typeof input.author !== 'string') {
+        errors.push({ field: 'author', message: 'Author should be of type string' });
+    }
+    else if (!input.author.trim()) {
+        errors.push({ field: 'author', message: 'Author should not be just whitespace' });
+    }
+    else if (input.author.length > 20) {
+        errors.push({ field: 'author', message: 'Author length should not exceed 20 characters' });
+    }
+
+    // Validate availableResolutions
+    if (!input.availableResolutions || !Array.isArray(input.availableResolutions) || input.availableResolutions.length === 0) {
+        errors.push({ field: 'availableResolutions', message: 'At least one resolution should be added' });
+    } else {
+        const uniqueValues = [...new Set(input.availableResolutions)];
+        if (uniqueValues.length !== input.availableResolutions.length) {
+            errors.push({ field: 'availableResolutions', message: 'Duplicate resolutions' });
+        }
+        for (const resolution of input.availableResolutions) {
+            if (!validResolutions.includes(resolution)) {
+                errors.push({ field: 'availableResolutions', message: `Invalid resolution value: ${resolution}`});
+            }
         }
     }
-    //validate b ??? errors.push({})
-    return errors.length ? errors : null
-}
-
-const validateInput = (input: any): { isValid: boolean, errors: Array<{ message: string, field: string }> } => {
-    const errors = []
-
-    if (!input.title || typeof input.title !== 'string' || !input.title.trim() || input.title.length > 40) errors.push({ field: 'title', message: 'Title is required and must be a string' });
-    if (typeof input.author !== 'string') errors.push({ field: 'author', message: 'Author is required and must be a string' });
 
     return {
         isValid: errors.length === 0,
         errors
     };
 };
+
+const validateInputPut = (input: any): { isValid: boolean, errors: Array<{ message: string, field: string }> } => {
+    const firstValidation = validateInputPost(input);
+
+    //Validate canBeDownloaded
+    if (!input.canBeDownloaded) {
+        firstValidation.errors.push({ field: 'canBeDownloaded', message: 'canBeDownloaded is required' });
+    }
+    else if (typeof input.canBeDownloaded !== 'boolean') {
+        firstValidation.errors.push({ field: 'canBeDownloaded', message: 'canBeDownloaded format is wrong' });
+    }
+
+    // Validate minAgeRestriction
+    if (input.minAgeRestriction === undefined) {
+        firstValidation.errors.push({field: 'minAgeRestriction', message: 'minAgeRestriction is required'});
+    }
+    else if ( input.minAgeRestriction !== null && typeof input.minAgeRestriction !== 'number') {
+        firstValidation.errors.push({ field: 'minAgeRestriction', message: 'minAgeRestriction format is wrong' });
+    }
+    else if (input.minAgeRestriction !== null && (input.minAgeRestriction < 1 || input.minAgeRestriction > 18)) {
+        firstValidation.errors.push({ field: 'minAgeRestriction', message: 'minAgeRestriction should be between 1 and 18' });
+    }
+
+    //Validate publicationDate
+    const checkPublicationDateRegex: RegExp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+    if (input.publicationDate === undefined) {
+        firstValidation.errors.push({field: 'publicationDate', message: 'publicationDate is required'});
+    }
+    else if (typeof input.publicationDate !== 'string') {
+        firstValidation.errors.push({ field: 'publicationDate', message: 'publicationDate format should be string' });
+    }
+    else if (!checkPublicationDateRegex.test(input.publicationDate)) {
+        firstValidation.errors.push({ field: 'publicationDate', message: 'publicationDate should be in ISO format' });
+    }
+
+
+    firstValidation.isValid = firstValidation.errors.length === 0;
+    return firstValidation;
+}
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
