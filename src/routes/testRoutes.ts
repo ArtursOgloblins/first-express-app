@@ -3,6 +3,6 @@ import * as testController from '../controllers/testControllers'
 
 const router = express.Router();
 
-router.get('/all-data', testController.deleteAllVideos)
+router.delete('/all-data', testController.deleteAllVideos)
 
 export default router
