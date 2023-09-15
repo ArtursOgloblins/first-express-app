@@ -124,11 +124,6 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         res.send(404)
     }
 })
-const a = (a: any) => {
-    const errors: {field: string, message: string}[] = []
-    //validate a ??? errors.push({})
-    return errors.length ? errors : null
-}
 
 const validateInputPost = (input: any): { isValid: boolean, errors: Array<{ message: string, field: string }> } => {
     const errors = []
