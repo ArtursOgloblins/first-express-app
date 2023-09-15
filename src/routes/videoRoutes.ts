@@ -1,6 +1,5 @@
 import express from "express";
 import * as videoController from '../controllers/videocontrollers'
-import {deleteAllVideos} from "../controllers/videocontrollers";
 
 const router = express.Router();
 
