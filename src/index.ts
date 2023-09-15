@@ -74,7 +74,7 @@ app.post('/videos', (req: Request, res: Response) => {
 
     if (!validation.isValid) {
         return res.status(400).send({
-            errorMessages: validation.errors
+            errorsMessages: validation.errors
         });
     }
 
@@ -105,7 +105,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
     if (!validation.isValid) {
         return res.status(400).send({
-            errorMessages: validation.errors
+            errorsMessages: validation.errors
         });
     }
 
