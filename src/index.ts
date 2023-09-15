@@ -60,7 +60,7 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
             return;
         }
     }
-    res.sendStatus(404)
+    res.status(404)
 })
 
 app.delete('/testing/all-data',(req: Request, res: Response) => {
@@ -121,7 +121,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
         res.status(204).send(video)
     } else {
-        res.sendStatus(400)
+        res.status(400)
     }
 })
 
