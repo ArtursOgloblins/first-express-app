@@ -115,8 +115,10 @@ app.put('/videos/:id', (req: Request, res: Response) => {
         video.author = req.body.author
         video.canBeDownloaded = req.body.canBeDownloaded
         video.minAgeRestriction = req.body.minAgeRestriction
-        video.createdAt = (new Date()).toISOString()
-        video.publicationDate = (new Date().toISOString())
+        if (!video.createdAt) {
+            video.createdAt = (new Date()).toISOString();
+        }
+        video.publicationDate = req.body.publicationDate
         video.availableResolutions = req.body.availableResolutions
 
         res.status(204).send(video)
