@@ -5,11 +5,11 @@ const app: Express = express();
 
 const PORT = process.env.PORT || 3000;
 
-interface VideoInput {
-    title: string;
-    author: string;
-    availableResolutions: string[];
-}
+// interface VideoInput {
+//     title: string;
+//     author: string;
+//     availableResolutions: string[];
+// }
 
 const videos = [
     {
@@ -121,7 +121,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
         res.status(204).send(video)
     } else {
-        res.send(400)
+        res.send(404)
     }
 })
 
