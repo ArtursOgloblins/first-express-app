@@ -131,43 +131,43 @@ const validateInputPost = (input: any): { isValid: boolean, errors: Array<{ mess
 
     // Validate title
     if (input.title === undefined) {
-        errors.push({ field: 'title', message: 'Title is required' });
+        errors.push({ message: 'Title is required', field: 'title' });
     }
     else if (typeof input.title !== 'string') {
-        errors.push({ field: 'title', message: 'Title should be of type string' });
+        errors.push({message: 'Title should be of type string',  field: 'title' });
     }
     else if (!input.title.trim()) {
-        errors.push({ field: 'title', message: 'Title should not be just whitespace' });
+        errors.push({message: 'Title should not be just whitespace', field: 'title' });
     }
     else if (input.title.length > 40) {
-        errors.push({ field: 'title', message: 'Title length should not exceed 40 characters' });
+        errors.push({message: 'Title length should not exceed 40 characters', field: 'title' });
     }
 
     // Validate author
     if (input.author === undefined) {
-        errors.push({ field: 'author', message: 'Author is required' });
+        errors.push({message: 'Author is required', field: 'author'});
     }
     else if (typeof input.author !== 'string') {
-        errors.push({ field: 'author', message: 'Author should be of type string' });
+        errors.push({message: 'Author should be of type string', field: 'author' });
     }
     else if (!input.author.trim()) {
-        errors.push({ field: 'author', message: 'Author should not be just whitespace' });
+        errors.push({message: 'Author should not be just whitespace', field: 'author'  });
     }
     else if (input.author.length > 20) {
-        errors.push({ field: 'author', message: 'Author length should not exceed 20 characters' });
+        errors.push({message: 'Author length should not exceed 20 characters', field: 'author' });
     }
 
     // Validate availableResolutions
     if (!input.availableResolutions || !Array.isArray(input.availableResolutions) || input.availableResolutions.length === 0) {
-        errors.push({ field: 'availableResolutions', message: 'At least one resolution should be added' });
+        errors.push({message: 'At least one resolution should be added', field: 'availableResolutions' });
     } else {
         const uniqueValues = [...new Set(input.availableResolutions)];
         if (uniqueValues.length !== input.availableResolutions.length) {
-            errors.push({ field: 'availableResolutions', message: 'Duplicate resolutions' });
+            errors.push({message: 'Duplicate resolutions', field: 'availableResolutions' });
         }
         for (const resolution of input.availableResolutions) {
             if (!validResolutions.includes(resolution)) {
-                errors.push({ field: 'availableResolutions', message: `Invalid resolution value: ${resolution}`});
+                errors.push({message: `Invalid resolution value: ${resolution}`, field: 'availableResolutions', });
             }
         }
     }
