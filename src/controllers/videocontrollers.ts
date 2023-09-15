@@ -26,11 +26,6 @@ export const deleteVideoById = (req: Request, res: Response) => {
     res.send(404)
 }
 
-export const deleteAllVideos = (req: Request, res: Response) => {
-    videos.length = 0
-    res.send(204)
-}
-
 export const addVideo = (req: Request, res: Response) => {
 
     const validation = validateInputPost(req.body);
