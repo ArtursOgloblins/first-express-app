@@ -48,7 +48,7 @@ app.get('/videos/:id', (req: Request, res: Response) => {
     if (video){
         res.send(video)
     } else {
-        res.status(404)
+        res.send(404)
     }
 })
 
@@ -60,12 +60,12 @@ app.delete('/videos/:id', (req: Request, res: Response) => {
             return;
         }
     }
-    res.status(404)
+    res.send(404)
 })
 
 app.delete('/testing/all-data',(req: Request, res: Response) => {
     videos.length = 0
-    res.status(204)
+    res.send(204)
 })
 
 app.post('/videos', (req: Request, res: Response) => {
@@ -121,7 +121,7 @@ app.put('/videos/:id', (req: Request, res: Response) => {
 
         res.status(204).send(video)
     } else {
-        res.status(400)
+        res.send(400)
     }
 })
 
