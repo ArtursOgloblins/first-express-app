@@ -3,11 +3,11 @@ import bodyParser from "body-parser";
 import videoRoutes from './routes/videoRoutes'
 import testRoutes from "./routes/testRoutes";
 
-const app: Express = express();
+export const app: Express = express();
 
 const PORT = process.env.PORT || 3000;
 
-app.use(bodyParser())
+app.use(express.json())
 
 app.use(bodyParser.json())
 app.use('/videos', videoRoutes)

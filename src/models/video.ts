@@ -1,4 +1,4 @@
-type video = {
+type Video = {
     id: number;
     title: string;
     author: string;
@@ -9,7 +9,7 @@ type video = {
     availableResolutions: string[];
 };
 
-const videos: video[] = [
+const videos: Video[] = [
     {
         "id": 0,
         "title": "string",

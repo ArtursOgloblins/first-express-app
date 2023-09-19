@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import videos from "../models/video";
 import {validateInputPost, validateInputPut} from "../middleware/validateInput";
 
+
 export const getVideos = (req: Request, res: Response) => {
     res.send(videos);
 }
@@ -11,7 +12,7 @@ export const getVideoById = (req: Request, res: Response) => {
     if (video){
         res.send(video)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 }
 
@@ -19,11 +20,11 @@ export const deleteVideoById = (req: Request, res: Response) => {
     for (let i=0; i<videos.length; i++){
         if (videos[i].id === +req.params.id) {
             videos.splice(i, 1)
-            res.send(204)
+            res.sendStatus(204)
             return;
         }
     }
-    res.send(404)
+    res.sendStatus(404)
 }
 
 export const addVideo = (req: Request, res: Response) => {
@@ -80,6 +81,6 @@ export const updateVideo = (req: Request, res: Response) => {
 
         res.status(204).send(video)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 }
