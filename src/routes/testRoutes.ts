@@ -1,8 +1,11 @@
-import express from "express";
-import * as testController from '../controllers/testControllers'
+import express, {Request, Response} from "express";
+import {testRepository} from "../repositories/videos/testRepository";
 
-const router = express.Router();
+const testRouter = express.Router();
 
-router.delete('/all-data', testController.deleteAllVideos)
+testRouter.delete('/all-data', (req:Request, res:Response) => {
+    testRepository.deleteAllVideos()
+    res.status(204).send()
+})
 
-export default router
+export default testRouter
