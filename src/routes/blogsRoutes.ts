@@ -7,7 +7,8 @@ const blogRouter = express.Router();
 
 blogRouter.get('/', (req: Request, res: Response) => {
     const blogs = blogsRepository.getBlogs()
-    res.send(blogs)
+    const blogsWithIdString = blogs.map(b => ({...b, id: b.id.toString()}))
+    res.send(blogsWithIdString)
 })
 
 blogRouter.get('/:id', (req: Request, res: Response) => {

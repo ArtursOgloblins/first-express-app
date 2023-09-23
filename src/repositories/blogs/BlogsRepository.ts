@@ -2,6 +2,7 @@ import {db, Blog} from "../../models/Blogs";
 import {AddBlogAttr, UpdateBlogAttr} from "../../types";
 
 export const blogsRepository ={
+
     getBlogs(): Blog[] {
         return db.blogs
     },

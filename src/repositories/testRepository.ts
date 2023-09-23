@@ -1,5 +1,5 @@
-import {db as videoDb, Video} from "../../models/video";
-import {db as blogDb, Blog} from "../../models/Blogs";
+import {db as videoDb, Video} from "../models/video";
+import {db as blogDb, Blog} from "../models/Blogs";
 
 
 export const testRepository = {
