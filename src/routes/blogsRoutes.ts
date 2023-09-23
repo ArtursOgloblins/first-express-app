@@ -10,14 +10,6 @@ blogRouter.get('/', (req: Request, res: Response) => {
     res.send(blogs)
 })
 
-
-blogRouter.post('/',basicAuth,  blogValidationPost, blogsInputValidationResult,
-    (req: Request, res: Response) => {
-    const {name, description, websiteUrl} = req.body
-    const newBlog = blogsRepository.addBlog({name, description, websiteUrl})
-    res.status(201).send(newBlog)
-})
-
 blogRouter.get('/:id', (req: Request, res: Response) => {
     const blog = blogsRepository.getBlogById(+req.params.id)
     if (blog) {
@@ -26,5 +18,23 @@ blogRouter.get('/:id', (req: Request, res: Response) => {
         res.sendStatus(404)
     }
 })
+
+blogRouter.post('/',basicAuth,  blogValidationPost, blogsInputValidationResult,
+    (req: Request, res: Response) => {
+    const {name, description, websiteUrl} = req.body
+    const newBlog = blogsRepository.addBlog({name, description, websiteUrl})
+    res.status(201).send(newBlog)
+})
+
+blogRouter.delete('/:id', basicAuth, (req:Request, res:Response) => {
+    const isDeleted = blogsRepository.removeBlogById(+req.params.id)
+    if (isDeleted) {
+        res.sendStatus(204)
+    } else {
+        res.sendStatus(404)
+    }
+})
+
+
 
 export default blogRouter

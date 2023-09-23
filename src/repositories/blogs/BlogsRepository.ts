@@ -24,23 +24,13 @@ export const blogsRepository ={
         return newBlog
     },
 
-    deleteBlogById(id: number): boolean{
-        for (let i = 0; i < db.blogs.length; i++){
-            if (db.blogs[i].id == id) {
-                db.blogs.splice(i, 1)
-                return true
-            }
+    removeBlogById(id: number): boolean {
+        const index = db.blogs.findIndex(blog => blog.id === id);
+        if (index !== -1) {
+            const removedBlog = db.blogs[index];
+            db.blogs = [...db.blogs.slice(0, index), ...db.blogs.slice(index + 1)];
+            return true;
         }
-        return false
-
-        // removeBlogById(id: number): Blog | null {
-        //     const index = db.blogs.findIndex(blog => blog.id === id);
-        //     if (index !== -1) {
-        //         const removedBlog = db.blogs[index];
-        //         db.blogs = [...db.blogs.slice(0, index), ...db.blogs.slice(index + 1)];
-        //         return removedBlog;
-        //     }
-        //     return null;
-        // }
+        return false;
     }
 }
