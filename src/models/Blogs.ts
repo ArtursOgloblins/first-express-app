@@ -10,7 +10,8 @@ export type DbType = {
 }
 
 export const db: DbType = {
-    blogs: [{
+    blogs: [
+        {
             id: 0,
             name: "Blog1",
             description: "Description1",
