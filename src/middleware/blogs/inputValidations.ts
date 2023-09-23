@@ -4,7 +4,7 @@ import {body, validationResult} from "express-validator";
 
 export const blogValidationPost = [
     body('name').trim()
-        .isLength({ max: 15 })
+        .isLength({ max: 10 })
         .withMessage('Max length 10 '),
     body('description')
         .trim()
@@ -17,9 +17,9 @@ export const blogValidationPost = [
 ]
 
 export const blogsInputValidationResult = (req:Request, res: Response, next: NextFunction) => {
-    const result = validationResult(req);
-    if (result.isEmpty()) {
-        next()
+    const errors = validationResult(req)
+    if (errors.isEmpty()) {
+       return  next()
     }
-    res.status(400).send({codeResult: 1, errors: result.array() });
+    res.status(400).send({errors: errors.array({onlyFirstError: true})})
 }
