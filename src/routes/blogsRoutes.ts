@@ -48,6 +48,4 @@ blogRouter.delete('/:id', basicAuth, (req:Request, res:Response) => {
     }
 })
 
-
-
 export default blogRouter
