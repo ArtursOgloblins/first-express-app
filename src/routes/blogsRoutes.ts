@@ -1,6 +1,5 @@
 import express, {Request, Response} from "express";
 import {blogsRepository} from "../repositories/blogs/BlogsRepository";
-import {videosRepository} from "../repositories/videos/videosRepository";
 
 const blogRouter = express.Router();
 
@@ -10,7 +9,7 @@ blogRouter.get('/', (req: Request, res: Response) => {
 })
 
 blogRouter.get('/:id', (req: Request, res: Response) => {
-    const blog = videosRepository.deleteVideoById(+req.params.id)
+    const blog = blogsRepository.getBlogById(+req.params.id)
     if (blog) {
         res.send(blog)
     } else {
