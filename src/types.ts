@@ -23,7 +23,7 @@ export type AddBlogAttr = {
 }
 
 export type UpdateBlogAttr = {
-    id: number
+    id: string
     name: string
     description: string
     websiteUrl: string
@@ -37,7 +37,7 @@ export type AddPostAttr = {
 }
 
 export type UpdatePostAttr = {
-    id: number
+    id: string
     title: string,
     shortDescription: string,
     content: string,

@@ -1,5 +1,5 @@
 export type Post ={
-    id: number,
+    id: string,
     title: string,
     shortDescription: string,
     content: string,
@@ -14,7 +14,7 @@ export type DbType = {
 export const db: DbType = {
     posts : [
         {
-            id: 0,
+            id: "0",
             title: "string",
             shortDescription: "string",
             content: "string",
@@ -22,7 +22,7 @@ export const db: DbType = {
             blogName: "string"
         },
         {
-            id: 1,
+            id: "0",
             title: "string",
             shortDescription: "string",
             content: "string",

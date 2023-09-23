@@ -7,14 +7,14 @@ export const postsRepository = {
         return db.posts
     },
 
-    getPostById(id: number): Post {
+    getPostById(id: string): Post {
         return <Post>db.posts.find(p => p.id === id)
     },
 
     addPost(inputData: AddPostAttr): Post {
 
         const newPost = {
-            id: +(new Date()),
+            id: (new Date()).toString(),
             title: inputData.title,
             shortDescription: inputData.shortDescription,
             content: inputData.content,
@@ -41,7 +41,7 @@ export const postsRepository = {
         return updatedPost
     },
 
-    deletePostById(id: number): boolean {
+    deletePostById(id: string): boolean {
         const postIndex = db.posts.findIndex(p => p.id === id)
         if (postIndex !== -1) {
             db.posts = [...db.posts.slice(0, postIndex), ...db.posts.slice(postIndex + 1)]

@@ -7,14 +7,14 @@ export const blogsRepository ={
         return db.blogs
     },
 
-    getBlogById(id: number): Blog {
+    getBlogById(id: string): Blog {
         return <Blog>db.blogs.find(b => b.id === id)
     },
 
     addBlog(inputData: AddBlogAttr): Blog {
 
         const newBlog = {
-            id: +(new Date()),
+            id: (new Date()).toString(),
             name: inputData.name,
             description: inputData.description,
             websiteUrl: inputData.websiteUrl
@@ -40,7 +40,7 @@ export const blogsRepository ={
         return updatedBlog
     },
 
-    removeBlogById(id: number): boolean {
+    removeBlogById(id: string): boolean {
         const index = db.blogs.findIndex(blog => blog.id === id);
         if (index !== -1) {
             db.blogs = [...db.blogs.slice(0, index), ...db.blogs.slice(index + 1)];

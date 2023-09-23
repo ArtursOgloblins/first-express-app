@@ -14,7 +14,7 @@ postRouter.get('/', (req: Request, res: Response) => {
 })
 
 postRouter.get('/:id', (req:Request, res:Response) => {
-    const post = postsRepository.getPostById(+req.params.id)
+    const post = postsRepository.getPostById(req.params.id)
     if (post) {
         res.send(post)
     } else {
@@ -41,7 +41,7 @@ postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
     })
 
 postRouter.delete('/:id', basicAuth, (req:Request, res: Response) => {
-    const isDeleted = postsRepository.deletePostById(+req.params.id)
+    const isDeleted = postsRepository.deletePostById(req.params.id)
     if (isDeleted) {
         res.sendStatus(204)
     } else {
