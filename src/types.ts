@@ -21,3 +21,10 @@ export type AddBlogAttr = {
     description: string
     websiteUrl: string
 }
+
+export type UpdateBlogAttr = {
+    id: number
+    name: string
+    description: string
+    websiteUrl: string
+}

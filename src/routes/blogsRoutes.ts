@@ -26,6 +26,18 @@ blogRouter.post('/',basicAuth,  blogValidationPost, blogsInputValidationResult,
     res.status(201).send(newBlog)
 })
 
+blogRouter.put('/:id', basicAuth, blogValidationPost, blogsInputValidationResult, (req:Request, res: Response) => {
+    const id = +req.params.id
+    const {name, description, websiteUrl} = req.body
+    const updatedBlog = blogsRepository.updateBlog({id,name, description, websiteUrl})
+
+    if (updatedBlog) {
+        res.status(204).send(updatedBlog)
+    } else {
+        res.sendStatus(404)
+    }
+})
+
 blogRouter.delete('/:id', basicAuth, (req:Request, res:Response) => {
     const isDeleted = blogsRepository.removeBlogById(+req.params.id)
     if (isDeleted) {
