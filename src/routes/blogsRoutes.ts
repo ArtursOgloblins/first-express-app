@@ -1,6 +1,7 @@
 import express, {Request, Response} from "express";
 import {blogsRepository} from "../repositories/blogs/BlogsRepository";
 import {blogsInputValidationResult, blogValidationPost} from "../middleware/blogs/inputValidations";
+import {basicAuth} from "../middleware/authorization";
 
 const blogRouter = express.Router();
 
@@ -10,11 +11,11 @@ blogRouter.get('/', (req: Request, res: Response) => {
 })
 
 
-blogRouter.post('/', blogValidationPost, blogsInputValidationResult,
+blogRouter.post('/',basicAuth,  blogValidationPost, blogsInputValidationResult,
     (req: Request, res: Response) => {
     const {name, description, websiteUrl} = req.body
     const newBlog = blogsRepository.addBlog({name, description, websiteUrl})
-    res.sendStatus(201).send(newBlog)
+    res.status(201).send(newBlog)
 })
 
 blogRouter.get('/:id', (req: Request, res: Response) => {

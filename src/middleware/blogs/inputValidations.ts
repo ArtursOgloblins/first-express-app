@@ -21,5 +21,5 @@ export const blogsInputValidationResult = (req:Request, res: Response, next: Nex
     if (result.isEmpty()) {
         next()
     }
-    res.sendStatus(400).send({codeResult: 1, errors: result.array() });
+    res.status(400).send({codeResult: 1, errors: result.array() });
 }
