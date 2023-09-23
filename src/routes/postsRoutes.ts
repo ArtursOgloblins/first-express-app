@@ -30,7 +30,7 @@ postRouter.post('/', basicAuth, postsInputValidation, InputValidationResult,
 
 postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
     (req:Request, res: Response) => {
-        const id = +req.params.id
+        const id = req.params.id
         const updatedPost = postsRepository.updatePost({id, ...req.body})
 
         if (updatedPost){
