@@ -15,3 +15,9 @@ export type UpdateVideoAttr ={
     minAgeRestriction: number | null
     publicationDate: string
 }
+
+export type AddBlogAttr = {
+    name: string
+    description: string
+    websiteUrl: string
+}

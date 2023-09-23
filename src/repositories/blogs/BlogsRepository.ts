@@ -1,12 +1,28 @@
 import {db, Blog} from "../../models/Blogs";
+import {Video} from "../../models/video";
+import {AddBlogAttr} from "../../types";
 
 export const blogsRepository ={
     getBlogs(): Blog[] {
         return db.blogs
     },
 
-    getBlogById (id: number): Blog {
+    getBlogById(id: number): Blog {
         return <Blog>db.blogs.find(b => b.id === id)
+    },
+
+    addBlog(inputData: AddBlogAttr): Blog {
+
+        const newBlog = {
+            id: +(new Date()),
+            name: inputData.name,
+            description: inputData.description,
+            websiteUrl: inputData.websiteUrl
+        }
+
+        db.blogs = [...db.blogs, newBlog]
+
+        return newBlog
     },
 
     deleteBlogById(id: number): boolean{
