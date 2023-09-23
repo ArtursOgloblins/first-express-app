@@ -30,6 +30,11 @@ blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
 
 blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, (req:Request, res: Response) => {
     const id = req.params.id
+
+    if (Object.keys(req.body).length === 0) {
+        return res.status(401).send('Request body is required.');
+    }
+
     const {name, description, websiteUrl} = req.body
     const updatedBlog = blogsRepository.updateBlog({id,name, description, websiteUrl})
 

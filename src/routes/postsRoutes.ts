@@ -31,6 +31,11 @@ postRouter.post('/', basicAuth, postsInputValidation, InputValidationResult,
 postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
     (req:Request, res: Response) => {
         const id = req.params.id
+
+        if (Object.keys(req.body).length === 0) {
+            return res.status(401).send('Request body is required.');
+        }
+
         const updatedPost = postsRepository.updatePost({id, ...req.body})
 
         if (updatedPost){
