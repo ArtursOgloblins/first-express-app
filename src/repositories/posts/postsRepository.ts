@@ -14,7 +14,7 @@ export const postsRepository = {
     addPost(inputData: AddPostAttr): Post {
 
         const newPost = {
-            id: (new Date()).toString(),
+            id: Math.random().toString(),
             title: inputData.title,
             shortDescription: inputData.shortDescription,
             content: inputData.content,
