@@ -22,4 +22,5 @@ export const blogsInputValidationResult = (req:Request, res: Response, next: Nex
        return  next()
     }
     res.status(400).send({errors: errors.array({onlyFirstError: true})})
+
 }
