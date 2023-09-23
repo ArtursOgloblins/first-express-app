@@ -1,5 +1,4 @@
 import {db, Blog} from "../../models/Blogs";
-import {Video} from "../../models/video";
 import {AddBlogAttr} from "../../types";
 
 export const blogsRepository ={
