@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import videoRoutes from './routes/videoRoutes'
 import blogsRoutes from './routes/blogsRoutes'
 import testRoutes from "./routes/testRoutes";
+import postsRoutes from "./routes/postsRoutes";
 
 export const app: Express = express();
 
@@ -13,6 +14,7 @@ app.use(express.json())
 app.use(bodyParser.json())
 app.use('/videos', videoRoutes)
 app.use('/blogs', blogsRoutes)
+app.use('/posts', postsRoutes)
 app.use('/testing', testRoutes)
 
 app.listen(PORT, () => {

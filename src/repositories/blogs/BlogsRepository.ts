@@ -26,7 +26,7 @@ export const blogsRepository ={
     },
 
     updateBlog(inputData: UpdateBlogAttr): Blog | null  {
-        const blogIndex=  db.blogs.findIndex(b => b.id ===inputData.id)
+        const blogIndex=  db.blogs.findIndex(b => b.id === inputData.id)
         const {id, ...dataToUpdate} = inputData
         if (blogIndex === -1) return null
 

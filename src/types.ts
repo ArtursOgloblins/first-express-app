@@ -28,3 +28,19 @@ export type UpdateBlogAttr = {
     description: string
     websiteUrl: string
 }
+
+export type AddPostAttr = {
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string
+}
+
+export type UpdatePostAttr = {
+    id: number
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string
+
+}
