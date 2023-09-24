@@ -4,7 +4,7 @@ import {blogsRepository} from "../../repositories/blogs/BlogsRepository";
 export const postsInputValidation = [
     body('title')
         .trim()
-        .exists().withMessage('Name field is required')
+        .exists().withMessage('Field is required')
         .notEmpty().withMessage('Field must not be empty')
         .isString().withMessage('Title should be string')
         .isLength({max:30}).withMessage('Max length 30'),
@@ -16,13 +16,13 @@ export const postsInputValidation = [
         .isLength({max:100}).withMessage('Max length 100'),
     body('content')
         .trim()
-        .exists().withMessage('Name field is required')
+        .exists().withMessage('Field is required')
         .notEmpty().withMessage('Field must not be empty')
         .isString().withMessage('Title should be string')
         .isLength({max:1000}).withMessage('Max length 1000'),
     body('blogId')
         .trim()
-        .exists().withMessage('Name field is required')
+        .exists().withMessage('Field is required')
         .notEmpty().withMessage('Field must not be empty')
         .isString().withMessage('Title should be string')
         .custom(val => {
