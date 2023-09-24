@@ -8,7 +8,7 @@ export const blogValidationPost = [
         .notEmpty().withMessage('Name field must not be empty')
         .isLength({ max: 10 }).withMessage('Max length 10'),
     body('description')
-        .trim().withMessage('Wrong format')
+        .trim()
         .exists().withMessage('Name field is required')
         .notEmpty().withMessage('Name field must not be empty')
         .isLength({max: 500}).withMessage('Max length 500'),
