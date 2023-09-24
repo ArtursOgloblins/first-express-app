@@ -1,5 +1,7 @@
 import {db, Post} from "../../models/posts";
 import {AddPostAttr, UpdatePostAttr} from "../../types";
+import {blogsRepository} from "../blogs/BlogsRepository";
+import {randomUUID} from "crypto";
 
 export const postsRepository = {
 
@@ -12,17 +14,18 @@ export const postsRepository = {
     },
 
     addPost(inputData: AddPostAttr): Post {
+        const blog = blogsRepository.getBlogById(inputData.blogId)
 
         const newPost = {
-            id: (Math.floor(Math.random() * 1000000000) + 1).toString(),
+            id: randomUUID(),
             title: inputData.title,
             shortDescription: inputData.shortDescription,
             content: inputData.content,
             blogId: inputData.blogId,
-            blogName: "New Post"
+            blogName: blog!.name
         }
 
-        db.posts = [...db.posts, newPost]
+        db.posts.push(newPost)
 
         return newPost
     },

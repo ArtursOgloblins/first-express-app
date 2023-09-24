@@ -1,5 +1,6 @@
 import {db, Blog} from "../../models/Blogs";
 import {AddBlogAttr, UpdateBlogAttr} from "../../types";
+import {randomUUID} from "crypto";
 
 export const blogsRepository ={
 
@@ -14,7 +15,7 @@ export const blogsRepository ={
     addBlog(inputData: AddBlogAttr): Blog {
 
         const newBlog = {
-            id: (Math.floor(Math.random() * 1000000000) + 1).toString(),
+            id: randomUUID(),
             name: inputData.name,
             description: inputData.description,
             websiteUrl: inputData.websiteUrl

@@ -1,4 +1,5 @@
 import {body} from "express-validator";
+import {blogsRepository} from "../../repositories/blogs/BlogsRepository";
 
 export const postsInputValidation = [
     body('title')
@@ -20,4 +21,9 @@ export const postsInputValidation = [
         .exists().withMessage('Name field is required')
         .isString().withMessage('Title should be string')
         .trim().withMessage('Incorrect input')
+        .custom(val => {
+            const blog = blogsRepository.getBlogById(val)
+            if(!blog) throw new Error('incorrect blog id')
+            return true
+        })
 ]

@@ -6,7 +6,11 @@ export const basicAuth = (req: Request, res: Response, next: NextFunction) => {
         res.set('WWW-Authenticate', 'Basic realm="401"')
         return res.status(401).send('Authentication required.')
     }
-    const base64Credentials = authHeader.split(' ')[1]
+    const [authType, base64Credentials] = authHeader.split(' ')
+    if(authType !== 'Basic') {
+        res.set('WWW-Authenticate', 'Basic realm="401"');
+        res.status(401).send('Invalid credentials');
+    }
     const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8')
     const [username, password] = credentials.split(':')
 
