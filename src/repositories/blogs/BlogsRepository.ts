@@ -4,11 +4,11 @@ import {randomUUID} from "crypto";
 
 export const blogsRepository ={
 
-    getBlogs(): Blog[] {
+    async getBlogs(): Promise<Blog[]> {
         return db.blogs
     },
 
-    getBlogById(id: string): Blog {
+    async getBlogById(id: string): Promise<Blog> {
         return <Blog>db.blogs.find(b => b.id === id)
     },
 

@@ -6,14 +6,13 @@ import {basicAuth} from "../middleware/authorization";
 
 const blogRouter = express.Router();
 
-blogRouter.get('/', (req: Request, res: Response) => {
-    const blogs = blogsRepository.getBlogs()
-    const blogsWithIdString = blogs.map(b => ({...b, id: b.id.toString()}))
-    res.send(blogsWithIdString)
+blogRouter.get('/', async (req: Request, res: Response) => {
+    const blogs = await blogsRepository.getBlogs()
+    res.send(blogs)
 })
 
-blogRouter.get('/:id', (req: Request, res: Response) => {
-    const blog = blogsRepository.getBlogById(req.params.id)
+blogRouter.get('/:id', async (req: Request, res: Response) => {
+    const blog = await blogsRepository.getBlogById(req.params.id)
     if (blog) {
         res.send(blog)
     } else {
@@ -31,9 +30,9 @@ blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
 blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, (req:Request, res: Response) => {
     const id = req.params.id
 
-    if (Object.keys(req.body).length === 0) {
-        return res.status(401).send('Request body is required.');
-    }
+    // if (Object.keys(req.body).length === 0) {
+    //     return res.status(401).send('Request body is required.');
+    // }
 
     const {name, description, websiteUrl} = req.body
     const updatedBlog = blogsRepository.updateBlog({id,name, description, websiteUrl})

@@ -4,6 +4,7 @@ import videoRoutes from './routes/videoRoutes'
 import blogsRoutes from './routes/blogsRoutes'
 import testRoutes from "./routes/testRoutes";
 import postsRoutes from "./routes/postsRoutes";
+import {runDb} from "./repositories/db";
 
 export const app: Express = express();
 
@@ -17,6 +18,11 @@ app.use('/blogs', blogsRoutes)
 app.use('/posts', postsRoutes)
 app.use('/testing', testRoutes)
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+
+const startApp = async () => {
+    await runDb()
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}
+

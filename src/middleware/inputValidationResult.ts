@@ -5,7 +5,7 @@ import { validationResult, ValidationError  } from "express-validator";
 export const InputValidationResult = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
-        return next();
+        next();
     }
 
     const errorsMessages = errors.array({ onlyFirstError: true })
