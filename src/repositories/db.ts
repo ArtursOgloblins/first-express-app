@@ -13,6 +13,8 @@ export async function runDb() {
         await client.db("TestDB").command({ping: 1})
         console.log("Connection successfully to mongo server")
     } catch {
+
+
         // Ensures that the client will close when you finish/over
         await client.close()
     }

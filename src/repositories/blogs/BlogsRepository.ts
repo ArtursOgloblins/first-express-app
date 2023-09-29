@@ -12,7 +12,7 @@ export const blogsRepository ={
         return <Blog>db.blogs.find(b => b.id === id)
     },
 
-    addBlog(inputData: AddBlogAttr): Blog {
+    async addBlog(inputData: AddBlogAttr): Promise<Blog> {
 
         const newBlog = {
             id: randomUUID(),
@@ -26,7 +26,7 @@ export const blogsRepository ={
         return newBlog
     },
 
-    updateBlog(inputData: UpdateBlogAttr): Blog | null  {
+    async updateBlog(inputData: UpdateBlogAttr): Promise<Blog | null>  {
         const blogIndex=  db.blogs.findIndex(b => b.id === inputData.id)
         const {id, ...dataToUpdate} = inputData
         if (blogIndex === -1) return null
@@ -41,7 +41,7 @@ export const blogsRepository ={
         return updatedBlog
     },
 
-    removeBlogById(id: string): boolean {
+    async removeBlogById(id: string): Promise<boolean> {
         const index = db.blogs.findIndex(blog => blog.id === id);
         if (index !== -1) {
             db.blogs = [...db.blogs.slice(0, index), ...db.blogs.slice(index + 1)];

@@ -5,15 +5,15 @@ import {randomUUID} from "crypto";
 
 export const postsRepository = {
 
-    getPosts(): Post[] {
+    async getPosts(): Promise<Post[]> {
         return db.posts
     },
 
-    getPostById(id: string): Post {
+    async getPostById(id: string): Promise<Post> {
         return <Post>db.posts.find(p => p.id === id)
     },
 
-    addPost(inputData: AddPostAttr): Post {
+   async addPost(inputData: AddPostAttr): Promise<Post> {
         const blog = blogsRepository.getBlogById(inputData.blogId)
 
         const newPost = {
@@ -22,7 +22,7 @@ export const postsRepository = {
             shortDescription: inputData.shortDescription,
             content: inputData.content,
             blogId: inputData.blogId,
-            blogName: blog!.name
+            blogName: (await blog!).name
         }
 
         db.posts.push(newPost)
@@ -30,7 +30,7 @@ export const postsRepository = {
         return newPost
     },
 
-    updatePost(inputData: UpdatePostAttr): Post | null {
+    async updatePost(inputData: UpdatePostAttr): Promise<Post | null> {
         const postIndex = db.posts.findIndex(p => p.id === inputData.id)
         const {id, ...dataToUpdate} = inputData
         if (postIndex === -1) return null
@@ -44,7 +44,7 @@ export const postsRepository = {
         return updatedPost
     },
 
-    deletePostById(id: string): boolean {
+    async deletePostById(id: string): Promise<boolean> {
         const postIndex = db.posts.findIndex(p => p.id === id)
         if (postIndex !== -1) {
             db.posts = [...db.posts.slice(0, postIndex), ...db.posts.slice(postIndex + 1)]

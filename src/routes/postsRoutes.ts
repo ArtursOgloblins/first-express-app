@@ -7,14 +7,14 @@ import {InputValidationResult} from "../middleware/inputValidationResult";
 
 const postRouter = express.Router()
 
-postRouter.get('/', (req: Request, res: Response) => {
-    const posts = postsRepository.getPosts()
+postRouter.get('/', async (req: Request, res: Response) => {
+    const posts = await postsRepository.getPosts()
     const postsWithIdString = posts.map(p => ({...p, id: p.id.toString()}))
     res.send(postsWithIdString)
 })
 
-postRouter.get('/:id', (req:Request, res:Response) => {
-    const post = postsRepository.getPostById(req.params.id)
+postRouter.get('/:id', async (req:Request, res:Response) => {
+    const post = await postsRepository.getPostById(req.params.id)
     if (post) {
         res.send(post)
     } else {
@@ -23,20 +23,20 @@ postRouter.get('/:id', (req:Request, res:Response) => {
 })
 
 postRouter.post('/', basicAuth, postsInputValidation, InputValidationResult,
-    (req:Request, res: Response) => {
-    const newPost = postsRepository.addPost(req.body)
+    async (req:Request, res: Response) => {
+    const newPost = await postsRepository.addPost(req.body)
     res.status(201).send(newPost)
 })
 
 postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
-    (req:Request, res: Response) => {
+    async (req:Request, res: Response) => {
         const id = req.params.id
 
         if (Object.keys(req.body).length === 0) {
             return res.status(401).send('Request body is required.');
         }
 
-        const updatedPost = postsRepository.updatePost({id, ...req.body})
+        const updatedPost = await postsRepository.updatePost({id, ...req.body})
 
         if (updatedPost){
             res.status(204).send(updatedPost)
@@ -45,8 +45,8 @@ postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
         }
     })
 
-postRouter.delete('/:id', basicAuth, (req:Request, res: Response) => {
-    const isDeleted = postsRepository.deletePostById(req.params.id)
+postRouter.delete('/:id', basicAuth, async (req:Request, res: Response) => {
+    const isDeleted = await postsRepository.deletePostById(req.params.id)
     if (isDeleted) {
         res.sendStatus(204)
     } else {

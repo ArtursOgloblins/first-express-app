@@ -21,13 +21,13 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
 })
 
 blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
-    (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
     const {name, description, websiteUrl} = req.body
-    const newBlog = blogsRepository.addBlog({name, description, websiteUrl})
+    const newBlog = await blogsRepository.addBlog({name, description, websiteUrl})
     res.status(201).send(newBlog)
 })
 
-blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, (req:Request, res: Response) => {
+blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, async (req:Request, res: Response) => {
     const id = req.params.id
 
     // if (Object.keys(req.body).length === 0) {
@@ -35,7 +35,7 @@ blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, (re
     // }
 
     const {name, description, websiteUrl} = req.body
-    const updatedBlog = blogsRepository.updateBlog({id,name, description, websiteUrl})
+    const updatedBlog = await blogsRepository.updateBlog({id,name, description, websiteUrl})
 
     if (updatedBlog) {
         res.status(204).send(updatedBlog)
@@ -44,8 +44,8 @@ blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, (re
     }
 })
 
-blogRouter.delete('/:id', basicAuth, (req:Request, res:Response) => {
-    const isDeleted = blogsRepository.removeBlogById(req.params.id)
+blogRouter.delete('/:id', basicAuth, async (req:Request, res:Response) => {
+    const isDeleted =await  blogsRepository.removeBlogById(req.params.id)
     if (isDeleted) {
         res.sendStatus(204)
     } else {
