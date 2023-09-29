@@ -1,5 +1,5 @@
 import express, {Request, Response} from "express";
-import {blogsRepository} from "../repositories/blogs/BlogsRepository";
+import {blogsRepository} from "../repositories/blogs/blogs-db-repository";
 import {blogValidationPost} from "../middleware/blogs/blogInputValidations";
 import {InputValidationResult} from "../middleware/inputValidationResult"
 import {basicAuth} from "../middleware/authorization";

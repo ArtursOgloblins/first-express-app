@@ -26,3 +26,7 @@ const startApp = async () => {
     });
 }
 
+startApp().catch(err => {
+    console.error("Failed to start app", err);
+});
+

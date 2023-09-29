@@ -1,6 +1,6 @@
 import {db, Post} from "../../models/posts";
 import {AddPostAttr, UpdatePostAttr} from "../../types";
-import {blogsRepository} from "../blogs/BlogsRepository";
+import {blogsRepository} from "../blogs/blogs-db-repository";
 import {randomUUID} from "crypto";
 
 export const postsRepository = {
