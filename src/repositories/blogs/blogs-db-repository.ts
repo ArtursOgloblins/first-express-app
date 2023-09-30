@@ -32,7 +32,14 @@ export const blogsRepository = {
         const result: InsertOneResult<Blog> = await blogsCollection.insertOne(newBlog);
         const insertedId = result.insertedId;
 
-        return await blogsCollection.findOne({_id: insertedId});
+        const resBlog = await blogsCollection.findOne({_id: insertedId});
+        if (resBlog) {
+            return {
+                ...resBlog,
+                id: resBlog._id.toString(),
+            };
+        }
+        return null
     },
 
     async updateBlog(inputData: UpdateBlogAttr): Promise<Blog | null>  {
