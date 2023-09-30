@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express";
 import {basicAuth} from "../middleware/authorization";
-import {postsRepository} from "../repositories/posts/postsRepository";
+import {postsRepository} from "../repositories/posts/posts-db-repository";
 import {postsInputValidation} from "../middleware/posts/postsInputValidation";
 import {InputValidationResult} from "../middleware/inputValidationResult";
 
@@ -9,8 +9,7 @@ const postRouter = express.Router()
 
 postRouter.get('/', async (req: Request, res: Response) => {
     const posts = await postsRepository.getPosts()
-    const postsWithIdString = posts.map(p => ({...p, id: p.id.toString()}))
-    res.send(postsWithIdString)
+    res.send(posts)
 })
 
 postRouter.get('/:id', async (req:Request, res:Response) => {

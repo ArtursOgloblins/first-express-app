@@ -1,10 +1,10 @@
 export type Post ={
-    id: string,
     title: string,
     shortDescription: string,
     content: string,
     blogId: string,
     blogName: string
+    createdAt: string
 }
 
 export type DbType = {
@@ -14,20 +14,20 @@ export type DbType = {
 export const db: DbType = {
     posts : [
         {
-            id: "0",
             title: "string",
             shortDescription: "string",
             content: "string",
             blogId: "string",
-            blogName: "string"
+            blogName: "string",
+            createdAt: "2023-09-30T17:09:04.513Z"
         },
         {
-            id: "1",
             title: "string",
             shortDescription: "string",
             content: "string",
             blogId: "string",
-            blogName: "string"
+            blogName: "string",
+            createdAt: "2023-09-30T17:09:04.513Z"
         }
     ]
 }

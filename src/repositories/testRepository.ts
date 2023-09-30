@@ -1,22 +1,23 @@
-import {db as videoDb, Video} from "../models/video";
-import {db as blogDb, Blog} from "../models/Blogs";
-import {db as postDb, Post} from "../models/posts";
+import {client} from "./db";
+import {Post} from "../models/posts";
+import {Blog} from "../models/Blogs";
+import {blogsRepository} from "./blogs/blogs-db-repository";
+import {postsRepository} from "./posts/posts-db-repository";
 
-
+const dbName = process.env.DB_NAME || "blogs_posts";
+const db = client.db(dbName);
+const postCollection = db.collection<Post>("posts");
+const blogsCollection = db.collection<Blog>("blogs");
 
 export const testRepository = {
-    deleteAllVideos(): Video[]  {
-        videoDb.videos.length = 0
-        return videoDb.videos
+
+   async deleteAllBlogs(): Promise<Blog[]> {
+        await blogsCollection.deleteMany({})
+        return await blogsRepository.getBlogs()
     },
 
-    deleteAllBlogs(): Blog[] {
-        blogDb.blogs.length = 0
-        return blogDb.blogs
-    },
-
-    deleteAllPosts(): Post[] {
-        postDb.posts.length = 0
-        return postDb.posts
+    async deleteAllPosts(): Promise<Post[]> {
+        await postCollection.deleteMany({})
+        return await postsRepository.getPosts()
     }
 }

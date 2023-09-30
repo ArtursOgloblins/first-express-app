@@ -11,8 +11,8 @@ export const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json())
-
 app.use(bodyParser.json())
+
 app.use('/videos', videoRoutes)
 app.use('/blogs', blogsRoutes)
 app.use('/posts', postsRoutes)
