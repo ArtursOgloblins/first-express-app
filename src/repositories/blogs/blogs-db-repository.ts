@@ -26,7 +26,7 @@ export const blogsRepository = {
             description,
             websiteUrl,
             createdAt,
-            isMembership: true
+            isMembership: false
         }
 
         const result: InsertOneResult<Blog> = await blogsCollection.insertOne(newBlog);
