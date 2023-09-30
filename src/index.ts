@@ -18,7 +18,6 @@ app.use('/blogs', blogsRoutes)
 app.use('/posts', postsRoutes)
 app.use('/testing', testRoutes)
 
-
 const startApp = async () => {
     await runDb()
     app.listen(PORT, () => {
