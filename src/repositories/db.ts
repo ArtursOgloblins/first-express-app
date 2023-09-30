@@ -12,7 +12,7 @@ export async function runDb() {
         //Connect client to the server
         await client.connect()
         //Establish and verify connection
-        await client.db(dbName).command({ping: 1})
+        //await client.db(dbName).command({ping: 1})
         console.log("Connection successfully to mongo server")
     } catch (error) {
 
