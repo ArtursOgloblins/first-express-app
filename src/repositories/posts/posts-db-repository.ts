@@ -3,7 +3,6 @@ import {Blog} from "../../models/Blogs";
 import {AddPostAttr, UpdatePostAttr} from "../../types";
 import {blogsRepository} from "../blogs/blogs-db-repository";
 import {client} from "../db";
-import {ObjectId} from "mongodb";
 import {randomUUID} from "crypto";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
@@ -42,7 +41,7 @@ export const postsRepository = {
         const {id, ...dataToUpdate} = inputData
 
         return await postCollection.findOneAndUpdate(
-            {_id: new ObjectId(id)},
+            {id: id},
             {$set: dataToUpdate},
             {returnDocument: 'after'}
         )
