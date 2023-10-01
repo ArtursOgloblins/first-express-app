@@ -25,8 +25,8 @@ export const postsInputValidation = [
         .exists().withMessage('Field is required')
         .notEmpty().withMessage('Field must not be empty')
         .isString().withMessage('Title should be string')
-        .custom(val => {
-            const blog = blogsRepository.getBlogById(val)
+        .custom(async (val) => {
+            const blog = await blogsRepository.getBlogById(val)
             if(!blog) throw new Error('incorrect blog id')
             return true
         })
