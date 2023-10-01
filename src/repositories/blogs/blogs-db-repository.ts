@@ -10,7 +10,7 @@ const blogsCollection = db.collection<Blog>("blogs");
 export const blogsRepository = {
 
     async getBlogs(): Promise<Blog[]> {
-        return blogsCollection.find().toArray()
+        return blogsCollection.find({}, {projection: { _id: 0 }}).toArray()
     },
 
     async getBlogById(id: string): Promise<Blog | null> {
