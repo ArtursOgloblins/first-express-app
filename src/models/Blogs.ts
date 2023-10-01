@@ -7,6 +7,8 @@ export type Blog = {
     "isMembership": boolean
 }
 
+export type WithId<T> = T & { _id: any };
+
 export type DbType = {
     blogs: Blog[]
 }
