@@ -34,6 +34,7 @@ export const blogsRepository = {
         await blogsCollection.insertOne(newBlog);
 
         const newBlogRes: WithId<Blog> | null = await blogsCollection.findOne({id: newBlog.id})
+
         if (newBlogRes) {
             const {_id, ...blogWithout_Id} = newBlogRes;
             return blogWithout_Id;
