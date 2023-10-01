@@ -2,7 +2,6 @@ import {Blog} from "../../models/Blogs";
 import {AddBlogAttr, UpdateBlogAttr} from "../../types";
 import {client} from "../db";
 import {randomUUID} from "crypto";
-import {WithId} from "mongodb";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
 const db = client.db(dbName);
@@ -15,7 +14,7 @@ export const blogsRepository = {
     },
 
     async getBlogById(id: string): Promise<Blog | null> {
-        return blogsCollection.findOne({id: id})
+        return blogsCollection.findOne({id: id}, { projection: { _id: 0 }})
     },
 
     async addBlog(inputData: AddBlogAttr): Promise<Blog | null> {
@@ -33,12 +32,7 @@ export const blogsRepository = {
 
         await blogsCollection.insertOne(newBlog);
 
-        const result: WithId<Blog> | null =  await blogsCollection.findOne({id: newBlog.id}, { projection: { _id: 0 }})
-        if (result && result._id) {
-            // @ts-ignore
-            delete result._id;
-        }
-        return result;
+        return await this.getBlogById(newBlog.id);
     },
 
     async updateBlog(inputData: UpdateBlogAttr): Promise<Blog | null>  {
