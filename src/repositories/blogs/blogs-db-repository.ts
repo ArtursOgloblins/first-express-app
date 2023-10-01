@@ -1,7 +1,8 @@
 import {Blog} from "../../models/Blogs";
 import {AddBlogAttr, UpdateBlogAttr} from "../../types";
 import {client} from "../db";
-import {InsertOneResult, ObjectId} from "mongodb";
+import {InsertOneResult} from "mongodb";
+import {randomUUID} from "crypto";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
 const db = client.db(dbName);
@@ -14,7 +15,7 @@ export const blogsRepository = {
     },
 
     async getBlogById(id: string): Promise<Blog | null> {
-        return blogsCollection.findOne({_id: new ObjectId(id)})
+        return blogsCollection.findOne({id: id})
     },
 
     async addBlog(inputData: AddBlogAttr): Promise<Blog | null> {
@@ -22,6 +23,7 @@ export const blogsRepository = {
         const createdAt = new Date().toISOString();
 
         const newBlog = {
+            id: randomUUID(),
             name,
             description,
             websiteUrl,
@@ -30,30 +32,21 @@ export const blogsRepository = {
         }
 
         const result: InsertOneResult<Blog> = await blogsCollection.insertOne(newBlog);
-        const insertedId = result.insertedId;
-
-        const resBlog = await blogsCollection.findOne({_id: insertedId});
-        if (resBlog) {
-            return {
-                ...resBlog,
-                id: resBlog._id.toString(),
-            };
-        }
-        return null
+        return await blogsCollection.findOne({_id: result.insertedId})
     },
 
     async updateBlog(inputData: UpdateBlogAttr): Promise<Blog | null>  {
         const {id, ...dataToUpdate} = inputData
 
         return await blogsCollection.findOneAndUpdate(
-            {_id: new ObjectId(id)},
+            {id: id},
             {$set: dataToUpdate},
             {returnDocument: 'after'}
         )
     },
 
     async removeBlogById(id: string): Promise<boolean>  {
-        const result = await blogsCollection.deleteOne({_id: new ObjectId(id)})
+        const result = await blogsCollection.deleteOne({id: id})
         return result.deletedCount === 1
     }
 }
