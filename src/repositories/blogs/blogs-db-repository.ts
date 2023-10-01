@@ -34,7 +34,11 @@ export const blogsRepository = {
         await blogsCollection.insertOne(newBlog);
 
         const result: WithId<Blog> | null =  await blogsCollection.findOne({id: newBlog.id}, { projection: { _id: 0 }})
-        return result
+        if (result && result._id) {
+            // @ts-ignore
+            delete result._id;
+        }
+        return result;
     },
 
     async updateBlog(inputData: UpdateBlogAttr): Promise<Blog | null>  {
