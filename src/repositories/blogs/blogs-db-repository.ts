@@ -30,9 +30,9 @@ export const blogsRepository = {
             isMembership: false
         }
 
-        await blogsCollection.insertOne(newBlog);
+        await blogsCollection.insertOne(newBlog)
 
-        return await this.getBlogById(newBlog.id);
+        return await this.getBlogById(newBlog.id)
     },
 
     async updateBlog(inputData: UpdateBlogAttr): Promise<Blog | null>  {

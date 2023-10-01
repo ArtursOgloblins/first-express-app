@@ -3,7 +3,8 @@ import {Blog} from "../../models/Blogs";
 import {AddPostAttr, UpdatePostAttr} from "../../types";
 import {blogsRepository} from "../blogs/blogs-db-repository";
 import {client} from "../db";
-import {InsertOneResult, ObjectId} from "mongodb";
+import {ObjectId} from "mongodb";
+import {randomUUID} from "crypto";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
 const db = client.db(dbName);
@@ -11,11 +12,11 @@ const postCollection = db.collection<Post>("posts");
 export const postsRepository = {
 
     async getPosts(): Promise<Post[]> {
-        return postCollection.find().toArray()
+        return postCollection.find({}, {projection: { _id: 0 }}).toArray()
     },
 
     async getPostById(id: string): Promise<Post | null> {
-       return postCollection.findOne({_id: new ObjectId(id)})
+       return postCollection.findOne({id: id}, { projection: { _id: 0 }})
     },
 
     async addPost(inputData: AddPostAttr): Promise<Post | null> {
@@ -24,6 +25,7 @@ export const postsRepository = {
         const blog: Blog | null = await blogsRepository.getBlogById(inputData.blogId)
 
         const newPost = {
+            id: randomUUID(),
             title,
             shortDescription,
             content,
@@ -32,8 +34,8 @@ export const postsRepository = {
             createdAt
         };
 
-        const result: InsertOneResult<Post> = await postCollection.insertOne(newPost);
-        return await postCollection.findOne({_id: result.insertedId});
+        await postCollection.insertOne(newPost)
+        return await this.getPostById(newPost.id)
     },
 
     async updatePost(inputData: UpdatePostAttr): Promise<Post | null> {
@@ -47,7 +49,7 @@ export const postsRepository = {
     },
 
     async deletePostById(id: string): Promise<boolean> {
-        const result = await postCollection.deleteOne({_id: new ObjectId(id)})
+        const result = await postCollection.deleteOne({id: id})
         return result.deletedCount === 1
     }
 }
