@@ -3,17 +3,19 @@ import {basicAuth} from "../middleware/authorization";
 import {postsRepository} from "../repositories/posts/posts-db-repository";
 import {postsInputValidation} from "../middleware/posts/postsInputValidation";
 import {InputValidationResult} from "../middleware/inputValidationResult";
+import {postService} from "../domain/posts-service";
+import {postsQueryRepository} from "../repositories/posts/posts-query-repo";
 
 
 const postRouter = express.Router()
 
 postRouter.get('/', async (req: Request, res: Response) => {
-    const posts = await postsRepository.getPosts()
+    const posts = await postsQueryRepository.getPosts()
     res.send(posts)
 })
 
 postRouter.get('/:id', async (req:Request, res:Response) => {
-    const post = await postsRepository.getPostById(req.params.id)
+    const post = await postsQueryRepository.getPostById(req.params.id)
     if (post) {
         res.send(post)
     } else {
@@ -23,7 +25,7 @@ postRouter.get('/:id', async (req:Request, res:Response) => {
 
 postRouter.post('/', basicAuth, postsInputValidation, InputValidationResult,
     async (req:Request, res: Response) => {
-    const newPost = await postsRepository.addPost(req.body)
+    const newPost = await postService.addPost(req.body)
     res.status(201).send(newPost)
 })
 
@@ -35,7 +37,7 @@ postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
             return res.status(401).send('Request body is required.');
         }
 
-        const updatedPost = await postsRepository.updatePost({id, ...req.body})
+        const updatedPost = await postService.updatePost({id, ...req.body})
 
         if (updatedPost){
             res.status(204).send(updatedPost)
@@ -45,7 +47,7 @@ postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
     })
 
 postRouter.delete('/:id', basicAuth, async (req:Request, res: Response) => {
-    const isDeleted = await postsRepository.deletePostById(req.params.id)
+    const isDeleted = await postsQueryRepository.deletePostById(req.params.id)
     if (isDeleted) {
         res.sendStatus(204)
     } else {

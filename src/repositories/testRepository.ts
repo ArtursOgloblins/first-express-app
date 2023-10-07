@@ -1,5 +1,5 @@
 import {client} from "./db";
-import {Post} from "../models/posts";
+import {Post} from "../models/Posts";
 import {Blog} from "../models/Blogs";
 
 const dbName = process.env.DB_NAME || "blogs_posts";

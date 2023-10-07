@@ -1,5 +1,6 @@
 import {body} from "express-validator";
 import {blogsRepository} from "../../repositories/blogs/blogs-db-repository";
+import {blogsQueryRepository} from "../../repositories/blogs/blogs-query-repo";
 
 export const postsInputValidation = [
     body('title')
@@ -26,7 +27,7 @@ export const postsInputValidation = [
         .notEmpty().withMessage('Field must not be empty')
         .isString().withMessage('Title should be string')
         .custom(async (val) => {
-            const blog = await blogsRepository.getBlogById(val)
+            const blog = await blogsQueryRepository.getBlogById(val)
             if(!blog) throw new Error('incorrect blog id')
             return true
         })
