@@ -1,6 +1,5 @@
 import express, {Request, Response} from "express";
 import {basicAuth} from "../middleware/authorization";
-import {postsRepository} from "../repositories/posts/posts-db-repository";
 import {postsInputValidation} from "../middleware/posts/postsInputValidation";
 import {InputValidationResult} from "../middleware/inputValidationResult";
 import {postService} from "../domain/posts-service";

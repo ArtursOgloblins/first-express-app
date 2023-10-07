@@ -1,7 +1,6 @@
 import {PostOutput} from "../models/Posts";
 import {Blog} from "../models/Blogs";
 import {AddPostAttr, UpdatePostAttr} from "../types";
-import {blogsRepository} from "../repositories/blogs/blogs-db-repository";
 import {postsRepository} from "../repositories/posts/posts-db-repository";
 import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
 
