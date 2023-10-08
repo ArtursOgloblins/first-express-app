@@ -4,11 +4,25 @@ import {blogValidationPost} from "../middleware/blogs/blogInputValidations";
 import {InputValidationResult} from "../middleware/inputValidationResult"
 import {basicAuth} from "../middleware/authorization";
 import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
+import {BlogQueryParams} from "../types";
 
 const blogRouter = express.Router();
 
 blogRouter.get('/', async (req: Request, res: Response) => {
-    const blogs = await blogsQueryRepository.getBlogs()
+    const searchNameTerm: string | null = req.query.searchNameTerm?.toString() || null
+    const sortBy: string = req.query.sortBy?.toString() || 'createdAt'
+    const sortDirection: 'asc' | 'desc' = req.query.sortDirection?.toString().toLowerCase() === 'asc' ? 'asc' : 'desc';
+    const pageSize: number = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const pageNumber:number = req.query.pageNumber ? Number(req.query.pageNumber) : 1
+
+    const getBlogParams: BlogQueryParams = {
+        searchNameTerm,
+        sortBy,
+        sortDirection,
+        pageSize,
+        pageNumber}
+
+    const blogs = await blogsQueryRepository.getBlogs(getBlogParams)
     res.send(blogs)
 })
 

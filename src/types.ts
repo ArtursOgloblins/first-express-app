@@ -44,3 +44,11 @@ export type UpdatePostAttr = {
     blogId: string
 
 }
+
+export type BlogQueryParams = {
+    searchNameTerm: string | null;
+    sortBy: string;
+    sortDirection: 'asc' | 'desc';
+    pageSize: number;
+    pageNumber: number;
+}
