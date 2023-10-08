@@ -36,6 +36,12 @@ export type AddPostAttr = {
     blogId: string
 }
 
+export type AddPostByBlogIdtAttr = {
+    title: string,
+    shortDescription: string,
+    content: string,
+}
+
 export type UpdatePostAttr = {
     id: string
     title: string,

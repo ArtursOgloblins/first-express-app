@@ -1,7 +1,7 @@
 import {Post, PostOutput} from "../../models/Posts";
 import {UpdatePostAttr} from "../../types";
 import {client} from "../db";
-import {postMapper} from "../../helpers/helper";
+import {postMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 
 const dbName = process.env.DB_NAME || "blogs_posts";

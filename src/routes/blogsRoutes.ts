@@ -5,15 +5,15 @@ import {InputValidationResult} from "../middleware/inputValidationResult"
 import {basicAuth} from "../middleware/authorization";
 import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
 import {BlogQueryParams, PostQueryParams} from "../types";
+import {postsInputValidationInBlogs} from "../middleware/posts/postsInputValidation";
+import {postService} from "../domain/posts-service";
+import {getQueryParams} from "../helpers/query-params";
 
 const blogRouter = express.Router();
 
 blogRouter.get('/', async (req: Request, res: Response) => {
-    const searchNameTerm: string | null = req.query.searchNameTerm?.toString() || null
-    const sortBy: string = req.query.sortBy?.toString() || 'createdAt'
-    const sortDirection: 'asc' | 'desc' = req.query.sortDirection?.toString().toLowerCase() === 'asc' ? 'asc' : 'desc';
-    const pageSize: number = req.query.pageSize ? Number(req.query.pageSize) : 10
-    const pageNumber:number = req.query.pageNumber ? Number(req.query.pageNumber) : 1
+    const { sortBy, sortDirection, pageSize, pageNumber } = getQueryParams(req);
+    const searchNameTerm = req.query.searchNameTerm?.toString() || null;
 
     const getBlogParams: BlogQueryParams = {
         searchNameTerm,
@@ -37,10 +37,7 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
 })
 
 blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
-    const sortBy: string = req.query.sortBy?.toString() || 'createdAt'
-    const sortDirection: 'asc' | 'desc' = req.query.sortDirection?.toString().toLowerCase() === 'asc' ? 'asc' : 'desc';
-    const pageSize: number = req.query.pageSize ? Number(req.query.pageSize) : 10
-    const pageNumber:number = req.query.pageNumber ? Number(req.query.pageNumber) : 1
+    const { sortBy, sortDirection, pageSize, pageNumber } = getQueryParams(req);
 
     const getPostsParams: PostQueryParams = {
         sortBy,
@@ -59,6 +56,13 @@ blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
     const newBlogId  = await blogsService.addBlog({name, description, websiteUrl})
     const newBlog = await blogsQueryRepository.getBlogById(newBlogId)
     res.status(201).send(newBlog)
+})
+
+blogRouter.post('/:id/posts', basicAuth, postsInputValidationInBlogs, InputValidationResult,
+    async (req:Request, res: Response) => {
+    const blogId = req.params.id
+    const newPost = await postService.addPostByBlogId(blogId, req.body)
+    res.status(201).send(newPost)
 })
 
 blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, async (req:Request, res: Response) => {

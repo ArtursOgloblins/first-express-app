@@ -1,5 +1,5 @@
 import {PagedPostOutput, Post, PostOutput} from "../../models/Posts";
-import {postMapper} from "../../helpers/helper";
+import {postMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {client} from "../db";
 import {PostQueryParams} from "../../types";
