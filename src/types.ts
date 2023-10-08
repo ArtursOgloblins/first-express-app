@@ -52,3 +52,10 @@ export type BlogQueryParams = {
     pageSize: number;
     pageNumber: number;
 }
+
+export type PostQueryParams = {
+    sortBy: string;
+    sortDirection: 'asc' | 'desc';
+    pageSize: number;
+    pageNumber: number;
+}

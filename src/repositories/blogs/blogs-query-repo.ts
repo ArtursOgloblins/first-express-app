@@ -1,12 +1,14 @@
 import {Blog, BlogOutput, PagedBlogOutput} from "../../models/Blogs";
-import {blogMapper} from "../../helpers/helper";
+import {blogMapper, postMapper} from "../../helpers/helper";
 import {client} from "../db";
 import {ObjectId} from "mongodb";
-import {BlogQueryParams} from "../../types";
+import {BlogQueryParams, PostQueryParams} from "../../types";
+import {Post, PostOutput} from "../../models/Posts";
 
 const dbName = process.env.DB_NAME || "blogs_posts"
 const db = client.db(dbName)
 const blogsCollection = db.collection<Blog>("blogs")
+const postCollection = db.collection<Post>("posts")
 
 export const blogsQueryRepository = {
 
@@ -26,7 +28,7 @@ export const blogsQueryRepository = {
             .find(filter)
             .sort({[params.sortBy]: sortDir})
             .skip(skipAmount)
-            .limit(params.pageSize || 10)
+            .limit(params.pageSize)
             .toArray()
 
         const mappedBlogs: BlogOutput[] =  blogs.map((b) => blogMapper(b))
@@ -48,6 +50,29 @@ export const blogsQueryRepository = {
         }
 
         return blogMapper(blog);
+    },
+
+    async getPostsByBlogId(id: string, params: PostQueryParams) {
+        const sortDir = params.sortDirection === 'asc' ? 1 : -1
+        const skipAmount = (params.pageNumber - 1) * params.pageSize
+        const totalCount = await postCollection.countDocuments()
+
+        const posts = await postCollection
+            .find({blogId: id})
+            .sort({[params.sortBy]: sortDir})
+            .skip(skipAmount)
+            .limit(params.pageSize)
+            .toArray()
+
+        const mappedPosts: PostOutput[] =  posts.map((p) => postMapper(p))
+
+        return {
+            pagesCount: Math.ceil(totalCount / params.pageSize),
+            page: params.pageNumber,
+            pageSize: params.pageSize,
+            totalCount: totalCount,
+            items: mappedPosts
+        }
     },
 
     async removeBlogById(id: string): Promise<boolean>  {

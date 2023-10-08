@@ -4,7 +4,7 @@ import {blogValidationPost} from "../middleware/blogs/blogInputValidations";
 import {InputValidationResult} from "../middleware/inputValidationResult"
 import {basicAuth} from "../middleware/authorization";
 import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
-import {BlogQueryParams} from "../types";
+import {BlogQueryParams, PostQueryParams} from "../types";
 
 const blogRouter = express.Router();
 
@@ -20,7 +20,8 @@ blogRouter.get('/', async (req: Request, res: Response) => {
         sortBy,
         sortDirection,
         pageSize,
-        pageNumber}
+        pageNumber
+    }
 
     const blogs = await blogsQueryRepository.getBlogs(getBlogParams)
     res.send(blogs)
@@ -33,6 +34,23 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
     } else {
         res.sendStatus(404)
     }
+})
+
+blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
+    const sortBy: string = req.query.sortBy?.toString() || 'createdAt'
+    const sortDirection: 'asc' | 'desc' = req.query.sortDirection?.toString().toLowerCase() === 'asc' ? 'asc' : 'desc';
+    const pageSize: number = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const pageNumber:number = req.query.pageNumber ? Number(req.query.pageNumber) : 1
+
+    const getPostsParams: PostQueryParams = {
+        sortBy,
+        sortDirection,
+        pageSize,
+        pageNumber
+    }
+
+    const posts = await blogsQueryRepository.getPostsByBlogId(req.params.id, getPostsParams)
+    res.send(posts)
 })
 
 blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,

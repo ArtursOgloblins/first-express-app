@@ -4,12 +4,25 @@ import {postsInputValidation} from "../middleware/posts/postsInputValidation";
 import {InputValidationResult} from "../middleware/inputValidationResult";
 import {postService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/posts/posts-query-repo";
+import {PostQueryParams} from "../types";
 
 
 const postRouter = express.Router()
 
 postRouter.get('/', async (req: Request, res: Response) => {
-    const posts = await postsQueryRepository.getPosts()
+    const pageNumber: number = req.query.pageNumber ? Number(req.query.pageNumber) : 1
+    const pageSize: number = req.query.pageSize ? Number(req.query.pageSize) : 10
+    const sortBy: string = req.query.sortBy?.toString() || 'createdAt'
+    const sortDirection: 'asc' | 'desc' = req.query.sortDirection?.toString().toLowerCase() === 'asc' ? 'asc' : 'desc'
+
+    const getPostsParams: PostQueryParams = {
+        sortBy,
+        sortDirection,
+        pageSize,
+        pageNumber
+    }
+
+    const posts = await postsQueryRepository.getPosts(getPostsParams)
     res.send(posts)
 })
 
