@@ -8,6 +8,7 @@ import {BlogQueryParams, PostQueryParams} from "../types";
 import {postsInputValidationInBlogs} from "../middleware/posts/postsInputValidation";
 import {postService} from "../domain/posts-service";
 import {getQueryParams} from "../helpers/query-params";
+import {ObjectId} from "mongodb";
 
 const blogRouter = express.Router();
 
@@ -38,6 +39,7 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
 
 blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
     const { sortBy, sortDirection, pageSize, pageNumber } = getQueryParams(req);
+    const blogId = req.params.id
 
     const getPostsParams: PostQueryParams = {
         sortBy,
@@ -46,13 +48,11 @@ blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
         pageNumber
     }
 
-    const blogExist = await blogsQueryRepository.getBlogById(req.params.id)
-
-    if (blogExist) {
-        const posts = await blogsQueryRepository.getPostsByBlogId(req.params.id, getPostsParams)
-        res.send(posts)
+    if (!ObjectId.isValid(blogId)) {
+        return res.status(404)
     } else {
-        res.sendStatus(404)
+        const posts = await blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams)
+        res.send(posts)
     }
 })
 
