@@ -8,6 +8,7 @@ import {BlogQueryParams, PostQueryParams} from "../types";
 import {postsInputValidationInBlogs} from "../middleware/posts/postsInputValidation";
 import {postService} from "../domain/posts-service";
 import {getQueryParams} from "../helpers/query-params";
+import {ObjectId} from "mongodb";
 
 const blogRouter = express.Router();
 
@@ -62,7 +63,7 @@ blogRouter.post('/:id/posts', basicAuth, postsInputValidationInBlogs, InputValid
     async (req:Request, res: Response) => {
     const blogId = req.params.id
     const blogExist  = await blogsQueryRepository.getBlogById(blogId)
-    if (blogExist) {
+    if (blogExist && ObjectId.isValid(blogId)) {
         const newPost = await postService.addPostByBlogId(blogId, req.body)
         res.status(201).send(newPost)
     } else {
