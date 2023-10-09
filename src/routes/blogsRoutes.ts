@@ -46,8 +46,10 @@ blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
         pageNumber
     }
 
-    const posts = await blogsQueryRepository.getPostsByBlogId(req.params.id, getPostsParams)
-    if (posts) {
+    const blogExist = await blogsQueryRepository.getBlogById(req.params.id)
+
+    if (blogExist) {
+        const posts = await blogsQueryRepository.getPostsByBlogId(req.params.id, getPostsParams)
         res.send(posts)
     } else {
         res.sendStatus(404)
