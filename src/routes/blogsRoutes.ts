@@ -63,6 +63,7 @@ blogRouter.post('/:id/posts', basicAuth, postsInputValidationInBlogs, InputValid
     async (req:Request, res: Response) => {
     const blogId = req.params.id
     const blogExist  = await blogsQueryRepository.getBlogById(blogId)
+
     if (blogExist && ObjectId.isValid(blogId)) {
         const newPost = await postService.addPostByBlogId(blogId, req.body)
         res.status(201).send(newPost)
