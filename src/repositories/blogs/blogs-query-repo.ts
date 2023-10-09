@@ -55,7 +55,7 @@ export const blogsQueryRepository = {
 
     async getPostsByBlogId(id: string, params: PostQueryParams) {
         const { skipAmount, sortDir } = getPaginationDetails(params);
-        const totalCount = await postCollection.countDocuments()
+        const totalCount = await postCollection.countDocuments({blogId: id})
 
         const posts = await postCollection
             .find({blogId: id})
