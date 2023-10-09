@@ -8,7 +8,6 @@ import {BlogQueryParams, PostQueryParams} from "../types";
 import {postsInputValidationInBlogs} from "../middleware/posts/postsInputValidation";
 import {postService} from "../domain/posts-service";
 import {getQueryParams} from "../helpers/query-params";
-import {ObjectId} from "mongodb";
 
 const blogRouter = express.Router();
 
@@ -47,13 +46,8 @@ blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
         pageSize,
         pageNumber
     }
-
-    if (!ObjectId.isValid(blogId)) {
-        res.sendStatus(404)
-    } else {
         const posts = await blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams)
         res.send(posts)
-    }
 })
 
 blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
@@ -67,8 +61,13 @@ blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
 blogRouter.post('/:id/posts', basicAuth, postsInputValidationInBlogs, InputValidationResult,
     async (req:Request, res: Response) => {
     const blogId = req.params.id
-    const newPost = await postService.addPostByBlogId(blogId, req.body)
-    res.status(201).send(newPost)
+    const blogExist  = await blogsQueryRepository.getBlogById(blogId)
+    if (blogExist) {
+        const newPost = await postService.addPostByBlogId(blogId, req.body)
+        res.status(201).send(newPost)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, async (req:Request, res: Response) => {
