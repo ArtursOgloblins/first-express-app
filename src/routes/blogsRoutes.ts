@@ -47,8 +47,14 @@ blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
         pageSize,
         pageNumber
     }
+
+    const blogExist  = await blogsQueryRepository.getBlogById(blogId)
+    if (blogExist && ObjectId.isValid(blogId)) {
         const posts = await blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams)
         res.send(posts)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
