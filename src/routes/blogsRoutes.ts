@@ -49,7 +49,7 @@ blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
     }
 
     if (!ObjectId.isValid(blogId)) {
-        return res.status(404)
+        res.sendStatus(404)
     } else {
         const posts = await blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams)
         res.send(posts)
