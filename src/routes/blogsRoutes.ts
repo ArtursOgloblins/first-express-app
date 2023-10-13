@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express";
 import {blogsService} from "../domain/blogs-service"
-import {blogValidationPost} from "../middleware/blogs/blogInputValidations";
+import {blogValidationPost, checkForExistingBlog} from "../middleware/blogs/blogInputValidations";
 import {InputValidationResult} from "../middleware/inputValidationResult"
 import {basicAuth} from "../middleware/authorization";
 import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
@@ -37,7 +37,7 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
-blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
+blogRouter.get('/:id/posts',checkForExistingBlog, InputValidationResult, async (req: Request, res: Response) => {
     const { sortBy, sortDirection, pageSize, pageNumber } = getQueryParams(req);
     const blogId = req.params.id
 
@@ -48,13 +48,8 @@ blogRouter.get('/:id/posts', async (req: Request, res: Response) => {
         pageNumber
     }
 
-    const blogExist  = await blogsQueryRepository.getBlogById(blogId)
-    if (blogExist && ObjectId.isValid(blogId)) {
-        const posts = await blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams)
-        res.send(posts)
-    } else {
-        res.sendStatus(404)
-    }
+    const posts = await blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams)
+    res.send(posts)
 })
 
 blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,

@@ -5,6 +5,7 @@ import {InputValidationResult} from "../middleware/inputValidationResult";
 import {postService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/posts/posts-query-repo";
 import {PostQueryParams} from "../types";
+import { HttpStatusCodes as HTTP_STATUS }  from "../helpers/httpStatusCodes";
 
 
 const postRouter = express.Router()
@@ -31,14 +32,14 @@ postRouter.get('/:id', async (req:Request, res:Response) => {
     if (post) {
         res.send(post)
     } else {
-        res.sendStatus(404)
+        res.sendStatus(HTTP_STATUS.NOT_FOUND)
     }
 })
 
 postRouter.post('/', basicAuth, postsInputValidation, InputValidationResult,
     async (req:Request, res: Response) => {
     const newPost = await postService.addPost(req.body)
-    res.status(201).send(newPost)
+    res.status(HTTP_STATUS.CREATED).send(newPost)
 })
 
 postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
@@ -46,24 +47,24 @@ postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
         const id = req.params.id
 
         if (Object.keys(req.body).length === 0) {
-            return res.status(401).send('Request body is required.');
+            return res.status(HTTP_STATUS.UNAUTHORIZED).send('Request body is required.');
         }
 
         const updatedPost = await postService.updatePost({id, ...req.body})
 
         if (updatedPost){
-            res.status(204).send(updatedPost)
+            res.status(HTTP_STATUS.NO_CONTENT).send(updatedPost)
         } else {
-            res.sendStatus(404)
+            res.sendStatus(HTTP_STATUS.NOT_FOUND)
         }
     })
 
 postRouter.delete('/:id', basicAuth, async (req:Request, res: Response) => {
     const isDeleted = await postsQueryRepository.deletePostById(req.params.id)
     if (isDeleted) {
-        res.sendStatus(204)
+        res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } else {
-        res.sendStatus(404)
+        res.sendStatus(HTTP_STATUS.NOT_FOUND)
     }
 })
 

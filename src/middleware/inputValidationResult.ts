@@ -8,6 +8,11 @@ export const InputValidationResult = (req: Request, res: Response, next: NextFun
         return next();
     }
 
+    const incorrectBlogIdError = errors.array().some(err => ['incorrect blog id', 'incorrect blog id format'].includes(err.msg))
+    if (incorrectBlogIdError) {
+        return res.sendStatus(404)
+    }
+
     const errorsMessages = errors.array({ onlyFirstError: true })
         .map((error: ValidationError & { path?: string }) => {
         return {

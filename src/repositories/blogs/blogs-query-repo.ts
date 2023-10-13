@@ -13,7 +13,6 @@ const postCollection = db.collection<Post>("posts")
 
 export const blogsQueryRepository = {
 
-
     async getBlogs(params: BlogQueryParams): Promise<PagedBlogOutput> {
         let filter = {}
         if (params.searchNameTerm) {
