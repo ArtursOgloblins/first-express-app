@@ -19,6 +19,7 @@ export const blogValidationPost = [
         .matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/).withMessage('Invalid URL format')
 ]
 
+// TODO: `Check on support blog id validation approach`
 export const  checkForExistingBlog  = [
     param('id')
         .custom(async (val) => {

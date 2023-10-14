@@ -9,6 +9,7 @@ import {postsInputValidationInBlogs} from "../middleware/posts/postsInputValidat
 import {postService} from "../domain/posts-service";
 import {getQueryParams} from "../helpers/query-params";
 import {ObjectId} from "mongodb";
+import { HttpStatusCodes as HTTP_STATUS }  from "../helpers/httpStatusCodes";
 
 const blogRouter = express.Router();
 
@@ -33,7 +34,7 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
     if (blog) {
         res.send(blog)
     } else {
-        res.sendStatus(404)
+        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
     }
 })
 
@@ -57,7 +58,7 @@ blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
     const {name, description, websiteUrl} = req.body
     const newBlogId  = await blogsService.addBlog({name, description, websiteUrl})
     const newBlog = await blogsQueryRepository.getBlogById(newBlogId)
-    res.status(201).send(newBlog)
+    res.status(HTTP_STATUS.CREATED).send(newBlog)
 })
 
 blogRouter.post('/:id/posts', basicAuth, postsInputValidationInBlogs, InputValidationResult,
@@ -67,9 +68,9 @@ blogRouter.post('/:id/posts', basicAuth, postsInputValidationInBlogs, InputValid
 
     if (blogExist && ObjectId.isValid(blogId)) {
         const newPost = await postService.addPostByBlogId(blogId, req.body)
-        res.status(201).send(newPost)
+        res.status(HTTP_STATUS.CREATED).send(newPost)
     } else {
-        res.sendStatus(404)
+        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
     }
 })
 
@@ -80,18 +81,18 @@ blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, asy
     const updatedBlog = await blogsService.updateBlog({id,name, description, websiteUrl})
 
     if (updatedBlog) {
-        res.status(204).send()
+        res.status(HTTP_STATUS.NO_CONTENT).send()
     } else {
-        res.sendStatus(404)
+        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
     }
 })
 
 blogRouter.delete('/:id', basicAuth, async (req:Request, res:Response) => {
     const isDeleted = await blogsQueryRepository.removeBlogById(req.params.id)
     if (isDeleted) {
-        res.sendStatus(204)
+        res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } else {
-        res.sendStatus(404)
+        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
     }
 })
 

@@ -66,4 +66,6 @@ export const HttpStatusCodes = {
     NETWORK_AUTHENTICATION_REQUIRED: 511,
 }
 
-export default HttpStatusCodes;
+
+type  HttpStatusKeys = keyof typeof HttpStatusCodes
+export type HttpStatusType = (typeof HttpStatusCodes)[HttpStatusKeys]
