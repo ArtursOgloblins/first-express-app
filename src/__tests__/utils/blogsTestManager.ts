@@ -6,7 +6,6 @@ import {AddBlogAttr} from "../../types";
 
 const base64Credentials = Buffer.from('admin:qwerty').toString('base64');
 
-
 export const blogsTestManager = {
 
     async createBlog(data: AddBlogAttr, expectedStatusCode: HttpStatusType = HTTP_STATUS.CREATED) {
@@ -46,5 +45,4 @@ export const blogsTestManager = {
                 "items": []
             });
     }
-
 }
