@@ -1,7 +1,6 @@
 import express, {Request, Response} from "express";
 import {basicAuth} from "../middleware/authorization";
-import {postsInputValidation} from "../middleware/posts/postsInputValidation";
-import {InputValidationResult} from "../middleware/inputValidationResult";
+import {CreatePostValidation, UpdatePostValidation} from "../middleware/posts/postsInputValidation";
 import {postService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/posts/posts-query-repo";
 import {PostQueryParams} from "../types";
@@ -36,19 +35,19 @@ postRouter.get('/:id', async (req:Request, res:Response) => {
     }
 })
 
-postRouter.post('/', basicAuth, postsInputValidation, InputValidationResult,
+postRouter.post('/', basicAuth, CreatePostValidation(true),
     async (req:Request, res: Response) => {
-    const newPost = await postService.addPost(req.body)
-    res.status(HTTP_STATUS.CREATED).send(newPost)
+    const newPost = await postService.createPost(req.body)
+        if (!newPost) {
+            res.status(HTTP_STATUS.BAD_REQUEST)
+        } else {
+            res.status(HTTP_STATUS.CREATED).send(newPost)
+        }
 })
-
-postRouter.put('/:id', basicAuth, postsInputValidation, InputValidationResult,
+ // TODO create updatepostvalidation middleware
+postRouter.put('/:id', basicAuth, UpdatePostValidation(),
     async (req:Request, res: Response) => {
         const id = req.params.id
-
-        if (Object.keys(req.body).length === 0) {
-            return res.status(HTTP_STATUS.UNAUTHORIZED).send('Request body is required.');
-        }
 
         const updatedPost = await postService.updatePost({id, ...req.body})
 

@@ -43,6 +43,9 @@ export const blogsQueryRepository = {
     },
 
     async getBlogById(id: string): Promise<BlogOutput | null> {
+        if (!ObjectId.isValid(id)) {
+            return null
+        }
         const blog = await blogsCollection.findOne({_id: new ObjectId(id)})
 
         if(!blog){
@@ -54,10 +57,11 @@ export const blogsQueryRepository = {
 
     async getPostsByBlogId(id: string, params: PostQueryParams) {
         const { skipAmount, sortDir } = getPaginationDetails(params);
-        const totalCount = await postCollection.countDocuments({blogId: id})
+        const filter = {blogId: id}
+        const totalCount = await postCollection.countDocuments(filter)
 
         const posts = await postCollection
-            .find({blogId: id})
+            .find(filter)
             .sort({[params.sortBy]: sortDir} as any)
             .skip(skipAmount)
             .limit(params.pageSize)

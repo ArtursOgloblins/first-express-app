@@ -48,7 +48,6 @@ export type UpdatePostAttr = {
     shortDescription: string,
     content: string,
     blogId: string
-
 }
 
 export type BlogQueryParams = {
@@ -64,4 +63,10 @@ export type PostQueryParams = {
     sortDirection: 'asc' | 'desc';
     pageSize: number;
     pageNumber: number;
+}
+
+export type AddUserParams = {
+    login: string,
+    password:string
+    email: string,
 }

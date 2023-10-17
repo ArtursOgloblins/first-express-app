@@ -6,6 +6,7 @@ import testRoutes from "./routes/testRoutes";
 import postsRoutes from "./routes/postsRoutes";
 import {runDb} from "./repositories/db";
 import {RouterPath} from "./routerPaths";
+import usersRoutes from "./routes/usersRoutes";
 
 export const app: Express = express();
 
@@ -19,6 +20,7 @@ app.use(RouterPath.videos, videoRoutes)
 app.use(RouterPath.blogs, blogsRoutes)
 app.use(RouterPath.posts, postsRoutes)
 app.use(RouterPath.testing, testRoutes)
+app.use(RouterPath.users, usersRoutes)
 
 const startApp = async () => {
     await runDb()
@@ -30,4 +32,3 @@ const startApp = async () => {
 startApp().catch(err => {
     console.error("Failed to start app", err);
 });
-

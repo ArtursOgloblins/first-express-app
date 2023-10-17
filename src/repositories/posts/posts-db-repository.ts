@@ -14,7 +14,7 @@ export const postsRepository = {
 
         const res = await postCollection.insertOne(newPost)
 
-        return postMapper({...newPost, _id: res.insertedId, })
+        return postMapper({...newPost, _id: res.insertedId })
     },
 
     async updatePost(inputData: UpdatePostAttr): Promise<PostOutput | null> {

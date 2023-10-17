@@ -1,20 +1,19 @@
 import express, {Request, Response} from "express";
 import {blogsService} from "../domain/blogs-service"
-import {blogValidationPost, checkForExistingBlog} from "../middleware/blogs/blogInputValidations";
+import {blogValidationPost} from "../middleware/blogs/blogInputValidations";
 import {InputValidationResult} from "../middleware/inputValidationResult"
 import {basicAuth} from "../middleware/authorization";
 import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
 import {BlogQueryParams, PostQueryParams} from "../types";
-import {postsInputValidationInBlogs} from "../middleware/posts/postsInputValidation";
+import {CreatePostValidation,} from "../middleware/posts/postsInputValidation";
 import {postService} from "../domain/posts-service";
 import {getQueryParams} from "../helpers/query-params";
-import {ObjectId} from "mongodb";
-import { HttpStatusCodes as HTTP_STATUS }  from "../helpers/httpStatusCodes";
+import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 
 const blogRouter = express.Router();
 
 blogRouter.get('/', async (req: Request, res: Response) => {
-    const { sortBy, sortDirection, pageSize, pageNumber } = getQueryParams(req);
+    const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
     const searchNameTerm = req.query.searchNameTerm?.toString() || null;
 
     const getBlogParams: BlogQueryParams = {
@@ -38,9 +37,13 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
     }
 })
 
-blogRouter.get('/:id/posts',checkForExistingBlog, InputValidationResult, async (req: Request, res: Response) => {
-    const { sortBy, sortDirection, pageSize, pageNumber } = getQueryParams(req);
+blogRouter.get('/:id/posts',  async (req: Request, res: Response) => {
     const blogId = req.params.id
+    const blog = await blogsQueryRepository.getBlogById(blogId)
+    if(!blog) return res.sendStatus(404)
+
+
+    const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
 
     const getPostsParams: PostQueryParams = {
         sortBy,
@@ -55,30 +58,28 @@ blogRouter.get('/:id/posts',checkForExistingBlog, InputValidationResult, async (
 
 blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
     async (req: Request, res: Response) => {
-    const {name, description, websiteUrl} = req.body
-    const newBlogId  = await blogsService.addBlog({name, description, websiteUrl})
-    const newBlog = await blogsQueryRepository.getBlogById(newBlogId)
-    res.status(HTTP_STATUS.CREATED).send(newBlog)
-})
+        const {name, description, websiteUrl} = req.body
+        const newBlogId = await blogsService.addBlog({name, description, websiteUrl})
+        const newBlog = await blogsQueryRepository.getBlogById(newBlogId)
+        res.status(HTTP_STATUS.CREATED).send(newBlog)
+    })
 
-blogRouter.post('/:id/posts', basicAuth, postsInputValidationInBlogs, InputValidationResult,
-    async (req:Request, res: Response) => {
-    const blogId = req.params.id
-    const blogExist  = await blogsQueryRepository.getBlogById(blogId)
+blogRouter.post('/:id/posts', basicAuth, CreatePostValidation(false),
+    async (req: Request, res: Response) => {
+        const blogId = req.params.id
+        const newPost = await postService.createPost({blogId, ...req.body})
+        if (!newPost) {
+            res.sendStatus(HTTP_STATUS.NOT_FOUND)
+        } else {
+            res.status(HTTP_STATUS.CREATED).send(newPost)
+        }
+    })
 
-    if (blogExist && ObjectId.isValid(blogId)) {
-        const newPost = await postService.addPostByBlogId(blogId, req.body)
-        res.status(HTTP_STATUS.CREATED).send(newPost)
-    } else {
-        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
-    }
-})
-
-blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, async (req:Request, res: Response) => {
+blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, async (req: Request, res: Response) => {
     const id = req.params.id
 
     const {name, description, websiteUrl} = req.body
-    const updatedBlog = await blogsService.updateBlog({id,name, description, websiteUrl})
+    const updatedBlog = await blogsService.updateBlog({id, name, description, websiteUrl})
 
     if (updatedBlog) {
         res.status(HTTP_STATUS.NO_CONTENT).send()
@@ -87,7 +88,7 @@ blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, asy
     }
 })
 
-blogRouter.delete('/:id', basicAuth, async (req:Request, res:Response) => {
+blogRouter.delete('/:id', basicAuth, async (req: Request, res: Response) => {
     const isDeleted = await blogsQueryRepository.removeBlogById(req.params.id)
     if (isDeleted) {
         res.sendStatus(HTTP_STATUS.NO_CONTENT)
