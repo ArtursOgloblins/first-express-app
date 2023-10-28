@@ -40,7 +40,7 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
 blogRouter.get('/:id/posts',  async (req: Request, res: Response) => {
     const blogId = req.params.id
     const blog = await blogsQueryRepository.getBlogById(blogId)
-    if(!blog) return res.sendStatus(404)
+    if(!blog) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
 
     const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
@@ -84,7 +84,7 @@ blogRouter.put('/:id', basicAuth, blogValidationPost, InputValidationResult, asy
     if (updatedBlog) {
         res.status(HTTP_STATUS.NO_CONTENT).send()
     } else {
-        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+        res.sendStatus(HTTP_STATUS.NOT_FOUND)
     }
 })
 
