@@ -33,7 +33,7 @@ blogRouter.get('/:id', async (req: Request, res: Response) => {
     if (blog) {
         res.send(blog)
     } else {
-        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+        res.sendStatus(HTTP_STATUS.NOT_FOUND)
     }
 })
 
@@ -93,7 +93,7 @@ blogRouter.delete('/:id', basicAuth, async (req: Request, res: Response) => {
     if (isDeleted) {
         res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } else {
-        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+        res.sendStatus(HTTP_STATUS.NOT_FOUND)
     }
 })
 
