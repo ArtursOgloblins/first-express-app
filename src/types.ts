@@ -70,3 +70,18 @@ export type AddUserParams = {
     password:string
     email: string,
 }
+
+export type UsersQueryParams = {
+    searchLoginTerm: string | null;
+    searchEmailTerm: string | null;
+    sortBy: string;
+    sortDirection: 'asc' | 'desc';
+    pageSize: number;
+    pageNumber: number;
+}
+
+export type UserFilter = {
+    login?: RegExp;
+    email?: RegExp;
+    $or?: UserFilter[];
+};

@@ -10,6 +10,7 @@ export const postService = {
         if (!blog) {
             return null
         }
+        const createdAt = new Date().toISOString()
 
         const newPost = {
             title : inputData.title,
@@ -17,7 +18,7 @@ export const postService = {
             content: inputData.content,
             blogId: inputData.blogId,
             blogName: blog.name,
-            createdAt: new Date().toDateString()
+            createdAt: createdAt
         };
 
         return postsRepository.addPost(newPost)

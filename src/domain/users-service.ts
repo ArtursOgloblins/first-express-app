@@ -10,15 +10,27 @@ export const userService = {
         const createdAt = new Date().toISOString()
 
         const newUser = {
-            userName: login,
-            email,
-            passwordHash,
-            createdAt
+            login: login,
+            email: email,
+            password: passwordHash,
+            passwordSalt: passwordSalt,
+            createdAt: createdAt
         }
         return usersRepository.createUser(newUser)
     },
 
+    async checkCredentials(loginOrEmail: string, password: string) {
+        const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
+        if (!user) return false
+        const passwordHash = await this._generateHash(password, user.passwordSalt)
+        return user.password == passwordHash;
+
+    },
+
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
-    }
+    },
 }
+
+
+

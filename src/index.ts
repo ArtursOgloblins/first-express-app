@@ -7,6 +7,8 @@ import postsRoutes from "./routes/postsRoutes";
 import {runDb} from "./repositories/db";
 import {RouterPath} from "./routerPaths";
 import usersRoutes from "./routes/usersRoutes";
+import authRouter from "./routes/authRouter";
+
 
 export const app: Express = express();
 
@@ -21,6 +23,7 @@ app.use(RouterPath.blogs, blogsRoutes)
 app.use(RouterPath.posts, postsRoutes)
 app.use(RouterPath.testing, testRoutes)
 app.use(RouterPath.users, usersRoutes)
+app.use(RouterPath.auth, authRouter);
 
 const startApp = async () => {
     await runDb()

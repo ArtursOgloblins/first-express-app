@@ -1,6 +1,7 @@
 import {WithId} from "mongodb";
 import {Blog, BlogOutput} from "../models/Blogs";
 import {Post, PostOutput} from "../models/Posts";
+import {SanitizedUserOutput, User} from "../models/Users";
 
 export const blogMapper = (blog: WithId<Blog>): BlogOutput => {
     return {
@@ -23,5 +24,14 @@ export const postMapper = (post: WithId<Post>): PostOutput => {
         blogName: post.blogName,
         createdAt: post.createdAt
 
+    }
+}
+
+export const userMapper = (user: WithId<User>): SanitizedUserOutput => {
+    return {
+        id: user._id.toString(),
+        login: user.login,
+        email: user.email,
+        createdAt: user.createdAt
     }
 }
