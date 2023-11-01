@@ -1,5 +1,5 @@
 import {blogsRepository} from "../repositories/blogs/blogs-db-repository";
-import {AddBlogAttr, UpdateBlogAttr} from "../types";
+import {AddBlogAttr, UpdateBlogAttr} from "../types/types";
 
 export const blogsService = {
 

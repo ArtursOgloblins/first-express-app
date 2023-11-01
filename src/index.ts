@@ -1,6 +1,5 @@
 import express, {Express} from 'express'
 import bodyParser from "body-parser";
-import videoRoutes from './routes/videoRoutes'
 import blogsRoutes from './routes/blogsRoutes'
 import testRoutes from "./routes/testRoutes";
 import postsRoutes from "./routes/postsRoutes";
@@ -18,7 +17,6 @@ app.use(express.json())
 app.use(bodyParser.json())
 
 
-app.use(RouterPath.videos, videoRoutes)
 app.use(RouterPath.blogs, blogsRoutes)
 app.use(RouterPath.posts, postsRoutes)
 app.use(RouterPath.testing, testRoutes)

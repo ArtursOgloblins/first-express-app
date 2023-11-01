@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import {AddUserParams} from "../types";
+import {AddUserParams} from "../types/types";
 import {usersRepository} from "../repositories/users/users-db-repo";
 
 export const userService = {
@@ -21,10 +21,12 @@ export const userService = {
 
     async checkCredentials(loginOrEmail: string, password: string) {
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
-        if (!user) return false
+        if (!user) return null
         const passwordHash = await this._generateHash(password, user.passwordSalt)
-        return user.password == passwordHash;
-
+        if (user.password == passwordHash) {
+            return user
+        }
+        return null;
     },
 
     async _generateHash(password: string, salt: string) {

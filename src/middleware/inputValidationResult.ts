@@ -21,5 +21,5 @@ export const InputValidationResult = (req: Request, res: Response, next: NextFun
         };
     });
 
-    res.status(400).send({ errorsMessages });
+   return res.status(400).send({ errorsMessages });
 }

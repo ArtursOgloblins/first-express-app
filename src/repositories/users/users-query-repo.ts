@@ -1,6 +1,6 @@
 import {client} from "../db";
 import {PagedUserOutput, SanitizedUserOutput, User} from "../../models/Users";
-import {UsersQueryParams, UserFilter} from "../../types";
+import {UsersQueryParams, UserFilter} from "../../types/types";
 import {getPaginationDetails} from "../../helpers/query-params";
 import {userMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
@@ -44,6 +44,17 @@ export const usersQueryRepository = {
             totalCount: totalCount,
             items: sanitizedUsers
         }
+    },
+
+    async findUserById(id: ObjectId) {
+        if (!ObjectId.isValid(id)) {
+            return null
+        }
+        const user = await usersCollection.findOne({_id: id})
+        if (!user) {
+            return null
+        }
+        return user
     },
 
     async removeUserById(id: string): Promise<boolean>  {

@@ -3,9 +3,9 @@ import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {userService} from "../domain/users-service";
 import {createUserValidation} from "../middleware/users/createUserValidation";
 import {getQueryParams} from "../helpers/query-params";
-import {UsersQueryParams} from "../types";
+import {UsersQueryParams} from "../types/types";
 import {usersQueryRepository} from "../repositories/users/users-query-repo";
-import {basicAuth} from "../middleware/authorization";
+import {basicAuth} from "../middleware/auth/basicAuth";
 
 const usersRouter =  express.Router();
 

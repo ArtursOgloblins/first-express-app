@@ -1,5 +1,5 @@
 import {Post, PostOutput} from "../../models/Posts";
-import {UpdatePostAttr} from "../../types";
+import {UpdatePostAttr} from "../../types/types";
 import {client} from "../db";
 import {postMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";

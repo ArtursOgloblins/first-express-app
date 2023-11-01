@@ -2,9 +2,9 @@ import express, {Request, Response} from "express";
 import {blogsService} from "../domain/blogs-service"
 import {blogValidationPost} from "../middleware/blogs/blogInputValidations";
 import {InputValidationResult} from "../middleware/inputValidationResult"
-import {basicAuth} from "../middleware/authorization";
+import {basicAuth} from "../middleware/auth/basicAuth";
 import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
-import {BlogQueryParams, PostQueryParams} from "../types";
+import {BlogQueryParams, PostQueryParams} from "../types/types";
 import {CreatePostValidation,} from "../middleware/posts/postsInputValidation";
 import {postService} from "../domain/posts-service";
 import {getQueryParams} from "../helpers/query-params";

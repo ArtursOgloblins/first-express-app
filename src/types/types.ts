@@ -1,3 +1,4 @@
+import {ObjectId} from "mongodb";
 
 
 export type CreateVideoAttr = {
@@ -85,3 +86,10 @@ export type UserFilter = {
     email?: RegExp;
     $or?: UserFilter[];
 };
+
+export type AddCommentAttr = {
+    content: string
+    userId: ObjectId
+    userLogin: string
+    postId: string
+}

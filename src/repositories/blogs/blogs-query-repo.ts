@@ -2,7 +2,7 @@ import {Blog, BlogOutput, PagedBlogOutput} from "../../models/Blogs";
 import {blogMapper, postMapper} from "../../helpers/mappers";
 import {client} from "../db";
 import {ObjectId} from "mongodb";
-import {BlogQueryParams, PostQueryParams} from "../../types";
+import {BlogQueryParams, PostQueryParams} from "../../types/types";
 import {Post, PostOutput} from "../../models/Posts";
 import {getPaginationDetails} from "../../helpers/query-params";
 

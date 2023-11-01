@@ -2,7 +2,7 @@ import {PagedPostOutput, Post, PostOutput} from "../../models/Posts";
 import {postMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {client} from "../db";
-import {PostQueryParams} from "../../types";
+import {PostQueryParams} from "../../types/types";
 
 const dbName = process.env.DB_NAME || "blogs_posts"
 const db = client.db(dbName)

@@ -1,3 +1,5 @@
+import {WithId} from "mongodb";
+
 export type User = {
     login: string,
     email: string,
@@ -6,6 +8,7 @@ export type User = {
     createdAt: string
 }
 
+export type UserDb = WithId<User>
 export type UserOutput = User & { id: string}
 export type SanitizedUserOutput = Omit<UserOutput, 'password' | 'passwordSalt'>;
 

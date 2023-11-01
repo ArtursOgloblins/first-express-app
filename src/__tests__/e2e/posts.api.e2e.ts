@@ -2,7 +2,7 @@ import request from 'supertest'
 import {app} from '../../index'
 import {RouterPath} from "../../routerPaths";
 import {HttpStatusCodes as HTTP_STATUS} from "../../helpers/httpStatusCodes";
-import {AddBlogAttr, AddPostAttr} from "../../types";
+import {AddBlogAttr, AddPostAttr} from "../../types/types";
 import {blogsTestManager} from "../utils/blogsTestManager";
 import {postsTestManager} from "../utils/postsTestManager";
 

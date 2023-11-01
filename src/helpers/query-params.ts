@@ -1,5 +1,5 @@
 import {Request} from "express";
-import {PostQueryParams} from "../types";
+import {PostQueryParams} from "../types/types";
 
 export const  getQueryParams = (req: Request): PostQueryParams => {
     const sortBy = req.query.sortBy?.toString() || 'createdAt';

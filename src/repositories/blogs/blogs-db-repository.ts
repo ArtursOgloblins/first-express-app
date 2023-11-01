@@ -1,5 +1,5 @@
 import {Blog} from "../../models/Blogs";
-import {UpdateBlogAttr} from "../../types";
+import {UpdateBlogAttr} from "../../types/types";
 import {client} from "../db";
 import {ObjectId} from "mongodb";
 
