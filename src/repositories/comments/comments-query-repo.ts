@@ -3,6 +3,7 @@ import {Comment, CommentOutput, PagedCommentOutput} from "../../models/Comments"
 import {PostQueryParams} from "../../types/types";
 import {getPaginationDetails} from "../../helpers/query-params";
 import {commentsMapper} from "../../helpers/mappers";
+import {ObjectId} from "mongodb";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
 const db = client.db(dbName);
@@ -30,5 +31,23 @@ export const commentsQueryRepository = {
             totalCount: totalCount,
             items: mappedComments
         }
+    },
+
+    async getCommentById(id: string): Promise<CommentOutput | null> {
+        if (!ObjectId.isValid(id)) {
+            return null
+        }
+
+        const comment = await commentsCollection.findOne({_id: new ObjectId(id)})
+        if (!comment) {
+            return null
+        }
+
+        return commentsMapper(comment)
+    },
+
+    async removeCommentById(commentId: string): Promise<boolean> {
+        const result = await commentsCollection.deleteOne({ _id: new ObjectId(commentId)})
+        return result.deletedCount === 1
     }
 }

@@ -16,6 +16,7 @@ const postRouter = express.Router()
 
 postRouter.get('/', async (req: Request, res: Response) => {
     const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
+
     const getPostsParams: PostQueryParams = {
         sortBy,
         sortDirection,

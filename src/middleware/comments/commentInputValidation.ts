@@ -1,7 +1,6 @@
 import {body} from "express-validator";
 import {InputValidationResult} from "../inputValidationResult";
 
-
 const contentValidation = body('content')
     .trim()
     .exists().withMessage('Comment is required')

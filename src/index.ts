@@ -7,6 +7,7 @@ import {runDb} from "./repositories/db";
 import {RouterPath} from "./routerPaths";
 import usersRoutes from "./routes/usersRoutes";
 import authRouter from "./routes/authRouter";
+import commentsRouter from "./routes/commentsRouter";
 
 
 export const app: Express = express();
@@ -19,9 +20,10 @@ app.use(bodyParser.json())
 
 app.use(RouterPath.blogs, blogsRoutes)
 app.use(RouterPath.posts, postsRoutes)
-app.use(RouterPath.testing, testRoutes)
 app.use(RouterPath.users, usersRoutes)
-app.use(RouterPath.auth, authRouter);
+app.use(RouterPath.comments, commentsRouter)
+app.use(RouterPath.testing, testRoutes)
+app.use(RouterPath.auth, authRouter)
 
 const startApp = async () => {
     await runDb()

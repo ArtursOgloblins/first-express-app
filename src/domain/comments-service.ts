@@ -1,5 +1,5 @@
 import {commentsRepository} from "../repositories/comments/comments-db-repo";
-import {AddCommentAttr} from "../types/types";
+import {AddCommentAttr, UpdatedCommentAttr} from "../types/types";
 
 export const commentsService = {
     async createComment (inputData: AddCommentAttr) {
@@ -18,5 +18,9 @@ export const commentsService = {
         }
 
         return await commentsRepository.addComment(newComment)
+    },
+
+    async updateComment (inputData: UpdatedCommentAttr) {
+        return await commentsRepository.updateComment(inputData)
     }
 }

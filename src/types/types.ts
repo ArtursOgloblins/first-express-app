@@ -93,3 +93,8 @@ export type AddCommentAttr = {
     userLogin: string
     postId: string
 }
+
+export type UpdatedCommentAttr = {
+    commentId: string
+    content: string
+}
