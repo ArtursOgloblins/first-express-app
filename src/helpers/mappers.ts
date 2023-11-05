@@ -41,11 +41,11 @@ export const commentsMapper = (comment: WithId<Comment>): CommentOutput => {
 }
 
 //export const userMapper
-export const userMapper = (user: WithId<User>): SanitizedUserOutput => {
+export const userSanitizer = (user: WithId<User>): SanitizedUserOutput => {
     return {
         id: user._id.toString(),
-        login: user.login,
-        email: user.email,
-        createdAt: user.createdAt
+        login: user.accountData.login,
+        email: user.accountData.email,
+        createdAt: user.accountData.createdAt.toString()
     }
 }

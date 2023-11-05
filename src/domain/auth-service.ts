@@ -1,10 +1,11 @@
-import bcrypt from 'bcrypt';
 import {AddUserParams} from "../types/types";
+import bcrypt from "bcrypt";
 import {usersRepository} from "../repositories/users/users-db-repo";
-import {v4 as uuidv4} from "uuid";
-import {add} from "date-fns";
+import {v4 as uuidv4} from 'uuid'
+import { add } from 'date-fns';
+import {emailManager} from "../managers/email-manager";
 
-export const userService = {
+export const authService = {
     async createUser(inputData: AddUserParams) {
         const {login, password, email} = inputData
         const passwordSalt = await bcrypt.genSalt(10)
@@ -25,26 +26,21 @@ export const userService = {
                     hours: 1,
                     minutes: 3
                 }),
-                isConfirmed: true
+                isConfirmed: false
             }
         }
-        return usersRepository.createUser(newUser)
-    },
-
-    async checkCredentials(loginOrEmail: string, password: string) {
-        const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
-        if (!user) return null
-        const passwordHash = await this._generateHash(password, user.accountData.passwordSalt)
-        if (user.accountData.password == passwordHash) {
-            return user
+        const res = usersRepository.registerUser(newUser)
+        try {
+            await emailManager.sendUserRegistrationMail(newUser)
+        } catch (error) {
+            console.log(error)
+            // await usersRepository.deleteUserById(newUser._id)
+            return null
         }
-        return null;
+        return res
     },
 
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
     },
 }
-
-
-

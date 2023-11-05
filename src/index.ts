@@ -6,7 +6,7 @@ import postsRoutes from "./routes/postsRoutes";
 import {runDb} from "./repositories/db";
 import {RouterPath} from "./routerPaths";
 import usersRoutes from "./routes/usersRoutes";
-import authRouter from "./routes/authRouter";
+import authRoutes from "./routes/authRoutes";
 import commentsRouter from "./routes/commentsRouter";
 
 
@@ -23,7 +23,7 @@ app.use(RouterPath.posts, postsRoutes)
 app.use(RouterPath.users, usersRoutes)
 app.use(RouterPath.comments, commentsRouter)
 app.use(RouterPath.testing, testRoutes)
-app.use(RouterPath.auth, authRouter)
+app.use(RouterPath.auth, authRoutes)
 
 const startApp = async () => {
     await runDb()
