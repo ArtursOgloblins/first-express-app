@@ -77,7 +77,7 @@ postRouter.post('/:postId/comments',authWithToken, commentValidation(),
     if(!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
     const newComment  = await commentsService.createComment(
-        { content: req.body.content, userId: req.user!._id, userLogin: req.user!.login, postId: postId})
+        { content: req.body.content, userId: req.user!._id, userLogin: req.user!.accountData.login, postId: postId})
 
     if (!newComment) {
         res.status(HTTP_STATUS.BAD_REQUEST)

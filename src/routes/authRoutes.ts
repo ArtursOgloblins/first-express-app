@@ -4,6 +4,7 @@ import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {jwtService} from "../application/jwt-service";
 import {authWithToken} from "../middleware/auth/authWithToken";
 import {createUserValidation} from "../middleware/users/createUserValidation";
+import {authService} from "../domain/auth-service";
 
 const authRoutes = express.Router()
 
@@ -11,13 +12,12 @@ authRoutes.post('/registration',createUserValidation(),
     async (req: Request, res: Response) => {
 
     const {login, password, email} = req.body
-    const newUser = await userService.createUser({login, password, email})
+    const newUser = await authService.createUser({login, password, email})
         if (newUser) {
             res.sendStatus(HTTP_STATUS.NO_CONTENT)
         } else {
             res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         }
-
 })
 
 authRoutes.post('/login', async (req: Request, res: Response)=> {

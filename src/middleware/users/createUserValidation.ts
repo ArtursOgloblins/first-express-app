@@ -21,7 +21,7 @@ const emailValidation = body('email')
     .exists().withMessage('Field is required')
     .notEmpty().withMessage('Field must not be empty')
     .isString().withMessage('Username should be string')
-    .matches(/^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/).withMessage('Invalid email format')
+    .matches(/^[\w-]+@([\w-]+\.)+[\w-]{2,}$/).withMessage('Invalid email format')
 
 export const createUserValidation = () => {
     const validation: any = [

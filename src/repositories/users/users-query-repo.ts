@@ -2,7 +2,7 @@ import {client} from "../db";
 import {PagedUserOutput, SanitizedUserOutput, User} from "../../models/Users";
 import {UsersQueryParams, UserFilter} from "../../types/types";
 import {getPaginationDetails} from "../../helpers/query-params";
-import {userMapper} from "../../helpers/mappers";
+import {userSanitizer} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
@@ -35,7 +35,7 @@ export const usersQueryRepository = {
             .limit(params.pageSize)
             .toArray()
 
-        const sanitizedUsers: SanitizedUserOutput[] =  users.map((u) => userMapper(u))
+        const sanitizedUsers: SanitizedUserOutput[] =  users.map((u) => userSanitizer(u))
 
         return {
             pagesCount: Math.ceil(totalCount / params.pageSize),
