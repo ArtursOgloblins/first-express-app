@@ -19,7 +19,7 @@ commentsRouter.get('/:id', async (req: Request, res: Response ) => {
 
 commentsRouter.put('/:commentId', authWithToken, commentValidation(),
     async (req:Request, res: Response) => {
-        const commentId = req.params.commentId
+        const {commentId} = req.params
         const userId = req.user!._id.toString()
 
         const comment = await commentsQueryRepository.getCommentById(commentId);
@@ -38,7 +38,7 @@ commentsRouter.put('/:commentId', authWithToken, commentValidation(),
     })
 
 commentsRouter.delete('/:commentId', authWithToken, async (req: Request, res: Response) => {
-    const commentId = req.params.commentId
+    const {commentId} = req.params
     const userId = req.user!._id.toString()
 
     const comment = await commentsQueryRepository.getCommentById(commentId);

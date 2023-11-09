@@ -4,6 +4,8 @@ import {usersRepository} from "../repositories/users/users-db-repo";
 import {v4 as uuidv4} from 'uuid'
 import { add } from 'date-fns';
 import {emailManager} from "../managers/email-manager";
+import {usersQueryRepository} from "../repositories/users/users-query-repo";
+import {userService} from "./users-service";
 
 export const authService = {
     async createUser(inputData: AddUserParams) {
@@ -29,9 +31,10 @@ export const authService = {
                 isConfirmed: false
             }
         }
-        const res = usersRepository.registerUser(newUser)
+        const res = await usersRepository.registerUser(newUser)
+        const code = newUser.emailConfirmation.confirmationCode
         try {
-            await emailManager.sendUserRegistrationMail(newUser)
+            await emailManager.sendUserRegistrationMail(code, email)
         } catch (error) {
             console.log(error)
             // await usersRepository.deleteUserById(newUser._id)
@@ -43,4 +46,31 @@ export const authService = {
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
     },
+
+    async confirmRegistration(code: string) {
+        const user = await usersQueryRepository.getUserByRegistrationCode(code)
+        if (!user) return false
+        if (user.emailConfirmation.isConfirmed) return false
+        if (user.emailConfirmation.expirationDate < new Date()) return false
+
+        return await userService.updateConfirmation(user._id)
+
+    },
+
+    async confirmationResending(email: string) {
+        const user = await usersQueryRepository.getUserByEmail(email)
+        console.log('user', user)
+        if (!user) return false
+        if (user.emailConfirmation.isConfirmed) return false
+        if (user.emailConfirmation.expirationDate < new Date()) return false
+
+        const code = user.emailConfirmation.confirmationCode
+        try {
+            await emailManager.sendUserRegistrationMail(code, email)
+            return true
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+    }
 }

@@ -34,7 +34,7 @@ export const usersQueryRepository = {
             .skip(skipAmount)
             .limit(params.pageSize)
             .toArray()
-
+        console.log('users', users)
         const sanitizedUsers: SanitizedUserOutput[] =  users.map((u) => userSanitizer(u))
 
         return {
@@ -60,5 +60,23 @@ export const usersQueryRepository = {
     async removeUserById(id: string): Promise<boolean>  {
         const result = await usersCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
+    },
+
+    async getUserByRegistrationCode(code: string){
+        try {
+            return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+        } catch (error) {
+            console.error("An error occurred while fetching the user:", error);
+            return null;
+        }
+    },
+
+    async getUserByEmail(email: string) {
+        try {
+            return await usersCollection.findOne({'accountData.email': email});
+        } catch (error) {
+            console.error("An error occurred while fetching the user:", error);
+            return null;
+        }
     }
 }

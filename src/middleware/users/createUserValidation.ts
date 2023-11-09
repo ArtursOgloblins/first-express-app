@@ -16,7 +16,7 @@ const passwordValidation = body('password')
     .isString().withMessage('Password must be string')
     .isLength({max:20, min:6}).withMessage('Length must be between 6-20 chars')
 
-const emailValidation = body('email')
+const validateEmail = body('email')
     .trim()
     .exists().withMessage('Field is required')
     .notEmpty().withMessage('Field must not be empty')
@@ -27,7 +27,15 @@ export const createUserValidation = () => {
     const validation: any = [
         loginValidation,
         passwordValidation,
-        emailValidation
+        validateEmail
+    ]
+    validation.push(InputValidationResult)
+    return validation
+}
+
+export const emailValidation = () => {
+    const validation: any = [
+        validateEmail
     ]
     validation.push(InputValidationResult)
     return validation

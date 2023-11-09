@@ -3,6 +3,7 @@ import {AddUserParams} from "../types/types";
 import {usersRepository} from "../repositories/users/users-db-repo";
 import {v4 as uuidv4} from "uuid";
 import {add} from "date-fns";
+import {ObjectId} from "mongodb";
 
 export const userService = {
     async createUser(inputData: AddUserParams) {
@@ -34,6 +35,8 @@ export const userService = {
     async checkCredentials(loginOrEmail: string, password: string) {
         const user = await usersRepository.findByLoginOrEmail(loginOrEmail)
         if (!user) return null
+        if (!user.emailConfirmation.isConfirmed) return null
+
         const passwordHash = await this._generateHash(password, user.accountData.passwordSalt)
         if (user.accountData.password == passwordHash) {
             return user
@@ -44,6 +47,10 @@ export const userService = {
     async _generateHash(password: string, salt: string) {
         return await bcrypt.hash(password, salt)
     },
+
+    async updateConfirmation(id: ObjectId) {
+        return await usersRepository.updateUser(id)
+    }
 }
 
 

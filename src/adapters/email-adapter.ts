@@ -10,12 +10,11 @@ export const emailAdapter = {
             }
         });
 
-        const info = await transport.sendMail({
+        return await transport.sendMail({
             from: 'springJack',
             to: email,
             subject: subject,
-            html:message,
-        });
-        return info
+            html: message,
+        })
     }
 }
