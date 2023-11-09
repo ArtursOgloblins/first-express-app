@@ -1,5 +1,6 @@
 import {body} from "express-validator";
 import {InputValidationResult} from "../inputValidationResult";
+import {usersQueryRepository} from "../../repositories/users/users-query-repo";
 
 const loginValidation = body('login')
     .trim()
@@ -22,6 +23,11 @@ const validateEmail = body('email')
     .notEmpty().withMessage('Field must not be empty')
     .isString().withMessage('Username should be string')
     .matches(/^[\w-]+@([\w-]+\.)+[\w-]{2,}$/).withMessage('Invalid email format')
+    .custom(async (email) => {
+        const user = await usersQueryRepository.getUserByEmail(email)
+        if (user) throw new Error('Email already exists')
+        return true
+    })
 
 export const createUserValidation = () => {
     const validation: any = [
