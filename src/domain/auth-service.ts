@@ -58,11 +58,14 @@ export const authService = {
     async confirmationResending(email: string) {
         const user = await usersQueryRepository.getUserByEmail(email)
         console.log('user', user)
-        if (!user) return false
+        if (!user) return null
 
-        const code = user.emailConfirmation.confirmationCode
+        const newCode = uuidv4()
+        console.log('newCode', newCode)
+
         try {
-            await emailManager.sendUserRegistrationMail(code, email)
+            await usersRepository.updateConfirmationCode(user._id, newCode)
+            await emailManager.sendUserRegistrationMail(newCode, email)
             return true
         } catch (error) {
             console.log(error)
