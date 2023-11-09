@@ -9,6 +9,11 @@ const loginValidation = body('login')
     .isString().withMessage('Username should be string')
     .isLength({max:10, min:3}).withMessage('Length must be between 3-10 chars')
     .matches(/^[a-zA-Z0-9_-]*$/).withMessage('Invalid format')
+    .custom(async (login) => {
+        const user = await usersQueryRepository.getUserByEmail(login)
+        if (user) throw new Error('Email already exists')
+        return true
+    })
 
 const passwordValidation = body('password')
     .trim()

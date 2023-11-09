@@ -78,5 +78,14 @@ export const usersQueryRepository = {
             console.error("An error occurred while fetching the user:", error);
             return null;
         }
+    },
+
+    async getUserByLogin(login: string) {
+        try {
+            return await usersCollection.findOne({'accountData.login': login});
+        } catch (error) {
+            console.error("An error occurred while fetching the user:", error);
+            return null;
+        }
     }
 }
