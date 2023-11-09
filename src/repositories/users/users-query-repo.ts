@@ -64,7 +64,7 @@ export const usersQueryRepository = {
 
     async getUserByRegistrationCode(code: string){
         try {
-            return await usersCollection.findOne({'emailConfirmation.confirmationCode': code});
+            return await usersCollection.findOne({'emailConfirmation.confirmationCode': code})
         } catch (error) {
             console.error("An error occurred while fetching the user:", error);
             return null;
@@ -73,18 +73,18 @@ export const usersQueryRepository = {
 
     async getUserByEmail(email: string) {
         try {
-            return await usersCollection.findOne({'accountData.email': email});
+            return await usersCollection.findOne({'accountData.email': email})
         } catch (error) {
-            console.error("An error occurred while fetching the user:", error);
+            console.error("An error occurred while fetching the user:", error)
             return null;
         }
     },
 
     async getUserByLogin(login: string) {
         try {
-            return await usersCollection.findOne({'accountData.login': login});
+            return await usersCollection.findOne({'accountData.login': login})
         } catch (error) {
-            console.error("An error occurred while fetching the user:", error);
+            console.error("An error occurred while fetching the user:", error)
             return null;
         }
     }
