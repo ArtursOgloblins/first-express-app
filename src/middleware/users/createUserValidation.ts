@@ -36,6 +36,15 @@ const validateEmailExists = body('email')
         return true
     })
 
+const validateIsRegistrationConfirmedOrExpired = body('email')
+    .custom(async (email) => {
+        const user = await usersQueryRepository.getUserByEmail(email)
+        if (!user) return null
+        if (user.emailConfirmation.isConfirmed) throw new Error('Email already confirmed')
+        if (user.emailConfirmation.expirationDate < new Date()) throw new Error('Registration expired')
+        return true
+    })
+
 export const createUserValidation = () => {
     const validation: any = [
         loginValidation,
@@ -47,9 +56,10 @@ export const createUserValidation = () => {
     return validation
 }
 
-export const emailValidation = () => {
+export const resendingEmailValidation = () => {
     const validation: any = [
-        validateEmail
+        validateEmail,
+        validateIsRegistrationConfirmedOrExpired
     ]
     validation.push(InputValidationResult)
     return validation

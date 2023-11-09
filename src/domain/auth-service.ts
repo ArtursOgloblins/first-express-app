@@ -61,8 +61,6 @@ export const authService = {
         const user = await usersQueryRepository.getUserByEmail(email)
         console.log('user', user)
         if (!user) return false
-        if (user.emailConfirmation.isConfirmed) return false
-        if (user.emailConfirmation.expirationDate < new Date()) return false
 
         const code = user.emailConfirmation.confirmationCode
         try {

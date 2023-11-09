@@ -3,7 +3,7 @@ import {userService} from "../domain/users-service";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {jwtService} from "../application/jwt-service";
 import {authWithToken} from "../middleware/auth/authWithToken";
-import {createUserValidation, emailValidation} from "../middleware/users/createUserValidation";
+import {createUserValidation, resendingEmailValidation} from "../middleware/users/createUserValidation";
 import {authService} from "../domain/auth-service";
 import {registrationValidation} from "../middleware/auth/authValidations";
 
@@ -31,7 +31,7 @@ authRoutes.post('/registration-confirmation', registrationValidation(),
     }
 })
 
-authRoutes.post('/registration-email-resending', emailValidation(),
+authRoutes.post('/registration-email-resending', resendingEmailValidation(),
     async (req:Request, res:Response) => {
     const emailResending = await authService.confirmationResending(req.body.email)
         if (!emailResending) {
