@@ -28,6 +28,8 @@ const validateEmail = body('email')
     .notEmpty().withMessage('Field must not be empty')
     .isString().withMessage('Username should be string')
     .matches(/^[\w-]+@([\w-]+\.)+[\w-]{2,}$/).withMessage('Invalid email format')
+
+const validateEmailExists = body('email')
     .custom(async (email) => {
         const user = await usersQueryRepository.getUserByEmail(email)
         if (user) throw new Error('Email already exists')
@@ -38,7 +40,8 @@ export const createUserValidation = () => {
     const validation: any = [
         loginValidation,
         passwordValidation,
-        validateEmail
+        validateEmail,
+        validateEmailExists
     ]
     validation.push(InputValidationResult)
     return validation
