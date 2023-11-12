@@ -8,6 +8,7 @@ import {RouterPath} from "./routerPaths";
 import usersRoutes from "./routes/usersRoutes";
 import authRoutes from "./routes/authRoutes";
 import commentsRouter from "./routes/commentsRouter";
+import cookieParser from "cookie-parser";
 
 
 export const app: Express = express();
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json())
 app.use(bodyParser.json())
+app.use(cookieParser())
 
 
 app.use(RouterPath.blogs, blogsRoutes)
