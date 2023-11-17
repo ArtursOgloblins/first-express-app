@@ -11,36 +11,60 @@ import {rateLimitValidation} from "../middleware/rateLimit";
 
 const authRoutes = express.Router()
 
-authRoutes.post('/registration',createUserValidation(),
+authRoutes.post('/registration',rateLimitValidation(), createUserValidation(),
     async (req: Request, res: Response) => {
+    try {
+        const {ip, baseUrl} = req
+        await userService.saveRequest(ip, baseUrl)
 
-    const {login, password, email} = req.body
-    const newUser = await authService.createUser({login, password, email})
+        const {login, password, email} = req.body
+        const newUser = await authService.createUser({login, password, email})
+
         if (newUser) {
             res.sendStatus(HTTP_STATUS.NO_CONTENT)
         } else {
             res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         }
+    } catch (error) {
+        console.error('registration:', error)
+        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    }
 })
 
-authRoutes.post('/registration-confirmation', registrationValidation(),
+authRoutes.post('/registration-confirmation', rateLimitValidation(), registrationValidation(),
     async (req: Request, res: Response) => {
-    const confirmation = await authService.confirmRegistration(req.body.code)
-    if (!confirmation) {
-        res.sendStatus(HTTP_STATUS.BAD_REQUEST)
-    } else {
-        res.sendStatus(HTTP_STATUS.NO_CONTENT)
+    try {
+        const {ip, baseUrl} = req
+        await userService.saveRequest(ip, baseUrl)
+
+        const confirmation = await authService.confirmRegistration(req.body.code)
+        if (!confirmation) {
+            res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+        } else {
+            res.sendStatus(HTTP_STATUS.NO_CONTENT)
+        }
+    } catch (error) {
+        console.error('registration-confirmation:', error)
+        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
     }
 })
 
 authRoutes.post('/registration-email-resending', resendingEmailValidation(),
     async (req:Request, res:Response) => {
-    const emailResending = await authService.confirmationResending(req.body.email)
+    try {
+        const {ip, baseUrl} = req
+        await userService.saveRequest(ip, baseUrl)
+
+        const emailResending = await authService.confirmationResending(req.body.email)
         if (!emailResending) {
             res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         } else {
             res.sendStatus(HTTP_STATUS.NO_CONTENT)
         }
+    } catch (error) {
+        console.error('registration-email-resending:', error)
+        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    }
 })
 
 authRoutes.post('/login',rateLimitValidation(), async (req: Request, res: Response)=> {
