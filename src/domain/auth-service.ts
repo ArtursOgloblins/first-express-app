@@ -1,4 +1,4 @@
-import {AddUserParams} from "../types/types";
+import {AddUserParams, RefreshTokenParams} from "../types/types";
 import bcrypt from "bcrypt";
 import {usersRepository} from "../repositories/users/users-db-repo";
 import {v4 as uuidv4} from 'uuid'
@@ -6,6 +6,9 @@ import { add } from 'date-fns';
 import {emailManager} from "../managers/email-manager";
 import {usersQueryRepository} from "../repositories/users/users-query-repo";
 import {userService} from "./users-service";
+import {jwtService} from "../application/jwt-service";
+import {authRepository} from "../repositories/auth/auth-db-repo";
+import {jwtDateMapper} from "../helpers/mappers";
 
 export const authService = {
     async createUser(inputData: AddUserParams) {
@@ -71,5 +74,20 @@ export const authService = {
             console.log(error)
             return null
         }
+    },
+
+    async saveRefreshToken(inputData: RefreshTokenParams) {
+        const {userId, newRefreshToken, deviceId, ip, deviceName} = inputData
+        const refreshTokenDetails = await jwtService.getRefreshTokenDetails(newRefreshToken)
+
+        const newToken = {
+            createdAt:  jwtDateMapper(refreshTokenDetails.iat),
+            expiringAt: jwtDateMapper(refreshTokenDetails.exp),
+            deviceId: deviceId,
+            ip: ip,
+            deviceName: deviceName,
+            userId: userId
+        }
+        return await authRepository.addNewRefreshToken(newToken)
     }
 }

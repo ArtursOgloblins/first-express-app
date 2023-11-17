@@ -29,7 +29,7 @@ export const userService = {
                 isConfirmed: true
             }
         }
-        return usersRepository.createUser(newUser)
+        return await usersRepository.createUser(newUser)
     },
 
     async checkCredentials(loginOrEmail: string, password: string) {
@@ -50,6 +50,12 @@ export const userService = {
 
     async updateConfirmation(id: ObjectId) {
         return await usersRepository.updateUser(id)
+    },
+
+    async saveRequest(ip: string, url: string) {
+        const date = new Date().toISOString()
+        const saveRequestArgs = {ip, url, date}
+        return await usersRepository.saveRequest(saveRequestArgs)
     }
 }
 

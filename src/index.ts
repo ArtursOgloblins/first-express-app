@@ -9,9 +9,12 @@ import usersRoutes from "./routes/usersRoutes";
 import authRoutes from "./routes/authRoutes";
 import commentsRouter from "./routes/commentsRouter";
 import cookieParser from "cookie-parser";
+import securityRoutes from "./routes/securityRoutes";
 
 
 export const app: Express = express();
+
+app.set('trust proxy', true);
 
 const PORT = process.env.PORT || 3000;
 
@@ -26,6 +29,7 @@ app.use(RouterPath.users, usersRoutes)
 app.use(RouterPath.comments, commentsRouter)
 app.use(RouterPath.testing, testRoutes)
 app.use(RouterPath.auth, authRoutes)
+app.use(RouterPath.security, securityRoutes)
 
 const startApp = async () => {
     await runDb()

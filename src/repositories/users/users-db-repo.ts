@@ -3,10 +3,12 @@ import {User} from "../../models/Users";
 import {userSanitizer} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import { add } from 'date-fns';
+import {ApiRequest} from "../../models/Requests";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
 const db = client.db(dbName);
 const usersCollection = db.collection<User>("users");
+const requestCollection = db.collection<ApiRequest>("requests")
 
 export const usersRepository = {
     async createUser(newUser: User) {
@@ -44,5 +46,9 @@ export const usersRepository = {
             {$set: {'emailConfirmation.isConfirmed': true}}
         )
         return res.modifiedCount === 1
+    },
+
+    async saveRequest(requestData: ApiRequest) {
+        return await requestCollection.insertOne(requestData)
     }
 }

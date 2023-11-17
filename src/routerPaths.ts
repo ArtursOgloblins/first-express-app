@@ -4,5 +4,6 @@ export const RouterPath = {
     testing: '/testing',
     users: '/users',
     comments: '/comments',
-    auth: '/auth'
+    auth: '/auth',
+    security: '/security'
 }

@@ -5,20 +5,24 @@ import {usersQueryRepository} from "../../repositories/users/users-query-repo";
 
 export const authWithToken = async (req:Request, res:Response, next: NextFunction) => {
     if(!req.headers.authorization) {
-        res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-        return
+        return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
     }
 
-    const token = req.headers.authorization.split(' ')[1]
+    try {
+        const token = req.headers.authorization.split(' ')[1]
+        const userId = await jwtService.verifyToken(token)
 
-    const userId = await jwtService.getUserIdByToken(token)
-    if (userId) {
+        if (!userId) {
+            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        }
 
-        const user =  await usersQueryRepository.findUserById(userId)
-        console.log('úser:', user)
+        const user = await usersQueryRepository.findUserById(userId);
         if(!user) return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+
         req.user = user
         return next()
+    } catch (error) {
+        console.error('authWithToken error', error);
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
     }
-   return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
 }

@@ -4,10 +4,13 @@ import {UsersQueryParams, UserFilter} from "../../types/types";
 import {getPaginationDetails} from "../../helpers/query-params";
 import {userSanitizer} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
+import {ApiRequest} from "../../models/Requests";
+import { subSeconds } from 'date-fns';
 
 const dbName = process.env.DB_NAME || "blogs_posts";
 const db = client.db(dbName);
 const usersCollection = db.collection<User>("users");
+const requestCollection = db.collection<ApiRequest>("requests")
 
 export const usersQueryRepository = {
     async getUsers(params: UsersQueryParams): Promise<PagedUserOutput> {
@@ -85,6 +88,21 @@ export const usersQueryRepository = {
             return await usersCollection.findOne({'accountData.login': login})
         } catch (error) {
             console.error("An error occurred while fetching the user:", error)
+            return null;
+        }
+    },
+
+    async findRequestByIpAndUrl(ip: string, url: string) {
+        try{
+            const dateToCompare = subSeconds(new Date(), 10).toISOString();
+
+            return await requestCollection.find({
+                ip: ip,
+                url: url,
+                date: {$gte: dateToCompare}
+            }).toArray()
+        } catch (error) {
+            console.error("An error occurred while fetching findRequestByIpAndUrl", error)
             return null;
         }
     }

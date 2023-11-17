@@ -3,6 +3,7 @@ import {Blog, BlogOutput} from "../models/Blogs";
 import {Post, PostOutput} from "../models/Posts";
 import {SanitizedUserOutput, User} from "../models/Users";
 import {Comment, CommentOutput} from "../models/Comments";
+import {ActiveDevicesOutput, RefreshToken} from "../models/refreshToken";
 
 export const blogMapper = (blog: WithId<Blog>): BlogOutput => {
     return {
@@ -40,7 +41,6 @@ export const commentsMapper = (comment: WithId<Comment>): CommentOutput => {
     }
 }
 
-//export const userMapper
 export const userSanitizer = (user: WithId<User>): SanitizedUserOutput => {
     return {
         id: user._id.toString(),
@@ -48,4 +48,18 @@ export const userSanitizer = (user: WithId<User>): SanitizedUserOutput => {
         email: user.accountData.email,
         createdAt: user.accountData.createdAt.toString()
     }
+}
+
+export const jwtDateMapper = (date: any) => {
+    return new Date(date * 1000).toISOString()
+}
+
+export const activeDeviceMapper = (refreshToken: WithId<RefreshToken>): ActiveDevicesOutput =>  {
+    return {
+        ip: refreshToken.ip,
+        title: refreshToken.deviceName,
+        lastActiveDate: refreshToken.createdAt,
+        deviceId: refreshToken.deviceId
+    }
+
 }

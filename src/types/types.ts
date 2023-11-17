@@ -98,3 +98,24 @@ export type UpdatedCommentAttr = {
     commentId: string
     content: string
 }
+
+export type RefreshTokenParams = {
+    userId: ObjectId
+    newRefreshToken: string
+    deviceId: string
+    ip: string
+    deviceName: string
+}
+
+export type ValidateRefreshTokenArgs = {
+    createdAt: string
+    userObjectId: ObjectId
+    deviceId: string
+}
+
+export type RefreshTokenArgs = {
+    createdAt: string
+    expiresAt: string
+    deviceId: string
+    userId: ObjectId
+}

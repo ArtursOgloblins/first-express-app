@@ -6,7 +6,8 @@ import {authWithToken} from "../middleware/auth/authWithToken";
 import {createUserValidation, resendingEmailValidation} from "../middleware/users/createUserValidation";
 import {authService} from "../domain/auth-service";
 import {registrationValidation} from "../middleware/auth/authValidations";
-import {usersQueryRepository} from "../repositories/users/users-query-repo";
+import {helperMethods} from "../helpers/helperMethods";
+import {rateLimitValidation} from "../middleware/rateLimit";
 
 const authRoutes = express.Router()
 
@@ -42,48 +43,60 @@ authRoutes.post('/registration-email-resending', resendingEmailValidation(),
         }
 })
 
-authRoutes.post('/login', async (req: Request, res: Response)=> {
-    const user = await userService.checkCredentials(req.body.loginOrEmail, req.body.password);
+authRoutes.post('/login',rateLimitValidation(), async (req: Request, res: Response)=> {
+    try {
+        const {ip, baseUrl} = req
+        await userService.saveRequest(ip, baseUrl)
 
-    if (user !== null) {
-        const accessToken= await jwtService.createJWT(user)
-        const newRefreshToken = await jwtService.createRefreshJWT(user)
+        const {loginOrEmail, password} = req.body
+        const deviceName = req.headers['user-agent'] ? req.headers['user-agent'] : 'unknown device';
+        const deviceId = await helperMethods.generateUniqueValue()
+        const user = await userService.checkCredentials(loginOrEmail, password)
 
-        res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
-        res.send(accessToken).status(HTTP_STATUS.NO_CONTENT)
-    } else {
-        res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        if (user !== null) {
+            const userId = user._id
+            const accessToken= await jwtService.createJWT(userId)
+            const newRefreshToken = await jwtService.createRefreshJWT(userId, deviceId)
+
+            res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
+
+            await authService.saveRefreshToken({userId, newRefreshToken, deviceId, ip, deviceName})
+
+            res.send(accessToken).status(HTTP_STATUS.NO_CONTENT)
+        } else {
+            res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        }
+    } catch (error) {
+        console.error('Login error:', error)
+        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
 })
 
 authRoutes.post('/refresh-token', async (req:Request, res: Response) => {
     const oldRefreshToken = req.cookies.refreshToken
-    console.log("oldRefreshToken", oldRefreshToken)
 
     if(!oldRefreshToken) {
         return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
     }
 
     try {
-        const userId = await jwtService.verifyRefreshToken(oldRefreshToken)
-        if (!userId) {
+        const validationResult = await jwtService.validateRefreshToken(oldRefreshToken)
+        if (!validationResult) {
             return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
         }
-        await jwtService.invalidateRefreshToken(oldRefreshToken)
 
-        const user = await usersQueryRepository.findUserById(userId)
-        if (!user) {
-            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-        }
-        const newAccessToken = await jwtService.createJWT(user)
-        const newRefreshToken = await jwtService.createRefreshJWT(user)
+        const {userId, deviceId} = validationResult
+
+        const newAccessToken = await jwtService.createJWT(userId)
+        const newRefreshToken = await jwtService.createRefreshJWT(userId, deviceId)
+
+        await jwtService.refreshToken(newRefreshToken, deviceId, userId)
 
         res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
         res.send(newAccessToken).status(HTTP_STATUS.NO_CONTENT)
-
     } catch (error) {
         console.error("Error on refreshing token: ", error)
-        return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
     }
 })
 
@@ -93,15 +106,10 @@ authRoutes.post('/logout', async (req: Request, res: Response) => {
         return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
     }
 
-    const userId = await jwtService.verifyRefreshToken(refreshToken)
-    if (!userId) {
-        return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-    }
-
     try {
         await jwtService.invalidateRefreshToken(refreshToken)
         res.clearCookie('refreshToken', {httpOnly: true, secure: true})
-        return res.sendStatus(HTTP_STATUS.NO_CONTENT)
+        res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
         console.error('Error during logout: ', error)
         return  res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
@@ -109,12 +117,21 @@ authRoutes.post('/logout', async (req: Request, res: Response) => {
 })
 
 authRoutes.get('/me', authWithToken, async(req: Request, res: Response) => {
-    const currentUser = {
-        email: req.user!.accountData.email,
-        login: req.user!.accountData.login,
-        userId: req.user!._id.toString()
+    if (req.user && req.user.accountData && typeof req.user._id) {
+        try {
+            const currentUser = {
+                email: req.user.accountData.email,
+                login: req.user.accountData.login,
+                userId: req.user._id.toString()
+            }
+            res.status(HTTP_STATUS.OK).send(currentUser);
+        } catch (error) {
+            console.error('Failed to retrieve user data:', error);
+            res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
+        }
+    } else {
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
     }
-    res.status(HTTP_STATUS.OK).send(currentUser);
 })
 
 export default authRoutes
