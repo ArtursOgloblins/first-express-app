@@ -24,7 +24,7 @@ authRoutes.post('/registration',rateLimitValidation(), createUserValidation(),
         }
     } catch (error) {
         console.error('registration:', error)
-        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
     }
 })
 
@@ -39,7 +39,7 @@ authRoutes.post('/registration-confirmation', rateLimitValidation(), registratio
         }
     } catch (error) {
         console.error('registration-confirmation:', error)
-        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
     }
 })
 
@@ -57,7 +57,7 @@ authRoutes.post('/registration-email-resending',rateLimitValidation(), resending
         }
     } catch (error) {
         console.error('registration-email-resending:', error)
-        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
     }
 })
 
@@ -84,7 +84,7 @@ authRoutes.post('/login',rateLimitValidation(), async (req: Request, res: Respon
         }
     } catch (error) {
         console.error('Login error:', error)
-        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
     }
 })
 
