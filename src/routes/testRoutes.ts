@@ -11,6 +11,7 @@ testRouter.delete('/all-data', async (req:Request, res:Response) => {
     await testRepository.deleteAllUsers()
     await testRepository.deleteAllComments()
     await testRepository.deleteAllTokens()
+    await testRepository.deleteAllDevices()
     res.status(HTTP_STATUS.NO_CONTENT).send()
 })
 

@@ -4,6 +4,7 @@ import {Blog} from "../models/Blogs";
 import {User} from "../models/Users";
 import {Comment} from "../models/Comments";
 import {RefreshToken} from "../models/refreshToken";
+import {ApiRequest} from "../models/Requests";
 
 const dbName = process.env.DB_NAME || "blogs_posts";
 const db = client.db(dbName);
@@ -12,6 +13,7 @@ const blogsCollection = db.collection<Blog>("blogs");
 const usersCollection = db.collection<User>("users");
 const commentsCollection = db.collection<Comment>("comments");
 const refreshTokenCollection = db.collection<RefreshToken>("refreshTokens")
+const requestCollection = db.collection<ApiRequest>("requests")
 
 export const testRepository = {
 
@@ -38,5 +40,11 @@ export const testRepository = {
     async deleteAllTokens(): Promise<RefreshToken[]> {
         await refreshTokenCollection.deleteMany({})
         return []
+    },
+
+    async deleteAllDevices(): Promise<ApiRequest[]> {
+        await requestCollection.deleteMany({})
+        return []
+
     }
 }

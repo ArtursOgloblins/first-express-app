@@ -17,7 +17,7 @@ securityRoutes.get('/devices', async (req: Request, res:Response) => {
         res.send(activeDevices)
     } catch (error) {
         console.log('Error in getting active devices')
-        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
     }
 })
 
