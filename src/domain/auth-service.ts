@@ -64,7 +64,6 @@ export const authService = {
         if (!user) return null
 
         const newCode = uuidv4()
-        console.log('newCode', newCode)
 
         try {
             await usersRepository.updateConfirmationCode(user._id, newCode)
@@ -88,7 +87,6 @@ export const authService = {
             deviceName: deviceName,
             userId: userId
         }
-        console.log("New token:", newToken);
         return await authRepository.addNewRefreshToken(newToken)
     }
 }

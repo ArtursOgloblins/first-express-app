@@ -29,7 +29,6 @@ export const jwtService = {
         const userId = new ObjectId(refreshTokenDetails.userId)
 
         const validationsArgs = {createdAt, deviceId, userId}
-        console.log(validationsArgs)
 
         return await authRepository.validateRefreshToken(validationsArgs)
     },

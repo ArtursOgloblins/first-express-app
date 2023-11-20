@@ -33,7 +33,7 @@ securityRoutes.delete('/devices', async (req: Request, res: Response) => {
 
     } catch (error) {
         console.log('Error in deleting devices')
-        res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
     }
 })
 

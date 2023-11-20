@@ -9,9 +9,8 @@ export const rateLimitValidation = () => {
         await userService.saveRequest(ip, originalUrl)
         try {
             const requests = await usersQueryRepository.findRequestByIpAndUrl(ip, originalUrl)
-            console.log('requests', requests)
 
-            if (Array.isArray(requests) && requests.length >= 5) {
+            if (Array.isArray(requests) && requests.length > 5) {
                 res.sendStatus(HTTP_STATUS.TOO_MANY_REQUESTS)
             } else {
                 next()
