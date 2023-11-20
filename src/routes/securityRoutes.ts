@@ -49,12 +49,12 @@ securityRoutes.delete('/devices/:deviceId', async (req: Request, res: Response) 
             return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
         }
 
-        const validationResult = await jwtService.validateRefreshToken(refreshToken)
-        if (!validationResult) {
+        const isTokenValid = await jwtService.validateRefreshToken(refreshToken)
+        if (!isTokenValid) {
             return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
         }
 
-        const refreshTokenDetails = await jwtService.validateRefreshToken(refreshToken)
+        const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken)
         if (!refreshTokenDetails) {
             return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
         }

@@ -17,7 +17,7 @@ export const jwtService = {
     },
 
     async createRefreshJWT(userId: ObjectId, deviceId: string) {
-        const duration = 300
+        const duration = 20
         return jwt.sign({userId: userId, deviceId: deviceId}, jwtRefreshTokenSecret,
             {expiresIn: `${duration.toString()}s`})
     },
