@@ -28,6 +28,11 @@ securityRoutes.delete('/devices', async (req: Request, res: Response) => {
             res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
         }
 
+        const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken);
+        if (!refreshTokenDetails) {
+            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        }
+
         await securityService.deleteOtherDevices(refreshToken)
         res.sendStatus(HTTP_STATUS.NO_CONTENT)
 
@@ -45,11 +50,13 @@ securityRoutes.delete('/devices/:deviceId', async (req: Request, res: Response) 
         }
 
         const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken)
+        if (!refreshTokenDetails) {
+            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        }
         const {userId} = refreshTokenDetails
         const {deviceId} = req.params
 
         const deviceToDelete = await authRepository.getDeviceByDeviceId(deviceId)
-        console.log('deviceToDelete', deviceToDelete)
         if (!deviceToDelete) {
             return res.sendStatus(HTTP_STATUS.NOT_FOUND)
         } else if (deviceToDelete.userId != userId) {
