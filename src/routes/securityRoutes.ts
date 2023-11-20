@@ -28,6 +28,11 @@ securityRoutes.delete('/devices', async (req: Request, res: Response) => {
             res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
         }
 
+        const isTokenValid = await jwtService.validateRefreshToken(refreshToken)
+        if (!isTokenValid) {
+            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        }
+
         const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken);
         if (!refreshTokenDetails) {
             return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
