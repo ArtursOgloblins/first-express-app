@@ -1,7 +1,7 @@
 import {jwtService} from "../application/jwt-service";
 import {authRepository} from "../repositories/auth/auth-db-repo";
 import {ActiveDevicesOutput} from "../models/refreshToken";
-import {activeDeviceMapper} from "../helpers/mappers";
+import {activeDeviceMapper, jwtDateMapper} from "../helpers/mappers";
 import {ObjectId} from "mongodb";
 
 export const securityService = {
@@ -16,7 +16,8 @@ export const securityService = {
 
     async deleteOtherDevices(refreshToken: string) {
         const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken)
-        const {deviceId, createdAt} = refreshTokenDetails
+        const {iat, deviceId} = refreshTokenDetails
+        const createdAt = jwtDateMapper(iat)
         const userId = new ObjectId(refreshTokenDetails.userId)
 
         const tokenArgs = {createdAt, deviceId, userId}

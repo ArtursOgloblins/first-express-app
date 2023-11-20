@@ -39,10 +39,10 @@ export const authRepository = {
             createdAt: inputData.createdAt,
             deviceId: inputData.deviceId
         })
+        console.log('deviceToKeep', deviceToKeep)
 
         if (deviceToKeep) {
             return await refreshTokenCollection.deleteMany({
-                userId: inputData.userId,
                 _id: {$ne: deviceToKeep._id}
             });
         }
