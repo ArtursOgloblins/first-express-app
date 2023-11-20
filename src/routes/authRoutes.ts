@@ -31,9 +31,6 @@ authRoutes.post('/registration',rateLimitValidation(), createUserValidation(),
 authRoutes.post('/registration-confirmation', rateLimitValidation(), registrationValidation(),
     async (req: Request, res: Response) => {
     try {
-        const {ip, baseUrl} = req
-        await userService.saveRequest(ip, baseUrl)
-
         const confirmation = await authService.confirmRegistration(req.body.code)
         if (!confirmation) {
             res.sendStatus(HTTP_STATUS.BAD_REQUEST)
@@ -66,9 +63,7 @@ authRoutes.post('/registration-email-resending', resendingEmailValidation(),
 
 authRoutes.post('/login',rateLimitValidation(), async (req: Request, res: Response)=> {
     try {
-        const {ip, baseUrl} = req
-        await userService.saveRequest(ip, baseUrl)
-
+        const {ip} = req
         const {loginOrEmail, password} = req.body
         const deviceName = req.headers['user-agent'] ? req.headers['user-agent'] : 'unknown device';
         const deviceId = await helperMethods.generateUniqueValue()
