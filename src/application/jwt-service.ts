@@ -57,6 +57,9 @@ export const jwtService = {
 
     async invalidateRefreshToken(token: string) {
         const refreshTokenDetails = await this.getRefreshTokenDetails(token)
+        if (!refreshTokenDetails) {
+            return false
+        }
         const {iat, deviceId} = refreshTokenDetails
         const createdAt = jwtDateMapper(iat)
         const userId = new ObjectId(refreshTokenDetails.userId)

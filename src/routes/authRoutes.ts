@@ -121,7 +121,10 @@ authRoutes.post('/logout', async (req: Request, res: Response) => {
     }
 
     try {
-        await jwtService.invalidateRefreshToken(refreshToken)
+        const result = await jwtService.invalidateRefreshToken(refreshToken)
+        if(!result){
+            return  res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+        }
         res.clearCookie('refreshToken', {httpOnly: true, secure: true})
         res.sendStatus(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
