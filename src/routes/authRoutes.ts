@@ -14,9 +14,6 @@ const authRoutes = express.Router()
 authRoutes.post('/registration',rateLimitValidation(), createUserValidation(),
     async (req: Request, res: Response) => {
     try {
-        const {ip, baseUrl} = req
-        await userService.saveRequest(ip, baseUrl)
-
         const {login, password, email} = req.body
         const newUser = await authService.createUser({login, password, email})
 
