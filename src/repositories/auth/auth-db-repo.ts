@@ -66,7 +66,7 @@ export const authRepository = {
     async deleteDeviceByDeviceId(deviceId: string) {
         const result = await refreshTokenCollection.deleteOne({
             deviceId: deviceId,
-            expiringAt: {$gt: new Date().toISOString()}
+            // expiringAt: {$gt: new Date().toISOString()}
         })
         return result.deletedCount === 1
     }
