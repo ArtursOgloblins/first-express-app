@@ -14,7 +14,6 @@ export const authRepository = {
     },
 
     async validateRefreshToken(validationsArgs: ValidateRefreshTokenArgs) {
-        console.log("Querying with:", validationsArgs)
         return await refreshTokenCollection.findOne(validationsArgs)
     },
 
@@ -26,23 +25,24 @@ export const authRepository = {
     },
 
     async logOutUser(inputData: ValidateRefreshTokenArgs) {
-         return await refreshTokenCollection.findOneAndDelete({
-             userId: inputData.userObjectId,
+         const result =  await refreshTokenCollection.deleteOne({
+             userId: inputData.userId,
              createdAt: inputData.createdAt,
              deviceId: inputData.deviceId
          })
+        return result.deletedCount === 1
     },
 
     async deleteOtherDevices(inputData: ValidateRefreshTokenArgs) {
         const deviceToKeep = await refreshTokenCollection.findOne({
-            userId: inputData.userObjectId,
+            userId: inputData.userId,
             createdAt: inputData.createdAt,
             deviceId: inputData.deviceId
         })
 
         if (deviceToKeep) {
             return await refreshTokenCollection.deleteMany({
-                userId: inputData.userObjectId,
+                userId: inputData.userId,
                 _id: {$ne: deviceToKeep._id}
             });
         }

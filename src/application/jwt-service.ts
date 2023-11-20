@@ -57,7 +57,8 @@ export const jwtService = {
 
     async invalidateRefreshToken(token: string) {
         const refreshTokenDetails = await this.getRefreshTokenDetails(token)
-        const {createdAt, deviceId} = refreshTokenDetails
+        const {iat, deviceId} = refreshTokenDetails
+        const createdAt = jwtDateMapper(iat)
         const userId = new ObjectId(refreshTokenDetails.userId)
 
         const logoutRefreshTokeArgs = {createdAt, deviceId, userId}
