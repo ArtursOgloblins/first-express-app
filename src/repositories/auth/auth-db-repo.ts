@@ -59,7 +59,7 @@ export const authRepository = {
     async getDeviceByDeviceId(deviceId: string) {
         return await refreshTokenCollection.findOne({
             deviceId: deviceId,
-            expiringAt: {$gt: new Date().toISOString()}
+            // expiringAt: {$gt: new Date().toISOString()}
         })
     },
 
