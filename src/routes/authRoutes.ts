@@ -43,7 +43,7 @@ authRoutes.post('/registration-confirmation', rateLimitValidation(), registratio
     }
 })
 
-authRoutes.post('/registration-email-resending', resendingEmailValidation(),
+authRoutes.post('/registration-email-resending',rateLimitValidation(), resendingEmailValidation(),
     async (req:Request, res:Response) => {
     try {
         const {ip, baseUrl} = req
