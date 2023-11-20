@@ -36,6 +36,7 @@ export const jwtService = {
     async getRefreshTokenDetails(token: string) {
         try {
             const result: any = jwt.verify(token, jwtRefreshTokenSecret);
+            console.log('getRefreshTokenDetails', result)
             return result
         } catch (error) {
             console.log('error in verify:', error)
