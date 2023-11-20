@@ -16,10 +16,10 @@ export const securityService = {
 
     async deleteOtherDevices(refreshToken: string) {
         const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken)
-        const {userId, deviceId, createdAt} = refreshTokenDetails
-        const userObjectId = new ObjectId(userId)
+        const {deviceId, createdAt} = refreshTokenDetails
+        const userId = new ObjectId(refreshTokenDetails.userId)
 
-        const tokenArgs = {createdAt, deviceId, userObjectId}
+        const tokenArgs = {createdAt, deviceId, userId}
 
         return await authRepository.deleteOtherDevices(tokenArgs)
     }
