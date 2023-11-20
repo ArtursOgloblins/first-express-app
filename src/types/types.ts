@@ -109,7 +109,7 @@ export type RefreshTokenParams = {
 
 export type ValidateRefreshTokenArgs = {
     createdAt: string
-    userObjectId: ObjectId
+    userId: ObjectId
     deviceId: string
 }
 

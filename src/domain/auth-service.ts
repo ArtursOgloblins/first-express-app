@@ -88,6 +88,7 @@ export const authService = {
             deviceName: deviceName,
             userId: userId
         }
+        console.log("New token:", newToken);
         return await authRepository.addNewRefreshToken(newToken)
     }
 }

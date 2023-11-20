@@ -14,6 +14,7 @@ export const authRepository = {
     },
 
     async validateRefreshToken(validationsArgs: ValidateRefreshTokenArgs) {
+        console.log("Querying with:", validationsArgs)
         return await refreshTokenCollection.findOne(validationsArgs)
     },
 

@@ -24,10 +24,12 @@ export const jwtService = {
 
     async validateRefreshToken(token: string) {
         const refreshTokenDetails = await this.getRefreshTokenDetails(token)
-        const {createdAt, deviceId, userId} = refreshTokenDetails
-        const userObjectId = new ObjectId(userId)
+        const {iat, deviceId} = refreshTokenDetails
+        const createdAt = jwtDateMapper(iat)
+        const userId = new ObjectId(refreshTokenDetails.userId)
 
-        const validationsArgs = {createdAt, deviceId, userObjectId}
+        const validationsArgs = {createdAt, deviceId, userId}
+        console.log(validationsArgs)
 
         return await authRepository.validateRefreshToken(validationsArgs)
     },
@@ -55,10 +57,10 @@ export const jwtService = {
 
     async invalidateRefreshToken(token: string) {
         const refreshTokenDetails = await this.getRefreshTokenDetails(token)
-        const {createdAt, deviceId, userId} = refreshTokenDetails
-        const userObjectId = new ObjectId(userId)
+        const {createdAt, deviceId} = refreshTokenDetails
+        const userId = new ObjectId(refreshTokenDetails.userId)
 
-        const logoutRefreshTokeArgs = {createdAt, deviceId, userObjectId}
+        const logoutRefreshTokeArgs = {createdAt, deviceId, userId}
 
         return await authRepository.logOutUser(logoutRefreshTokeArgs)
     },

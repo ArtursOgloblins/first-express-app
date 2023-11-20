@@ -102,12 +102,10 @@ authRoutes.post('/refresh-token', async (req:Request, res: Response) => {
         }
 
         const {userId, deviceId} = validationResult
-
         const newAccessToken = await jwtService.createJWT(userId)
         const newRefreshToken = await jwtService.createRefreshJWT(userId, deviceId)
 
         await jwtService.refreshToken(newRefreshToken, deviceId, userId)
-
         res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
         res.send(newAccessToken).status(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
