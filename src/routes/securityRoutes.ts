@@ -10,7 +10,7 @@ securityRoutes.get('/devices', async (req: Request, res:Response) => {
     try {
         const refreshToken = req.cookies.refreshToken
         if (!refreshToken) {
-            res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
+            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
         }
 
         const activeDevices = await securityService.getDevices(refreshToken)
@@ -39,11 +39,11 @@ securityRoutes.delete('/devices', async (req: Request, res: Response) => {
         }
 
         await securityService.deleteOtherDevices(refreshToken)
-        res.sendStatus(HTTP_STATUS.NO_CONTENT)
+        return res.sendStatus(HTTP_STATUS.NO_CONTENT)
 
     } catch (error) {
         console.log('Error in deleting devices')
-        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
+        return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
     }
 })
 
