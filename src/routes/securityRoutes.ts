@@ -25,7 +25,7 @@ securityRoutes.delete('/devices', async (req: Request, res: Response) => {
     try {
         const refreshToken = req.cookies.refreshToken
         if (!refreshToken) {
-            res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
+           return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
         }
 
         const isTokenValid = await jwtService.validateRefreshToken(refreshToken)
