@@ -1,7 +1,6 @@
-import {Blog} from "../../models/Blogs";
+import {Blog, BlogModelClass} from "../../models/Blogs";
 import {UpdateBlogAttr} from "../../types/types";
 import {ObjectId} from "mongodb";
-import {BlogModelClass} from "../../models/models"
 
 
 export const blogsRepository = {
