@@ -5,7 +5,7 @@ import {jwtService} from "../application/jwt-service";
 import {authWithToken} from "../middleware/auth/authWithToken";
 import {
     createUserValidation,
-    emailValidation, newPasswordValidation,
+    emailValidation,
     resendingEmailValidation
 } from "../middleware/users/createUserValidation";
 import {authService} from "../domain/auth-service";
@@ -14,6 +14,7 @@ import {helperMethods} from "../helpers/helperMethods";
 import {rateLimitValidation} from "../middleware/rateLimit";
 import {usersQueryRepository} from "../repositories/users/users-query-repo";
 import {authRepository} from "../repositories/auth/auth-db-repo";
+import {newPasswordValidation} from "../middleware/auth/passwordRecoveryValidations";
 
 const authRoutes = express.Router()
 
