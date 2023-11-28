@@ -181,6 +181,7 @@ authRoutes.post('/password-recovery',rateLimitValidation(), emailValidation(),
 
 authRoutes.post('/new-password',rateLimitValidation(), passwordValidation(),
     async(req: Request, res: Response ) => {
+
     try {
         const {newPassword, recoveryCode} = req.body
         const recoveryDetails = await authRepository.getRecoveryDetails(recoveryCode)
