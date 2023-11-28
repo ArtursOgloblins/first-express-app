@@ -22,6 +22,14 @@ const validatePassword = body('password')
     .isString().withMessage('Password must be string')
     .isLength({max:20, min:6}).withMessage('Length must be between 6-20 chars')
 
+const validateUpdatedPassword = body('newPassword')
+    .trim()
+    .exists().withMessage('Field is required')
+    .notEmpty().withMessage('Field must not be empty')
+    .isString().withMessage('Password must be string')
+    .isLength({max:20, min:6}).withMessage('Length must be between 6-20 chars')
+
+
 const validateEmail = body('email')
     .trim()
     .exists().withMessage('Field is required')
@@ -73,9 +81,9 @@ export const emailValidation  = () => {
     return validation
 }
 
-export const passwordValidation = () => {
+export const newPasswordValidation = () => {
     const validation: any = [
-        validatePassword
+        validateUpdatedPassword
     ]
     validation.push(InputValidationResult)
     return validation

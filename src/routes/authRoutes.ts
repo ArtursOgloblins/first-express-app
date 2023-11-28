@@ -5,7 +5,7 @@ import {jwtService} from "../application/jwt-service";
 import {authWithToken} from "../middleware/auth/authWithToken";
 import {
     createUserValidation,
-    emailValidation, passwordValidation,
+    emailValidation, newPasswordValidation,
     resendingEmailValidation
 } from "../middleware/users/createUserValidation";
 import {authService} from "../domain/auth-service";
@@ -163,7 +163,7 @@ authRoutes.post('/password-recovery',rateLimitValidation(), emailValidation(),
         const {email} = req.body
         const user = await usersQueryRepository.getUserByEmail(email)
         if (!user) {
-            return res.sendStatus(HTTP_STATUS.NO_CONTENT)
+            return res.status(HTTP_STATUS.NO_CONTENT).send('No user found')
         }
 
         const sendPassword =  await authService.sendPasswordRecoveryMail(email, user._id)
@@ -179,7 +179,7 @@ authRoutes.post('/password-recovery',rateLimitValidation(), emailValidation(),
     }
 })
 
-authRoutes.post('/new-password',rateLimitValidation(), passwordValidation(),
+authRoutes.post('/new-password',rateLimitValidation(), newPasswordValidation(),
     async(req: Request, res: Response ) => {
 
     try {
