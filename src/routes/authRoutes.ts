@@ -171,7 +171,7 @@ authRoutes.post('/password-recovery',rateLimitValidation(), emailValidation(),
             return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         }
 
-        return res.sendStatus(HTTP_STATUS.OK)
+        return res.sendStatus(HTTP_STATUS.NO_CONTENT)
 
     } catch (error) {
         console.error('Failed in password-recovery mail sending:', error)
