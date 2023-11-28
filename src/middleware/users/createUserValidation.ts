@@ -15,7 +15,7 @@ const loginValidation = body('login')
         return true
     })
 
-const passwordValidation = body('password')
+const validatePassword = body('password')
     .trim()
     .exists().withMessage('Field is required')
     .notEmpty().withMessage('Field must not be empty')
@@ -48,7 +48,7 @@ const validateIsRegistrationConfirmed = body('email')
 export const createUserValidation = () => {
     const validation: any = [
         loginValidation,
-        passwordValidation,
+        validatePassword,
         validateEmail,
         validateEmailExists
     ]
@@ -60,6 +60,22 @@ export const resendingEmailValidation = () => {
     const validation: any = [
         validateEmail,
         validateIsRegistrationConfirmed
+    ]
+    validation.push(InputValidationResult)
+    return validation
+}
+
+export const emailValidation  = () => {
+    const  validation: any = [
+        validateEmail
+    ]
+    validation.push(InputValidationResult)
+    return validation
+}
+
+export const passwordValidation = () => {
+    const validation: any = [
+        validatePassword
     ]
     validation.push(InputValidationResult)
     return validation

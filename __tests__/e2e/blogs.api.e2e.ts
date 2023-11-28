@@ -1,10 +1,12 @@
 import request from 'supertest'
-import {app} from '../../index'
-import {RouterPath} from "../../routerPaths";
-import { HttpStatusCodes as HTTP_STATUS }  from "../../helpers/httpStatusCodes";
-import {AddBlogAttr} from "../../types/types";
-import {blogsTestManager} from "../utils/blogsTestManager";
+import {RouterPath} from "../../src/routerPaths";
+import { HttpStatusCodes as HTTP_STATUS }  from "../../src/helpers/httpStatusCodes";
+import {AddBlogAttr} from "../../src/types/types";
 
+import {initApp} from "../../src/initApp";
+// @ts-ignore
+import {blogsTestManager} from "../utils/blogsTestManager";
+const app = initApp();
 
 describe('tests for /blogs', () => {
     const base64Credentials = Buffer.from('admin:qwerty').toString('base64');

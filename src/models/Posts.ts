@@ -1,4 +1,5 @@
 import {WithId} from "mongodb";
+import {Schema, model} from 'mongoose';
 
 export type Post ={
     title: string,
@@ -20,3 +21,14 @@ export type PagedPostOutput = {
     totalCount: number
     items: PostOutput[]
 }
+
+export const PostSchema = new Schema<Post>({
+    title: { type: String, require: true },
+    shortDescription: { type: String, require: true },
+    content: { type: String, require: true },
+    blogId: { type: String, require: true },
+    blogName: { type: String, require: true },
+    createdAt: { type: String, require: true }
+})
+
+export const PostModelClass = model('posts', PostSchema)

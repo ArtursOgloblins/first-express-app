@@ -9,6 +9,8 @@ import {userService} from "./users-service";
 import {jwtService} from "../application/jwt-service";
 import {authRepository} from "../repositories/auth/auth-db-repo";
 import {jwtDateMapper} from "../helpers/mappers";
+import {ObjectId} from "mongodb";
+import {PasswordRecovery} from "../models/passwordRecovery";
 
 export const authService = {
     async createUser(inputData: AddUserParams) {
@@ -40,7 +42,6 @@ export const authService = {
             await emailManager.sendUserRegistrationMail(code, email)
         } catch (error) {
             console.log(error)
-            // await usersRepository.deleteUserById(newUser._id)
             return null
         }
         return res
@@ -88,5 +89,28 @@ export const authService = {
             userId: userId
         }
         return await authRepository.addNewRefreshToken(newToken)
+    },
+
+    async sendPasswordRecoveryMail(email: string, userId: ObjectId) {
+        const expirationDate = add(new Date(), { minutes: 20 }).toISOString()
+        const confirmationCode = uuidv4()
+        console.log('confirmationCode', confirmationCode)
+
+        const newPasswordRecovery: PasswordRecovery = {
+            userId: userId,
+            confirmationCode: confirmationCode,
+            expirationDate: expirationDate,
+            isValid: true
+        }
+
+        const res = await usersRepository.registerPasswordRecovery(newPasswordRecovery)
+
+        try {
+            await emailManager.sendPasswordRecoveryCode(confirmationCode, email)
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+        return res
     }
 }

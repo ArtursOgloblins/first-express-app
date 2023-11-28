@@ -1,16 +1,10 @@
-import {client} from "../db";
-import {PagedUserOutput, SanitizedUserOutput, User} from "../../models/Users";
 import {UsersQueryParams, UserFilter} from "../../types/types";
+import {PagedUserOutput, SanitizedUserOutput, UserModelClass} from "../../models/Users";
 import {getPaginationDetails} from "../../helpers/query-params";
 import {userSanitizer} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
-import {ApiRequest} from "../../models/Requests";
 import { subSeconds } from 'date-fns';
-
-const dbName = process.env.DB_NAME || "blogs_posts";
-const db = client.db(dbName);
-const usersCollection = db.collection<User>("users");
-const requestCollection = db.collection<ApiRequest>("requests")
+import {ApiRequestModelClass} from "../../models/Requests";
 
 export const usersQueryRepository = {
     async getUsers(params: UsersQueryParams): Promise<PagedUserOutput> {
@@ -24,19 +18,25 @@ export const usersQueryRepository = {
             filterConditions.push({email: new RegExp(params.searchEmailTerm, "i")})
         }
 
+        let query = UserModelClass.find()
+
         if (filterConditions.length) {
-            filter.$or = filterConditions;
+            query = query.or(filterConditions)
         }
 
-        const {skipAmount, sortDir} = getPaginationDetails(params);
-        const totalCount = await usersCollection.countDocuments(filter)
+        // if (filterConditions.length) {
+        //     filter.$or = filterConditions;
+        // }
 
-        const users= await usersCollection
-            .find(filter)
+        const {skipAmount, sortDir} = getPaginationDetails(params);
+        const totalCount = await UserModelClass.countDocuments(filter)
+
+        const users= await query
+            //.find(filter)
             .sort({[params.sortBy]: sortDir} as any)
             .skip(skipAmount)
             .limit(params.pageSize)
-            .toArray()
+
         console.log('users', users)
         const sanitizedUsers: SanitizedUserOutput[] =  users.map((u) => userSanitizer(u))
 
@@ -53,7 +53,7 @@ export const usersQueryRepository = {
         if (!ObjectId.isValid(id)) {
             return null
         }
-        const user = await usersCollection.findOne({_id: id})
+        const user = await UserModelClass.findOne({_id: id})
         if (!user) {
             return null
         }
@@ -61,13 +61,13 @@ export const usersQueryRepository = {
     },
 
     async removeUserById(id: string): Promise<boolean>  {
-        const result = await usersCollection.deleteOne({_id: new ObjectId(id)})
+        const result = await UserModelClass.deleteOne({_id: id})
         return result.deletedCount === 1
     },
 
     async getUserByRegistrationCode(code: string){
         try {
-            return await usersCollection.findOne({'emailConfirmation.confirmationCode': code})
+            return await UserModelClass.findOne({'emailConfirmation.confirmationCode': code})
         } catch (error) {
             console.error("An error occurred while fetching the user:", error);
             return null;
@@ -76,7 +76,7 @@ export const usersQueryRepository = {
 
     async getUserByEmail(email: string) {
         try {
-            return await usersCollection.findOne({'accountData.email': email})
+            return await UserModelClass.findOne({'accountData.email': email})
         } catch (error) {
             console.error("An error occurred while fetching the user:", error)
             return null;
@@ -85,7 +85,7 @@ export const usersQueryRepository = {
 
     async getUserByLogin(login: string) {
         try {
-            return await usersCollection.findOne({'accountData.login': login})
+            return await UserModelClass.findOne({'accountData.login': login})
         } catch (error) {
             console.error("An error occurred while fetching the user:", error)
             return null;
@@ -94,13 +94,13 @@ export const usersQueryRepository = {
 
     async findRequestByIpAndUrl(ip: string, url: string) {
         try{
-            const dateToCompare = subSeconds(new Date(), 10).toISOString();
+            const dateToCompare = subSeconds(new Date(), 10).toISOString()
 
-            return await requestCollection.find({
+            return await ApiRequestModelClass.find({
                 ip: ip,
                 url: url,
                 date: {$gte: dateToCompare}
-            }).toArray()
+            })
         } catch (error) {
             console.error("An error occurred while fetching findRequestByIpAndUrl", error)
             return null;

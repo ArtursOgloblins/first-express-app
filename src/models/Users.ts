@@ -1,4 +1,5 @@
 import {WithId} from "mongodb";
+import { Schema, model } from 'mongoose';
 
 type AccountData = {
     login: string;
@@ -34,3 +35,25 @@ export type PagedUserOutput = {
     totalCount: number
     items: SanitizedUserOutput[]
 }
+
+
+const AccountDataSchema = new Schema<AccountData>({
+    login: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+    passwordSalt: { type: String, required: true },
+    createdAt: { type: String, required: true }
+});
+
+const EmailConfirmationSchema = new Schema<EmailConfirmation>({
+    confirmationCode: { type: String, required: true },
+    expirationDate: { type: Date, required: true },
+    isConfirmed: { type: Boolean, required: true }
+});
+
+export const UserSchema = new Schema<User>({
+    accountData: { type: AccountDataSchema, required: true },
+    emailConfirmation: { type: EmailConfirmationSchema, required: true }
+});
+
+export const UserModelClass = model('Users', UserSchema)

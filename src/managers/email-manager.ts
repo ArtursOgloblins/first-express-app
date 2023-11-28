@@ -10,5 +10,16 @@ export const emailManager = {
             </p>`
 
         await emailAdapter.sendMail(email, subject, message)
+    },
+
+    async sendPasswordRecoveryCode(code: string, email: string) {
+        const subject = `Password recovery`
+        const message  = `
+            <h1>Password recovery</h1>
+            <p>To finish password recovery please follow the link below:
+              <a href='http://localhost:3000/auth/password-recovery?recoveryCode=${code}'>recovery password</a>
+            </p>`
+
+        await emailAdapter.sendMail(email, subject, message)
     }
 }

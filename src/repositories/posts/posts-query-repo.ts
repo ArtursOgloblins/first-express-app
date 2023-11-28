@@ -1,12 +1,7 @@
-import {PagedPostOutput, Post, PostOutput} from "../../models/Posts";
+import {PagedPostOutput, PostModelClass, PostOutput} from "../../models/Posts";
 import {postMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
-import {client} from "../db";
 import {PostQueryParams} from "../../types/types";
-
-const dbName = process.env.DB_NAME || "blogs_posts"
-const db = client.db(dbName)
-const postCollection = db.collection<Post>("posts")
 
 export const postsQueryRepository = {
 
@@ -14,14 +9,13 @@ export const postsQueryRepository = {
 
         const sortDir = params.sortDirection === 'asc' ? 1 : -1
         const skipAmount = (params.pageNumber - 1) * params.pageSize
-        const totalCount = await postCollection.countDocuments()
+        const totalCount = await PostModelClass.countDocuments()
 
-        const posts = await postCollection
+        const posts = await PostModelClass
             .find({})
             .sort({[params.sortBy]: sortDir})
             .skip(skipAmount)
             .limit(params.pageSize)
-            .toArray()
 
         const mappedPosts: PostOutput[] =  posts.map((p) => postMapper(p))
 
@@ -35,7 +29,7 @@ export const postsQueryRepository = {
     },
 
     async getPostById(id: string): Promise<PostOutput | null> {
-        const post = await postCollection.findOne({_id: new ObjectId(id)})
+        const post = await PostModelClass.findOne({_id: new ObjectId(id)})
 
         if (!post) {
             return null
@@ -45,8 +39,7 @@ export const postsQueryRepository = {
     },
 
     async deletePostById(id: string): Promise<boolean> {
-        const result = await postCollection.deleteOne({_id: new ObjectId(id)})
+        const result = await PostModelClass.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
-
 }

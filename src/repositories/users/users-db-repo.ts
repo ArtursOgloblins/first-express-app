@@ -1,34 +1,29 @@
-import {client} from "../db";
-import {User} from "../../models/Users";
+import {User, UserModelClass} from "../../models/Users";
 import {userSanitizer} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import { add } from 'date-fns';
-import {ApiRequest} from "../../models/Requests";
-
-const dbName = process.env.DB_NAME || "blogs_posts";
-const db = client.db(dbName);
-const usersCollection = db.collection<User>("users");
-const requestCollection = db.collection<ApiRequest>("requests")
+import {ApiRequest, ApiRequestModelClass} from "../../models/Requests";
+import {PasswordRecovery, PasswordRecoveryModel} from "../../models/passwordRecovery";
 
 export const usersRepository = {
     async createUser(newUser: User) {
-        const res = await usersCollection.insertOne(newUser)
-        return userSanitizer({...newUser, _id: res.insertedId})
+        const res = await UserModelClass.create(newUser)
+        return userSanitizer({...newUser, _id: res._id})
     },
 
     async findByLoginOrEmail(loginOrEmail: string) {
-        return await usersCollection.findOne({$or: [{'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
+        return UserModelClass.findOne({$or: [{'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
     },
 
     async registerUser(newUser: User)  {
-        const res = await usersCollection.insertOne(newUser)
+        const res = await UserModelClass.create(newUser)
         console.log('new user', newUser)
-        return userSanitizer({...newUser, _id: res.insertedId})
+        return userSanitizer({...newUser, _id: res._id})
     },
 
     async updateConfirmationCode(id: ObjectId, code: string) {
         const expirationDate = add(new Date(), {hours: 1, minutes: 3});
-        const res = await usersCollection.updateMany(
+        const res = await UserModelClass.updateMany(
             {_id: id},
             {
                 $set: {
@@ -41,7 +36,7 @@ export const usersRepository = {
     },
 
     async updateUser(id: ObjectId) {
-        const res = await usersCollection.updateOne(
+        const res = await UserModelClass.updateOne(
             {_id: id},
             {$set: {'emailConfirmation.isConfirmed': true}}
         )
@@ -49,6 +44,22 @@ export const usersRepository = {
     },
 
     async saveRequest(requestData: ApiRequest) {
-        return await requestCollection.insertOne(requestData)
+        return await ApiRequestModelClass.create(requestData)
+    },
+
+    async registerPasswordRecovery(newPasswordRecovery: PasswordRecovery) {
+        return await PasswordRecoveryModel.create(newPasswordRecovery)
+    },
+
+    async updateUserPassword(userId: ObjectId, passwordSalt: string, passwordHash: string) {
+        const res = await UserModelClass.updateOne(
+            {_id: userId},
+            {$set:
+                    {'accountData.password': passwordHash,
+                    'accountData.passwordSalt': passwordSalt}
+            }
+
+        )
+        return res.modifiedCount === 1
     }
 }

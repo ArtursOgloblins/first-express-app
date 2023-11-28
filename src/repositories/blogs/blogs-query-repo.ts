@@ -1,15 +1,9 @@
-import {Blog, BlogOutput, PagedBlogOutput} from "../../models/Blogs";
+import {BlogModelClass, BlogOutput, PagedBlogOutput} from "../../models/Blogs";
 import {blogMapper, postMapper} from "../../helpers/mappers";
-import {client} from "../db";
 import {ObjectId} from "mongodb";
 import {BlogQueryParams, PostQueryParams} from "../../types/types";
-import {Post, PostOutput} from "../../models/Posts";
+import {PostModelClass, PostOutput} from "../../models/Posts";
 import {getPaginationDetails} from "../../helpers/query-params";
-
-const dbName = process.env.DB_NAME || "blogs_posts"
-const db = client.db(dbName)
-const blogsCollection = db.collection<Blog>("blogs")
-const postCollection = db.collection<Post>("posts")
 
 export const blogsQueryRepository = {
 
@@ -22,14 +16,13 @@ export const blogsQueryRepository = {
         }
 
         const { skipAmount, sortDir } = getPaginationDetails(params);
-        const totalCount = await blogsCollection.countDocuments(filter)
+        const totalCount = await BlogModelClass.countDocuments(filter)
 
-        const blogs= await blogsCollection
+        const blogs= await BlogModelClass
             .find(filter)
             .sort({[params.sortBy]: sortDir} as any)
             .skip(skipAmount)
             .limit(params.pageSize)
-            .toArray()
 
         const mappedBlogs: BlogOutput[] =  blogs.map((b) => blogMapper(b))
 
@@ -46,7 +39,7 @@ export const blogsQueryRepository = {
         if (!ObjectId.isValid(id)) {
             return null
         }
-        const blog = await blogsCollection.findOne({_id: new ObjectId(id)})
+        const blog = await BlogModelClass.findOne({_id: new ObjectId(id)})
 
         if(!blog){
             return null;
@@ -58,14 +51,13 @@ export const blogsQueryRepository = {
     async getPostsByBlogId(id: string, params: PostQueryParams) {
         const { skipAmount, sortDir } = getPaginationDetails(params);
         const filter = {blogId: id}
-        const totalCount = await postCollection.countDocuments(filter)
+        const totalCount = await PostModelClass.countDocuments(filter)
 
-        const posts = await postCollection
+        const posts = await PostModelClass
             .find(filter)
             .sort({[params.sortBy]: sortDir} as any)
             .skip(skipAmount)
             .limit(params.pageSize)
-            .toArray()
 
         const mappedPosts: PostOutput[] =  posts.map((p) => postMapper(p))
 
@@ -79,7 +71,7 @@ export const blogsQueryRepository = {
     },
 
     async removeBlogById(id: string): Promise<boolean>  {
-        const result = await blogsCollection.deleteOne({ _id: new ObjectId(id) })
+        const result = await BlogModelClass.deleteOne({ _id: new ObjectId(id) })
         return result.deletedCount === 1
     }
 }

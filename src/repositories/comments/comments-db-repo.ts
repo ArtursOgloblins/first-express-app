@@ -1,18 +1,13 @@
-import {client} from "../db";
-import {Comment, CommentOutput} from "../../models/Comments";
+import {Comment, CommentModelClass, CommentOutput} from "../../models/Comments";
 import {ObjectId} from "mongodb";
 import {commentsMapper} from "../../helpers/mappers";
 import {UpdatedCommentAttr} from "../../types/types";
 
-const dbName = process.env.DB_NAME || "blogs_posts";
-const db = client.db(dbName);
-const commentsCollection = db.collection<Comment>("comments");
-
 export const commentsRepository = {
     async addComment(newComment: Comment)  {
 
-        const res = await commentsCollection.insertOne({...newComment})
-        const id = res.insertedId.toString();
+        const res = await CommentModelClass.create({...newComment})
+        const id = res._id.toString();
         const { postId, ...restOfNewComment  } = newComment;
 
         return {id: id, ...restOfNewComment}
@@ -21,7 +16,7 @@ export const commentsRepository = {
     async updateComment(inputData: UpdatedCommentAttr): Promise<CommentOutput | null> {
         const {commentId, ...dataToUpdate} = inputData
 
-        const comment = await commentsCollection.findOneAndUpdate(
+        const comment = await CommentModelClass.findOneAndUpdate(
             {_id: new ObjectId(commentId)},
             {$set: dataToUpdate},
             {returnDocument: 'after'}

@@ -43,4 +43,5 @@ usersRouter.delete('/:id', basicAuth, async (req: Request, res: Response) => {
         res.sendStatus(HTTP_STATUS.NOT_FOUND)
     }
 })
+
 export default usersRouter

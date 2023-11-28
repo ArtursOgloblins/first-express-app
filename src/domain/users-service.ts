@@ -56,6 +56,13 @@ export const userService = {
         const date = new Date().toISOString()
         const saveRequestArgs = {ip, url, date}
         return await usersRepository.saveRequest(saveRequestArgs)
+    },
+
+    async updatePassword(userId: ObjectId, newPassword: string) {
+        const passwordSalt = await bcrypt.genSalt(10)
+        const passwordHash = await this._generateHash(newPassword, passwordSalt)
+
+        return await usersRepository.updateUserPassword(userId, passwordSalt, passwordHash)
     }
 }
 

@@ -3,11 +3,17 @@ import {userService} from "../domain/users-service";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {jwtService} from "../application/jwt-service";
 import {authWithToken} from "../middleware/auth/authWithToken";
-import {createUserValidation, resendingEmailValidation} from "../middleware/users/createUserValidation";
+import {
+    createUserValidation,
+    emailValidation, passwordValidation,
+    resendingEmailValidation
+} from "../middleware/users/createUserValidation";
 import {authService} from "../domain/auth-service";
 import {registrationValidation} from "../middleware/auth/authValidations";
 import {helperMethods} from "../helpers/helperMethods";
 import {rateLimitValidation} from "../middleware/rateLimit";
+import {usersQueryRepository} from "../repositories/users/users-query-repo";
+import {authRepository} from "../repositories/auth/auth-db-repo";
 
 const authRoutes = express.Router()
 
@@ -107,7 +113,7 @@ authRoutes.post('/refresh-token', async (req:Request, res: Response) => {
 
         await jwtService.refreshToken(newRefreshToken, deviceId, userId)
         res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true})
-        res.send(newAccessToken).status(HTTP_STATUS.NO_CONTENT)
+        return res.send(newAccessToken).status(HTTP_STATUS.NO_CONTENT)
     } catch (error) {
         console.error("Error on refreshing token: ", error)
         res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
@@ -141,13 +147,69 @@ authRoutes.get('/me', authWithToken, async(req: Request, res: Response) => {
                 login: req.user.accountData.login,
                 userId: req.user._id.toString()
             }
-            res.status(HTTP_STATUS.OK).send(currentUser);
+            res.status(HTTP_STATUS.OK).send(currentUser)
         } catch (error) {
-            console.error('Failed to retrieve user data:', error);
-            res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
+            console.error('Failed to retrieve user data:', error)
+            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
         }
     } else {
-        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
+        return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
+    }
+})
+
+authRoutes.post('/password-recovery',rateLimitValidation(), emailValidation(),
+    async(req:Request, res: Response) => {
+    try {
+        const {email} = req.body
+        const user = await usersQueryRepository.getUserByEmail(email)
+        if (!user) {
+            return res.sendStatus(HTTP_STATUS.NO_CONTENT)
+        }
+
+        const sendPassword =  await authService.sendPasswordRecoveryMail(email, user._id)
+        if (!sendPassword) {
+            return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+        }
+
+        return res.sendStatus(HTTP_STATUS.OK)
+
+    } catch (error) {
+        console.error('Failed in password-recovery mail sending:', error)
+        return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+    }
+})
+
+authRoutes.post('/new-password',rateLimitValidation(), passwordValidation(),
+    async(req: Request, res: Response ) => {
+    try {
+        const {newPassword, recoveryCode} = req.body
+        const recoveryDetails = await authRepository.getRecoveryDetails(recoveryCode)
+        console.log('recoveryDetails', recoveryDetails)
+
+        if (!recoveryDetails) {
+            return res.status(HTTP_STATUS.NO_CONTENT).send('No recovery details found')
+        }
+        const {userId, expirationDate, isValid} = recoveryDetails
+        const isExpired = new Date(expirationDate) < new Date()
+
+        if (!isValid || isExpired) {
+            return res.status(HTTP_STATUS.NO_CONTENT).send('Recovery details invalid or expired')
+        }
+
+        const updatePassword = await userService.updatePassword(userId, newPassword)
+        if (!updatePassword) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).send('Error in password updating')
+        }
+
+        const resetRecoveryDetails = await authRepository.resetRecoveryDetails(recoveryCode)
+        if (!resetRecoveryDetails) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).send('Error in resetting recovery details')
+        }
+
+        return res.sendStatus(HTTP_STATUS.NO_CONTENT)
+    } catch (error) {
+        console.error('Failed in sending new password:', error)
+        return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
     }
 })
 

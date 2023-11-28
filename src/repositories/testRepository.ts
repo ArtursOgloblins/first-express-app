@@ -1,49 +1,39 @@
-import {client} from "./db";
-import {Post} from "../models/Posts";
-import {Blog} from "../models/Blogs";
-import {User} from "../models/Users";
-import {Comment} from "../models/Comments";
-import {RefreshToken} from "../models/refreshToken";
-import {ApiRequest} from "../models/Requests";
-
-const dbName = process.env.DB_NAME || "blogs_posts";
-const db = client.db(dbName);
-const postCollection = db.collection<Post>("posts");
-const blogsCollection = db.collection<Blog>("blogs");
-const usersCollection = db.collection<User>("users");
-const commentsCollection = db.collection<Comment>("comments");
-const refreshTokenCollection = db.collection<RefreshToken>("refreshTokens")
-const requestCollection = db.collection<ApiRequest>("requests")
+import {Post, PostModelClass} from "../models/Posts";
+import {Blog, BlogModelClass} from "../models/Blogs";
+import {User, UserModelClass} from "../models/Users";
+import {Comment, CommentModelClass} from "../models/Comments";
+import {RefreshToken, RefreshTokenModelClass} from "../models/refreshToken";
+import {ApiRequest, ApiRequestModelClass} from "../models/Requests";
 
 export const testRepository = {
 
    async deleteAllBlogs(): Promise<Blog[]> {
-        await blogsCollection.deleteMany({})
+        await BlogModelClass.deleteMany({})
        return []
     },
 
     async deleteAllPosts(): Promise<Post[]> {
-        await postCollection.deleteMany({})
+        await PostModelClass.deleteMany({})
         return []
     },
 
     async deleteAllUsers(): Promise<User[]> {
-        await usersCollection.deleteMany({})
+        await UserModelClass.deleteMany({})
         return []
     },
 
     async deleteAllComments(): Promise<Comment[]> {
-        await commentsCollection.deleteMany({})
+        await CommentModelClass.deleteMany({})
         return []
     },
 
     async deleteAllTokens(): Promise<RefreshToken[]> {
-        await refreshTokenCollection.deleteMany({})
+        await RefreshTokenModelClass.deleteMany({})
         return []
     },
 
     async deleteAllDevices(): Promise<ApiRequest[]> {
-        await requestCollection.deleteMany({})
+        await ApiRequestModelClass.deleteMany({})
         return []
 
     }

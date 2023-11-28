@@ -1,9 +1,11 @@
 import request from "supertest";
-import {app} from "../../index";
-import {RouterPath} from "../../routerPaths";
-import {HttpStatusCodes as HTTP_STATUS} from "../../helpers/httpStatusCodes";
+import {RouterPath} from "../../src/routerPaths";
+import {HttpStatusCodes as HTTP_STATUS} from "../../src/helpers/httpStatusCodes";
+import {initApp} from "../../src/initApp";
+const app = initApp();
 
 const base64Credentials = Buffer.from('admin:qwerty').toString('base64');
+
 
 
 export const postsTestManager = {

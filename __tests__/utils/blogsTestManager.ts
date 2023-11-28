@@ -1,8 +1,9 @@
 import request from "supertest";
-import {app} from "../../index";
-import {RouterPath} from "../../routerPaths";
-import {HttpStatusCodes as HTTP_STATUS, HttpStatusType} from "../../helpers/httpStatusCodes";
-import {AddBlogAttr} from "../../types/types";
+import {RouterPath} from "../../src/routerPaths";
+import {HttpStatusCodes as HTTP_STATUS, HttpStatusType} from "../../src/helpers/httpStatusCodes";
+import {AddBlogAttr} from "../../src/types/types";
+import {initApp} from "../../src/initApp";
+const app = initApp();
 
 const base64Credentials = Buffer.from('admin:qwerty').toString('base64');
 

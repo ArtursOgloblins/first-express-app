@@ -1,31 +1,27 @@
-import {client} from "../db"
-import {RefreshToken} from "../../models/refreshToken"
+import {RefreshToken, RefreshTokenDb, RefreshTokenModelClass} from "../../models/refreshToken"
 import {ObjectId} from "mongodb"
 import {RefreshTokenArgs, ValidateRefreshTokenArgs} from "../../types/types"
-
-const dbName = process.env.DB_NAME || "blogs_posts"
-const db = client.db(dbName)
-const refreshTokenCollection = db.collection<RefreshToken>("refreshTokens")
+import {PasswordRecoveryDb, PasswordRecoveryModel} from "../../models/passwordRecovery";
 
 export const authRepository = {
 
     async addNewRefreshToken(newRefreshToken: RefreshToken) {
-        return await refreshTokenCollection.insertOne(newRefreshToken)
+        return await RefreshTokenModelClass.create(newRefreshToken)
     },
 
     async validateRefreshToken(validationsArgs: ValidateRefreshTokenArgs) {
-        return await refreshTokenCollection.findOne(validationsArgs)
+        return RefreshTokenModelClass.findOne(validationsArgs);
     },
 
     async refreshToken(inputData: RefreshTokenArgs) {
-        return await refreshTokenCollection.findOneAndUpdate(
+        return RefreshTokenModelClass.findOneAndUpdate(
             {deviceId: inputData.deviceId, userId: inputData.userId},
             {$set: {createdAt: inputData.createdAt, expiresAt: inputData.expiresAt}},
             {returnDocument: 'after'})
     },
 
     async logOutUser(inputData: ValidateRefreshTokenArgs) {
-         const result =  await refreshTokenCollection.deleteOne({
+         const result =  await RefreshTokenModelClass.deleteOne({
              userId: inputData.userId,
              createdAt: inputData.createdAt,
              deviceId: inputData.deviceId
@@ -34,39 +30,62 @@ export const authRepository = {
     },
 
     async deleteOtherDevices(inputData: ValidateRefreshTokenArgs) {
-        const deviceToKeep = await refreshTokenCollection.findOne({
+        const deviceToKeep = await RefreshTokenModelClass.findOne({
             userId: inputData.userId,
             createdAt: inputData.createdAt,
             deviceId: inputData.deviceId
         })
 
         if (deviceToKeep) {
-            return await refreshTokenCollection.deleteMany({
+            return RefreshTokenModelClass.deleteMany({
                 _id: {$ne: deviceToKeep._id}
             });
         }
     },
 
-    async getActiveDevices(userId: ObjectId) {
+    async getActiveDevices(userId: ObjectId): Promise<RefreshTokenDb[]> {
         const filter = {
             userId: new ObjectId(userId),
             expiringAt: {$gt: new Date().toISOString()}
         }
-        return await refreshTokenCollection.find(filter).toArray()
+        return RefreshTokenModelClass.find(filter)
     },
 
     async getDeviceByDeviceId(deviceId: string) {
-        return await refreshTokenCollection.findOne({
+        return RefreshTokenModelClass.findOne({
             deviceId: deviceId,
             // expiringAt: {$gt: new Date().toISOString()}
         })
     },
 
     async deleteDeviceByDeviceId(deviceId: string) {
-        const result = await refreshTokenCollection.deleteOne({
+        const result = await RefreshTokenModelClass.deleteOne({
             deviceId: deviceId,
             // expiringAt: {$gt: new Date().toISOString()}
         })
         return result.deletedCount === 1
+    },
+
+    async getRecoveryDetails(recoveryCode: string): Promise<PasswordRecoveryDb | null>  {
+        try {
+            return await PasswordRecoveryModel.findOne({confirmationCode: recoveryCode}).lean()
+        } catch (error) {
+            console.error("Error getting userId by recovery code", error)
+            throw new Error('Database query failed')
+        }
+    },
+
+    async resetRecoveryDetails(recoveryCode: string) {
+        try {
+            const res =  await PasswordRecoveryModel.updateOne(
+                {confirmationCode: recoveryCode},
+                {$set:{isValid: false}}
+            )
+            return res.modifiedCount === 1
+
+        } catch (error) {
+            console.error("Error resetting recovery details", error)
+            throw new Error('Database query failed')
+        }
     }
 }

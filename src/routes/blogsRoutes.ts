@@ -61,7 +61,7 @@ blogRouter.post('/', basicAuth, blogValidationPost, InputValidationResult,
         const {name, description, websiteUrl} = req.body
         const newBlogId = await blogsService.addBlog({name, description, websiteUrl})
         const newBlog = await blogsQueryRepository.getBlogById(newBlogId)
-        res.status(HTTP_STATUS.CREATED).send(newBlog)
+        return res.status(HTTP_STATUS.CREATED).send(newBlog)
     })
 
 blogRouter.post('/:id/posts', basicAuth, CreatePostValidation(false),
