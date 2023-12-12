@@ -41,6 +41,7 @@ export class CommentsRepository {
             {returnDocument: 'after'}
         )
         return commentLikeStatus
+
     }
 
     async removeCommentLikeStatus(commentId: string, userId: string) {
