@@ -1,22 +1,5 @@
 import {ObjectId} from "mongodb";
 
-
-export type CreateVideoAttr = {
-    title: string
-    author: string
-    availableResolutions: string[]
-}
-
-export type UpdateVideoAttr ={
-    id: number
-    title: string
-    author: string
-    availableResolutions: string[]
-    canBeDownloaded: boolean;
-    minAgeRestriction: number | null
-    publicationDate: string
-}
-
 export type AddBlogAttr = {
     name: string
     description: string
@@ -97,6 +80,12 @@ export type AddCommentAttr = {
 export type UpdatedCommentAttr = {
     commentId: string
     content: string
+}
+
+export type UpdateCommentLikeParams = {
+    commentId: string,
+    userId: string,
+    likeStatus: string
 }
 
 export type RefreshTokenParams = {

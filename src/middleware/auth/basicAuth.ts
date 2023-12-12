@@ -1,4 +1,5 @@
 import {Request, Response, NextFunction} from "express";
+
 export const basicAuth = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization
 
@@ -18,7 +19,7 @@ export const basicAuth = (req: Request, res: Response, next: NextFunction) => {
     const [username, password] = credentials.split(':')
 
     if (username === 'admin' && password === 'qwerty') {
-        next();
+        return next();
     } else {
         res.set('WWW-Authenticate', 'Basic realm="401"');
         res.status(401).send('Invalid credentials');

@@ -3,14 +3,14 @@ import {UpdatePostAttr} from "../../types/types";
 import {postMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 
-export const postsRepository = {
 
+export class PostsRepository {
     async addPost(newPost: Post): Promise<PostOutput | null> {
 
         const res = await PostModelClass.create(newPost)
 
         return postMapper({...newPost, _id: res._id})
-    },
+    }
 
     async updatePost(inputData: UpdatePostAttr): Promise<PostOutput | null> {
         const {id, ...dataToUpdate} = inputData

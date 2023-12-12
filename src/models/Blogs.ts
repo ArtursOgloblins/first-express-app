@@ -1,12 +1,21 @@
 import {WithId} from "mongodb";
 import {Schema, model} from 'mongoose';
 
-export type Blog = {
-    name: string
-    description: string
-    websiteUrl: string
-    createdAt: string
-    isMembership: boolean
+// export type Blog = {
+//     name: string
+//     description: string
+//     websiteUrl: string
+//     createdAt: string
+//     isMembership: boolean
+// }
+
+export class Blog {
+    constructor(public name: string,
+                public description: string,
+                public websiteUrl: string,
+                public createdAt: string,
+                public isMembership: boolean,) {
+    }
 }
 
 export type BlogDb = WithId<Blog>
@@ -14,7 +23,7 @@ export type BlogDb = WithId<Blog>
 export type BlogOutput = Blog & { id: string}
 
 export type PagedBlogOutput = {
-    pagesCount: number;
+    pagesCount: number
     page: number
     pageSize: number
     totalCount: number

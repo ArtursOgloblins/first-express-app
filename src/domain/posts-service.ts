@@ -1,30 +1,25 @@
-import {PostOutput} from "../models/Posts";
+import {Post, PostOutput} from "../models/Posts";
 import {AddPostAttr, UpdatePostAttr} from "../types/types";
-import {postsRepository} from "../repositories/posts/posts-db-repository";
-import {blogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
+import {PostsRepository} from "../repositories/posts/posts-db-repository";
+import {BlogsQueryRepository} from "../repositories/blogs/blogs-query-repo";
 
-export const postService = {
-
+export class PostsService {
+    constructor(protected postsRepository: PostsRepository,
+                protected blogsQueryRepository: BlogsQueryRepository) {
+    }
     async createPost(inputData: AddPostAttr): Promise<PostOutput | null> {
-        const blog = await blogsQueryRepository.getBlogById(inputData.blogId)
+        const {title, shortDescription, content, blogId} = inputData
+        const blog = await this.blogsQueryRepository.getBlogById(inputData.blogId)
         if (!blog) {
             return null
         }
         const createdAt = new Date().toISOString()
 
-        const newPost = {
-            title : inputData.title,
-            shortDescription: inputData.shortDescription,
-            content: inputData.content,
-            blogId: inputData.blogId,
-            blogName: blog.name,
-            createdAt: createdAt
-        };
+        const newPost = new Post(title, shortDescription, content, blogId, blog.name, createdAt)
 
-        return postsRepository.addPost(newPost)
-    },
-
+        return this.postsRepository.addPost(newPost)
+    }
     async updatePost(inputData: UpdatePostAttr){
-        return await postsRepository.updatePost(inputData)
+        return await this.postsRepository.updatePost(inputData)
     }
 }

@@ -1,26 +1,31 @@
 import jwt from 'jsonwebtoken'
 import {ObjectId} from "mongodb";
 import {config} from "dotenv";
-import {authRepository} from "../repositories/auth/auth-db-repo";
+import {AuthRepository} from "../repositories/auth/auth-db-repo";
 import {jwtDateMapper} from "../helpers/mappers";
 
 config()
 
 const jwtAccessTokenSecret  = process.env.JWT_SECRET || "defaultSecret"
 const jwtRefreshTokenSecret = process.env.JWT_REFRESH_SECRET || "defaultRefreshSecret";
-export const jwtService = {
+
+export class JwtService {
+    constructor(protected authRepository: AuthRepository) {
+
+    }
+
     async createJWT(userId: ObjectId) {
-        const token = jwt.sign({userId: userId}, jwtAccessTokenSecret, {expiresIn: '10s'})
+        const token = jwt.sign({userId: userId}, jwtAccessTokenSecret, {expiresIn: '5m'})
         return {
             accessToken: token
         }
-    },
+    }
 
     async createRefreshJWT(userId: ObjectId, deviceId: string) {
         const duration = 300
         return jwt.sign({userId: userId, deviceId: deviceId}, jwtRefreshTokenSecret,
             {expiresIn: `${duration.toString()}s`})
-    },
+    }
 
     async validateRefreshToken(token: string) {
         const refreshTokenDetails = await this.getRefreshTokenDetails(token)
@@ -33,8 +38,8 @@ export const jwtService = {
 
         const validationsArgs = {createdAt, deviceId, userId}
 
-        return await authRepository.validateRefreshToken(validationsArgs)
-    },
+        return await this.authRepository.validateRefreshToken(validationsArgs)
+    }
 
     async getRefreshTokenDetails(token: string) {
         try {
@@ -44,7 +49,7 @@ export const jwtService = {
             console.log('error in verify:', error)
             return null
         }
-    },
+    }
 
     async refreshToken(token: string, deviceId: string, userId: ObjectId) {
         const refreshTokenDetails = await this.getRefreshTokenDetails(token)
@@ -54,8 +59,8 @@ export const jwtService = {
 
         const refreshTokeArgs = {createdAt, expiresAt, deviceId, userId}
 
-        return await authRepository.refreshToken(refreshTokeArgs)
-    },
+        return await this.authRepository.refreshToken(refreshTokeArgs)
+    }
 
     async invalidateRefreshToken(token: string) {
         const refreshTokenDetails = await this.getRefreshTokenDetails(token)
@@ -68,8 +73,8 @@ export const jwtService = {
 
         const logoutRefreshTokeArgs = {createdAt, deviceId, userId}
 
-        return await authRepository.logOutUser(logoutRefreshTokeArgs)
-    },
+        return await this.authRepository.logOutUser(logoutRefreshTokeArgs)
+    }
 
     async verifyToken(token: string) {
         try {

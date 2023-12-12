@@ -6,7 +6,8 @@ import {ObjectId} from "mongodb";
 import { subSeconds } from 'date-fns';
 import {ApiRequestModelClass} from "../../models/Requests";
 
-export const usersQueryRepository = {
+
+export class UsersQueryRepository {
     async getUsers(params: UsersQueryParams): Promise<PagedUserOutput> {
         let filter: UserFilter = {}
         let filterConditions: UserFilter[] = []
@@ -47,7 +48,7 @@ export const usersQueryRepository = {
             totalCount: totalCount,
             items: sanitizedUsers
         }
-    },
+    }
 
     async findUserById(id: ObjectId) {
         if (!ObjectId.isValid(id)) {
@@ -58,12 +59,12 @@ export const usersQueryRepository = {
             return null
         }
         return user
-    },
+    }
 
     async removeUserById(id: string): Promise<boolean>  {
         const result = await UserModelClass.deleteOne({_id: id})
         return result.deletedCount === 1
-    },
+    }
 
     async getUserByRegistrationCode(code: string){
         try {
@@ -72,7 +73,7 @@ export const usersQueryRepository = {
             console.error("An error occurred while fetching the user:", error);
             return null;
         }
-    },
+    }
 
     async getUserByEmail(email: string) {
         try {
@@ -81,7 +82,7 @@ export const usersQueryRepository = {
             console.error("An error occurred while fetching the user:", error)
             return null;
         }
-    },
+    }
 
     async getUserByLogin(login: string) {
         try {
@@ -90,7 +91,7 @@ export const usersQueryRepository = {
             console.error("An error occurred while fetching the user:", error)
             return null;
         }
-    },
+    }
 
     async findRequestByIpAndUrl(ip: string, url: string) {
         try{

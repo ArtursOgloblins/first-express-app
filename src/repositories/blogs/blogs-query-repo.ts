@@ -5,8 +5,8 @@ import {BlogQueryParams, PostQueryParams} from "../../types/types";
 import {PostModelClass, PostOutput} from "../../models/Posts";
 import {getPaginationDetails} from "../../helpers/query-params";
 
-export const blogsQueryRepository = {
 
+export class BlogsQueryRepository {
     async getBlogs(params: BlogQueryParams): Promise<PagedBlogOutput> {
         let filter = {}
         if (params.searchNameTerm) {
@@ -33,7 +33,7 @@ export const blogsQueryRepository = {
             totalCount: totalCount,
             items: mappedBlogs
         }
-    },
+    }
 
     async getBlogById(id: string): Promise<BlogOutput | null> {
         if (!ObjectId.isValid(id)) {
@@ -46,7 +46,7 @@ export const blogsQueryRepository = {
         }
 
         return blogMapper(blog);
-    },
+    }
 
     async getPostsByBlogId(id: string, params: PostQueryParams) {
         const { skipAmount, sortDir } = getPaginationDetails(params);
@@ -68,7 +68,7 @@ export const blogsQueryRepository = {
             totalCount: totalCount,
             items: mappedPosts
         }
-    },
+    }
 
     async removeBlogById(id: string): Promise<boolean>  {
         const result = await BlogModelClass.deleteOne({ _id: new ObjectId(id) })

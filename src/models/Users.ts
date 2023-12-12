@@ -1,27 +1,51 @@
 import {WithId} from "mongodb";
 import { Schema, model } from 'mongoose';
 
-type AccountData = {
-    login: string;
-    email: string;
-    password: string;
-    passwordSalt: string;
-    createdAt: string;
-};
+// type AccountData = {
+//     login: string;
+//     email: string;
+//     password: string;
+//     passwordSalt: string;
+//     createdAt: string;
+// }
 
-type EmailConfirmation = {
-    confirmationCode: string;
-    expirationDate: Date;
-    isConfirmed: boolean;
-};
+// type EmailConfirmation = {
+//     confirmationCode: string;
+//     expirationDate: Date;
+//     isConfirmed: boolean;
+// }
 
-export type User = {
-    accountData: AccountData;
-    emailConfirmation: EmailConfirmation;
-};
+// export type User = {
+//     accountData: AccountData;
+//     emailConfirmation: EmailConfirmation;
+// }
+
+export class AccountData {
+    constructor(public login: string,
+                public email: string,
+                public password: string,
+                public passwordSalt: string,
+                public createdAt: string) {
+    }
+}
+
+export class EmailConfirmation {
+    constructor(public confirmationCode: string,
+                public expirationDate: Date,
+                public isConfirmed: boolean) {
+    }
+}
+
+export class User {
+    constructor(public accountData: AccountData,
+                public emailConfirmation: EmailConfirmation) {
+    }
+}
 
 export type UserDb = WithId<User>
+
 export type UserOutput = User & { id: string}
+
 export type SanitizedUserOutput = Omit<UserOutput, 'accountData' | 'emailConfirmation'> & {
     login: string;
     email: string;
@@ -48,7 +72,7 @@ const AccountDataSchema = new Schema<AccountData>({
 const EmailConfirmationSchema = new Schema<EmailConfirmation>({
     confirmationCode: { type: String, required: true },
     expirationDate: { type: Date, required: true },
-    isConfirmed: { type: Boolean, required: true }
+    isConfirmed: { type: Boolean, required: true, default: false }
 });
 
 export const UserSchema = new Schema<User>({

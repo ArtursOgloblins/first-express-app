@@ -1,26 +1,40 @@
-import {commentsRepository} from "../repositories/comments/comments-db-repo";
-import {AddCommentAttr, UpdatedCommentAttr} from "../types/types";
+import {CommentsRepository} from "../repositories/comments/comments-db-repo";
+import {AddCommentAttr, UpdateCommentLikeParams, UpdatedCommentAttr} from "../types/types";
+import {BlogComment, CommentatorInfo} from "../models/Comments";
+import {CommentsQueryRepository} from "../repositories/comments/comments-query-repo";
 
-export const commentsService = {
+export class CommentsService {
+    constructor( protected commentsRepository: CommentsRepository,
+                 protected commentsQueryRepository: CommentsQueryRepository) {
+    }
+
     async createComment (inputData: AddCommentAttr) {
+        const {content, postId} = inputData
         const createdAt = new Date().toISOString()
         const userId = inputData.userId.toString()
         const userLogin = inputData.userLogin
 
-        const newComment = {
-            content: inputData.content,
-            commentatorInfo: {
-                userId: userId,
-                userLogin: userLogin,
-            },
-            createdAt: createdAt,
-            postId: inputData.postId
-        }
+        const commentatorInfo = new CommentatorInfo(userId, userLogin)
+        const newComment = new BlogComment(content, commentatorInfo, createdAt, postId)
 
-        return await commentsRepository.addComment(newComment)
-    },
+        return await this.commentsRepository.addComment(newComment)
+    }
 
     async updateComment (inputData: UpdatedCommentAttr) {
-        return await commentsRepository.updateComment(inputData)
+        return await this.commentsRepository.updateComment(inputData)
+    }
+
+    async updateLikeStatus (inputData: UpdateCommentLikeParams) {
+        const {commentId, userId, likeStatus} = inputData
+        const commentLike = await this.commentsQueryRepository.getCommentLikeStatus(commentId, userId)
+        console.log('commentLike', commentLike)
+            if (!commentLike) {
+                return await this.commentsRepository.createCommentLikeStatus(inputData)
+            }
+            if (likeStatus != 'None') {
+                return await this.commentsRepository.updateCommentLikeStatus(inputData)
+            } else {
+                return await this.commentsRepository.removeCommentLikeStatus(commentId, userId)
+            }
     }
 }

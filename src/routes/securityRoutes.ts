@@ -1,86 +1,13 @@
-import express, {Request, Response} from "express";
-import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
-import {securityService} from "../domain/security-service";
-import {jwtService} from "../application/jwt-service";
-import {authRepository} from "../repositories/auth/auth-db-repo";
+import express from "express";
+import {RefreshTokenValidation} from "../middleware/auth/refreshTokenValitation";
+import {securityController} from "../composition-root";
 
-const securityRoutes = express.Router()
+const securityRouter = express.Router()
 
-securityRoutes.get('/devices', async (req: Request, res:Response) => {
-    try {
-        const refreshToken = req.cookies.refreshToken
-        if (!refreshToken) {
-            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
-        }
+const refreshTokenValidation = new RefreshTokenValidation();
 
-        const activeDevices = await securityService.getDevices(refreshToken)
-        res.send(activeDevices)
-    } catch (error) {
-        console.log('Error in getting active devices')
-        res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
-    }
-})
+securityRouter.get('/devices', refreshTokenValidation.checkRefreshToken, securityController.getActiveDevices.bind(securityController))
+securityRouter.delete('/devices', refreshTokenValidation.checkRefreshToken, securityController.deleteNonActiveDevices.bind(securityController))
+securityRouter.delete('/devices/:deviceId', refreshTokenValidation.checkRefreshToken, securityController.deleteDeviceById.bind(securityController))
 
-securityRoutes.delete('/devices', async (req: Request, res: Response) => {
-    try {
-        const refreshToken = req.cookies.refreshToken
-        if (!refreshToken) {
-           return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
-        }
-
-        const isTokenValid = await jwtService.validateRefreshToken(refreshToken)
-        if (!isTokenValid) {
-            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-        }
-
-        const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken);
-        if (!refreshTokenDetails) {
-            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-        }
-
-        await securityService.deleteOtherDevices(refreshToken)
-        return res.sendStatus(HTTP_STATUS.NO_CONTENT)
-
-    } catch (error) {
-        console.log('Error in deleting devices')
-        return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
-    }
-})
-
-securityRoutes.delete('/devices/:deviceId', async (req: Request, res: Response) =>{
-    try {
-        const refreshToken = req.cookies.refreshToken
-        if (!refreshToken) {
-            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
-        }
-
-        const isTokenValid = await jwtService.validateRefreshToken(refreshToken)
-        if (!isTokenValid) {
-            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-        }
-
-        const refreshTokenDetails = await jwtService.getRefreshTokenDetails(refreshToken)
-        if (!refreshTokenDetails) {
-            return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-        }
-        const {userId} = refreshTokenDetails
-        const {deviceId} = req.params
-
-        const deviceToDelete = await authRepository.getDeviceByDeviceId(deviceId)
-        if (!deviceToDelete) {
-            return res.sendStatus(HTTP_STATUS.NOT_FOUND)
-        } else if (deviceToDelete.userId != userId) {
-            return res.sendStatus(HTTP_STATUS.FORBIDDEN)
-        }
-
-        await authRepository.deleteDeviceByDeviceId(deviceId)
-        return res.sendStatus(HTTP_STATUS.NO_CONTENT)
-
-    } catch (error) {
-
-        console.error('Error in deleting devices', error);
-        return res.sendStatus(HTTP_STATUS.UNAUTHORIZED);
-    }
-})
-
-export default securityRoutes
+export default securityRouter

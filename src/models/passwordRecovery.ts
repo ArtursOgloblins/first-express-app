@@ -1,11 +1,19 @@
 import {ObjectId, WithId} from "mongodb";
 import {model, Schema} from "mongoose";
 
-export type PasswordRecovery = {
-    userId: ObjectId
-    confirmationCode: string,
-    expirationDate: string,
-    isValid: boolean
+// export type PasswordRecovery = {
+//     userId: ObjectId
+//     confirmationCode: string,
+//     expirationDate: string,
+//     isValid: boolean
+// }
+
+export class PasswordRecovery {
+    constructor(public userId: ObjectId,
+                public confirmationCode: string,
+                public expirationDate: string,
+                public isValid: boolean) {
+    }
 }
 
 export type PasswordRecoveryDb = WithId<PasswordRecovery>

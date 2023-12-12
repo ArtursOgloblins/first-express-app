@@ -7,8 +7,8 @@ import postsRoutes from "./routes/postsRoutes";
 import usersRoutes from "./routes/usersRoutes";
 import commentsRouter from "./routes/commentsRouter";
 import testRoutes from "./routes/testRoutes";
-import authRoutes from "./routes/authRoutes";
-import securityRoutes from "./routes/securityRoutes";
+import authRouter from "./routes/authRouter";
+import securityRouter from "./routes/securityRoutes";
 
 
 export const initApp = () => {
@@ -26,8 +26,8 @@ export const initApp = () => {
     app.use(RouterPath.users, usersRoutes)
     app.use(RouterPath.comments, commentsRouter)
     app.use(RouterPath.testing, testRoutes)
-    app.use(RouterPath.auth, authRoutes)
-    app.use(RouterPath.security, securityRoutes)
+    app.use(RouterPath.auth, authRouter)
+    app.use(RouterPath.security, securityRouter)
 
     return app
 }

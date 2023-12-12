@@ -3,8 +3,8 @@ import {postMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {PostQueryParams} from "../../types/types";
 
-export const postsQueryRepository = {
 
+export class PostsQueryRepository {
     async getPosts(params: PostQueryParams): Promise<PagedPostOutput> {
 
         const sortDir = params.sortDirection === 'asc' ? 1 : -1
@@ -26,7 +26,7 @@ export const postsQueryRepository = {
             totalCount: totalCount,
             items: mappedPosts
         }
-    },
+    }
 
     async getPostById(id: string): Promise<PostOutput | null> {
         const post = await PostModelClass.findOne({_id: new ObjectId(id)})
@@ -36,7 +36,7 @@ export const postsQueryRepository = {
         }
 
         return postMapper(post)
-    },
+    }
 
     async deletePostById(id: string): Promise<boolean> {
         const result = await PostModelClass.deleteOne({_id: new ObjectId(id)})

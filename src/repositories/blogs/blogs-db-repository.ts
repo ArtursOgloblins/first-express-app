@@ -3,12 +3,11 @@ import {UpdateBlogAttr} from "../../types/types";
 import {ObjectId} from "mongodb";
 
 
-export const blogsRepository = {
-
+export class BlogsRepository {
     async addBlog(newBlog: Blog) {
         const res = await BlogModelClass.create(newBlog)
         return res._id.toString()
-    },
+    }
 
     async updateBlog(inputData: UpdateBlogAttr) {
         const {id, ...dataToUpdate} = inputData
@@ -20,3 +19,4 @@ export const blogsRepository = {
         )
     }
 }
+

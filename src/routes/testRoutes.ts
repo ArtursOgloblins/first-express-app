@@ -1,18 +1,8 @@
-import express, {Request, Response} from "express";
-import {testRepository} from "../repositories/testRepository";
-import { HttpStatusCodes as HTTP_STATUS }  from "../helpers/httpStatusCodes";
+import express from "express";
+import {testController} from "../composition-root";
 
 const testRouter = express.Router();
 
-testRouter.delete('/all-data', async (req:Request, res:Response) => {
-    //testRepository.deleteAllVideos()
-    await testRepository.deleteAllBlogs()
-    await testRepository.deleteAllPosts()
-    await testRepository.deleteAllUsers()
-    await testRepository.deleteAllComments()
-    await testRepository.deleteAllTokens()
-    await testRepository.deleteAllDevices()
-    res.status(HTTP_STATUS.NO_CONTENT).send()
-})
+testRouter.delete('/all-data', testController.deleteAllBeforeTest.bind(testController))
 
 export default testRouter

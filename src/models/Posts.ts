@@ -1,13 +1,23 @@
 import {WithId} from "mongodb";
 import {Schema, model} from 'mongoose';
 
-export type Post ={
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-    blogName: string
-    createdAt: string
+// export type Post ={
+//     title: string,
+//     shortDescription: string,
+//     content: string,
+//     blogId: string,
+//     blogName: string
+//     createdAt: string
+// }
+
+export class Post {
+    constructor(public title: string,
+                public shortDescription: string,
+                public content: string,
+                public blogId: string,
+                public blogName: string,
+                public createdAt: string) {
+    }
 }
 
 export type PostDb = WithId<Post>

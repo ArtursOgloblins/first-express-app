@@ -1,10 +1,17 @@
 import {WithId} from "mongodb";
 import {Schema, model} from 'mongoose';
 
-export type ApiRequest = {
-    ip: string
-    url: string
-    date: string
+// export type ApiRequest = {
+//     ip: string
+//     url: string
+//     date: string
+// }
+
+export class ApiRequest {
+    constructor(public ip: string,
+    public url: string,
+    public date: string) {
+    }
 }
 
 export type RequestDb = WithId<ApiRequest>

@@ -2,8 +2,9 @@ import {WithId} from "mongodb";
 import {Blog, BlogOutput} from "../models/Blogs";
 import {Post, PostOutput} from "../models/Posts";
 import {SanitizedUserOutput, User} from "../models/Users";
-import {Comment, CommentOutput} from "../models/Comments";
+import {BlogComment, CommentOutput} from "../models/Comments";
 import {ActiveDevicesOutput, RefreshToken} from "../models/refreshToken";
+import {LikesInfo} from "../models/CommentsLikesDislikes";
 
 export const blogMapper = (blog: WithId<Blog>): BlogOutput => {
     return {
@@ -29,7 +30,7 @@ export const postMapper = (post: WithId<Post>): PostOutput => {
     }
 }
 
-export const commentsMapper = (comment: WithId<Comment>): CommentOutput => {
+export const commentsMapper = (comment: WithId<BlogComment>, likesInfo: LikesInfo): CommentOutput => {
     return {
         id: comment._id.toString(),
         content: comment.content,
@@ -37,7 +38,8 @@ export const commentsMapper = (comment: WithId<Comment>): CommentOutput => {
             userId: comment.commentatorInfo.userId,
             userLogin: comment.commentatorInfo.userLogin
         },
-        createdAt: comment.createdAt
+        createdAt: comment.createdAt,
+        likesInfo: likesInfo
     }
 }
 
@@ -61,5 +63,4 @@ export const activeDeviceMapper = (refreshToken: WithId<RefreshToken>): ActiveDe
         lastActiveDate: refreshToken.createdAt,
         deviceId: refreshToken.deviceId
     }
-
 }

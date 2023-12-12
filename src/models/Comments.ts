@@ -1,19 +1,38 @@
-import {WithId} from "mongodb";
 import { Schema, model } from 'mongoose';
 
-export type Comment = {
-    content: string
-    commentatorInfo: {
-        userId: string
-        userLogin: string
+
+export class CommentatorInfo {
+    constructor(public userId: string,
+                public userLogin: string) {
     }
-    createdAt: string
-    postId: string
 }
 
-export type CommentDb = WithId<Comment>
+export class LikesInfo {
+    constructor(public likesCount: number,
+                public dislikesCount: number,
+                public myStatus: string) {
+    }
+}
 
-export type CommentOutput = Omit<Comment, 'postId'> & { id: string };
+export class BlogComment {
+    constructor(public content: string,
+                public commentatorInfo: CommentatorInfo,
+                public createdAt: string,
+                public postId: string,
+                ) {
+    }
+}
+
+//export type CommentOutput = Omit<BlogComment, 'postId'> & { id: string };
+export class CommentOutput {
+    constructor(public id: string,
+                public content: string,
+                public commentatorInfo: CommentatorInfo,
+                public createdAt: string,
+                public likesInfo: LikesInfo
+                ) {
+    }
+}
 
 export type PagedCommentOutput = {
     pagesCount: number;
@@ -23,7 +42,7 @@ export type PagedCommentOutput = {
     items: CommentOutput[]
 }
 
-export const CommentSchema = new Schema<Comment>({
+export const CommentSchema = new Schema<BlogComment>({
     content: { type: String, required: true },
     commentatorInfo: {
         userId: { type: String, required: true },
@@ -33,5 +52,5 @@ export const CommentSchema = new Schema<Comment>({
     postId: { type: String, required: true },
 })
 
-export const CommentModelClass = model('User', CommentSchema)
+export const CommentModel = model('comments', CommentSchema)
 

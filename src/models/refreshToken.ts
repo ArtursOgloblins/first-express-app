@@ -1,12 +1,22 @@
 import {ObjectId, WithId} from "mongodb";
 import {Schema, model} from 'mongoose';
 
-export type RefreshToken = {
-    createdAt: string
-    deviceId: string
-    ip: string
-    deviceName: string
-    userId: ObjectId
+// export type RefreshToken = {
+//     createdAt: string
+//     deviceId: string
+//     ip: string
+//     deviceName: string
+//     userId: ObjectId
+// }
+
+export class RefreshToken {
+    constructor(public createdAt: string,
+                public expiringAt: string,
+                public deviceId: string,
+                public ip: string,
+                public deviceName: string,
+                public userId: ObjectId) {
+    }
 }
 
 export type RefreshTokenDb = WithId<RefreshToken>
@@ -20,6 +30,7 @@ export type ActiveDevicesOutput = {
 
 export const RefreshTokenSchema = new Schema<RefreshToken>({
     createdAt: { type: String, require: true },
+    expiringAt: { type: String, require: true },
     deviceId: { type: String, require: true },
     ip: { type: String, require: true },
     deviceName: {type: String, require: false},
