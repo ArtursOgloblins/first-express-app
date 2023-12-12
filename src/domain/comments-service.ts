@@ -1,6 +1,6 @@
 import {CommentsRepository} from "../repositories/comments/comments-db-repo";
 import {AddCommentAttr, UpdateCommentLikeParams, UpdatedCommentAttr} from "../types/types";
-import {BlogComment, CommentatorInfo} from "../models/Comments";
+import {BlogComment, CommentatorInfo, LikesInfo} from "../models/Comments";
 import {CommentsQueryRepository} from "../repositories/comments/comments-query-repo";
 
 export class CommentsService {
@@ -15,7 +15,14 @@ export class CommentsService {
         const userLogin = inputData.userLogin
 
         const commentatorInfo = new CommentatorInfo(userId, userLogin)
-        const newComment = new BlogComment(content, commentatorInfo, createdAt, postId)
+
+        const likesInfo: LikesInfo = {
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: "None"
+        }
+
+        const newComment = new BlogComment(content, commentatorInfo, createdAt, postId, likesInfo)
 
         return await this.commentsRepository.addComment(newComment)
     }

@@ -19,6 +19,7 @@ export class BlogComment {
                 public commentatorInfo: CommentatorInfo,
                 public createdAt: string,
                 public postId: string,
+                public likesInfo: LikesInfo
                 ) {
     }
 }
