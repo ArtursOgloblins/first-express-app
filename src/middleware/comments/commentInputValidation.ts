@@ -27,3 +27,11 @@ export const commentValidation = () => {
     validation.push(InputValidationResult)
     return validation
 }
+
+export const commentLikeValidation = () => {
+    const validation: any = [
+        commentValidator.commentLikeValidation()
+    ]
+    validation.push(InputValidationResult)
+    return validation
+}
