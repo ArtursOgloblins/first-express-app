@@ -55,7 +55,7 @@ export const authController = new AuthController(usersService, authRepository, a
 export const securityController = new SecurityController(authRepository, securityService, jwtService)
 export const blogController = new BlogController(blogsQueryRepository, blogsService, postsService)
 export const  postController = new PostController(postsQueryRepository, postsService, commentsService, commentsQueryRepository)
-export const commentController = new CommentController(commentsQueryRepository, commentsService)
+export const commentController = new CommentController(commentsQueryRepository, commentsService, jwtService)
 
 
 export const rateLimit = new RateLimit(usersService, usersQueryRepository)

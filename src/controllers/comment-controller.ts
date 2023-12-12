@@ -3,14 +3,21 @@ import {CommentsService} from "../domain/comments-service";
 import {Request, Response} from "express";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {UpdateCommentLikeParams} from "../types/types";
+import {JwtService} from "../application/jwt-service";
 
 export class CommentController {
     constructor(protected commentsQueryRepository: CommentsQueryRepository,
-                protected commentsService: CommentsService) {
+                protected commentsService: CommentsService,
+                protected jwtService: JwtService) {
     }
 
     async getCommentById(req: Request, res: Response) {
-        const userId = req.user!._id.toString()
+
+        const refreshToken = req.cookies.refreshToken
+        const refreshTokenDetails = await this.jwtService.getRefreshTokenDetails(refreshToken)
+
+        const {userId} = refreshTokenDetails
+
         const comment = await this.commentsQueryRepository.getCommentById(req.params.id, userId)
         if (comment) {
             res.send(comment)

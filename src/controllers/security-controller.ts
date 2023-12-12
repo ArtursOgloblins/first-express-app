@@ -46,15 +46,8 @@ export class SecurityController {
     async deleteDeviceById(req: Request, res: Response) {
         try {
             const refreshToken = req.cookies.refreshToken
-            const isTokenValid = await this.jwtService.validateRefreshToken(refreshToken)
-            if (!isTokenValid) {
-                return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-            }
-
             const refreshTokenDetails = await this.jwtService.getRefreshTokenDetails(refreshToken)
-            if (!refreshTokenDetails) {
-                return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
-            }
+
             const {userId} = refreshTokenDetails
             const {deviceId} = req.params
 
