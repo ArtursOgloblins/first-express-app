@@ -54,7 +54,7 @@ export const userController = new UserController(usersQueryRepository, usersServ
 export const authController = new AuthController(usersService, authRepository, authService, jwtService, usersQueryRepository)
 export const securityController = new SecurityController(authRepository, securityService, jwtService)
 export const blogController = new BlogController(blogsQueryRepository, blogsService, postsService)
-export const  postController = new PostController(postsQueryRepository, postsService, commentsService, commentsQueryRepository)
+export const  postController = new PostController(postsQueryRepository, postsService, commentsService, commentsQueryRepository, jwtService)
 export const commentController = new CommentController(commentsQueryRepository, commentsService, jwtService)
 
 

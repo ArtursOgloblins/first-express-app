@@ -6,12 +6,14 @@ import {Request, Response} from "express";
 import {getQueryParams} from "../helpers/query-params";
 import {PostQueryParams} from "../types/types";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
+import {JwtService} from "../application/jwt-service";
 
 export class PostController {
     constructor(protected postsQueryRepository: PostsQueryRepository,
                 protected postsService: PostsService,
                 protected commentsService: CommentsService,
-                protected commentsQueryRepository: CommentsQueryRepository) {
+                protected commentsQueryRepository: CommentsQueryRepository,
+                protected jwtService: JwtService) {
     }
     async getPosts(req: Request, res: Response) {
         const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
@@ -84,7 +86,10 @@ export class PostController {
 
     async getCommentsByPostId(req: Request, res: Response) {
         const postId = req.params.postId
-        const userId = req.user!._id.toString()
+        const refreshToken = req.cookies.refreshToken
+        const refreshTokenDetails = await this.jwtService.getRefreshTokenDetails(refreshToken)
+
+        const {userId} = refreshTokenDetails
         const post = await this.postsQueryRepository.getPostById(postId)
         if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
