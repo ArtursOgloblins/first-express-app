@@ -36,9 +36,11 @@ export class CommentsService {
         const commentLike = await this.commentsQueryRepository.getCommentLikeStatus(commentId, userId)
         console.log('commentLike', commentLike)
             if (!commentLike) {
+                console.log('CreateLikeDislike')
                 return await this.commentsRepository.createCommentLikeStatus(inputData)
             }
             if (likeStatus != 'None') {
+                console.log('AddLikeDislike')
                 return await this.commentsRepository.updateCommentLikeStatus(inputData)
             } else {
                 return await this.commentsRepository.removeCommentLikeStatus(commentId, userId)

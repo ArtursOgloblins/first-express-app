@@ -14,8 +14,7 @@ export class CommentController {
     async getCommentById(req: Request, res: Response) {
 
         const user = req.user
-        let userId = null
-
+        let  userId = null
         if (user) {
             userId = req.user!._id.toString()
         }

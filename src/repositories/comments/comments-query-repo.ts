@@ -9,8 +9,8 @@ import {CommentLikesModel} from "../../models/CommentsLikesDislikes";
 export class CommentsQueryRepository {
 
     async fetchLikesInfo(commentId: string, userId: string | null) {
-        const likesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'like' })
-        const dislikesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'disLike' })
+        const likesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'Like' })
+        const dislikesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'Dislike' })
         const userLikeStatus = await CommentLikesModel.findOne({ commentId: commentId, userId: userId })
         return {
             likesCount,
@@ -55,6 +55,7 @@ export class CommentsQueryRepository {
         }
 
         const likesInfo = await this.fetchLikesInfo(commentId, userId)
+        console.log('likesInfo', likesInfo)
         return commentsMapper(comment, likesInfo)
     }
 
@@ -66,6 +67,7 @@ export class CommentsQueryRepository {
     async getCommentLikeStatus(commentId: string, userId: string) {
         const commentLikeStatus = await CommentLikesModel.findOne({commentId: commentId, userId: userId})
         if (!commentLikeStatus) {
+            return null
         } else {
             return commentLikeStatus
         }
