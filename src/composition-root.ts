@@ -24,6 +24,7 @@ import {TestRepository} from "./repositories/testRepository";
 import {TestController} from "./controllers/test-controller";
 import {RateLimit} from "./middleware/rateLimit";
 import {TokenAuthenticator} from "./middleware/auth/authWithToken";
+import {AccessTokenChecker} from "./middleware/auth/accessTokenChecker";
 
 
 const usersQueryRepository = new UsersQueryRepository()
@@ -62,5 +63,6 @@ export const rateLimit = new RateLimit(usersService, usersQueryRepository)
 export const rateLimitValidation = rateLimit.rateLimitValidation.bind(rateLimit)
 export const tokenAuthenticator = new TokenAuthenticator(jwtService, usersQueryRepository)
 export const authWithToken = tokenAuthenticator.authWithToken.bind(tokenAuthenticator)
-
+export const accessTokenChecker = new AccessTokenChecker(jwtService, usersQueryRepository)
+export const checkAccessToken = accessTokenChecker.checkToken.bind(accessTokenChecker)
 export const testController = new TestController(testRepository)

@@ -8,10 +8,10 @@ import {CommentLikesModel} from "../../models/CommentsLikesDislikes";
 
 export class CommentsQueryRepository {
 
-    async fetchLikesInfo(commentId: string, userId: string) {
-        const likesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'like' });
-        const dislikesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'disLike' });
-        const userLikeStatus = await CommentLikesModel.findOne({ commentId: commentId, userId: userId });
+    async fetchLikesInfo(commentId: string, userId: string | null) {
+        const likesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'like' })
+        const dislikesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: 'disLike' })
+        const userLikeStatus = await CommentLikesModel.findOne({ commentId: commentId, userId: userId })
         return {
             likesCount,
             dislikesCount,
@@ -44,7 +44,7 @@ export class CommentsQueryRepository {
         }
     }
 
-    async getCommentById(commentId: string, userId: string): Promise<CommentOutput | null> {
+    async getCommentById(commentId: string, userId: string | null): Promise<CommentOutput | null> {
         if (!ObjectId.isValid(commentId)) {
             return null
         }
@@ -55,7 +55,6 @@ export class CommentsQueryRepository {
         }
 
         const likesInfo = await this.fetchLikesInfo(commentId, userId)
-        console.log('likesInfo', likesInfo)
         return commentsMapper(comment, likesInfo)
     }
 

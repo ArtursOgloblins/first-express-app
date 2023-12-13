@@ -13,10 +13,12 @@ export class CommentController {
 
     async getCommentById(req: Request, res: Response) {
 
-        const refreshToken = req.cookies.refreshToken
-        const refreshTokenDetails = await this.jwtService.getRefreshTokenDetails(refreshToken)
+        const user = req.user
+        let userId = null
 
-        const {userId} = refreshTokenDetails
+        if (user) {
+            userId = req.user!._id.toString()
+        }
 
         const comment = await this.commentsQueryRepository.getCommentById(req.params.id, userId)
         if (comment) {

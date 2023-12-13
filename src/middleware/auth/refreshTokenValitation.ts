@@ -7,7 +7,11 @@ export class RefreshTokenValidation {
         if (!refreshToken) {
             return res.sendStatus(HTTP_STATUS.UNAUTHORIZED)
         }
-        next()
+        return next()
     }
 }
+
+//req.headers.accessToken
+//!accessToke -> req.user = null -> next()
+// accessToken -> user -> ? user in bd -> req.user = null / req.user = userFromBd -> next()
 
