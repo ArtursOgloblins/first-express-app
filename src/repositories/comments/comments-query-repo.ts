@@ -19,7 +19,7 @@ export class CommentsQueryRepository {
         }
     }
 
-    async getCommentsByPost(postId: string, params: PostQueryParams, userId: string): Promise<PagedCommentOutput> {
+    async getCommentsByPost(postId: string, params: PostQueryParams, userId: string | null): Promise<PagedCommentOutput> {
 
         const { skipAmount, sortDir } = getPaginationDetails(params);
         const totalCount = await CommentModel.countDocuments({ postId: postId })

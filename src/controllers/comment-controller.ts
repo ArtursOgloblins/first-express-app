@@ -40,7 +40,7 @@ export class CommentController {
         }
         const updatedComment = await this.commentsService.updateComment({commentId, userId, ...req.body})
         if (updatedComment) {
-            res.status(HTTP_STATUS.NO_CONTENT).send(updatedComment);
+            res.status(HTTP_STATUS.NO_CONTENT).send(updatedComment)
         } else {
             res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
         }
@@ -60,9 +60,9 @@ export class CommentController {
             }
             const isDeleted = await this.commentsQueryRepository.removeCommentById(commentId)
             if (isDeleted) {
-                res.sendStatus(HTTP_STATUS.NO_CONTENT)
+                return res.sendStatus(HTTP_STATUS.NO_CONTENT)
             } else {
-                res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
+                return res.sendStatus(HTTP_STATUS.INTERNAL_SERVER_ERROR);
             }
         } catch (error) {
             console.error('Failed in deleting comment:', error)

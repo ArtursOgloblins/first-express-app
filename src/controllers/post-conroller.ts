@@ -85,24 +85,39 @@ export class PostController {
     }
 
     async getCommentsByPostId(req: Request, res: Response) {
-        const postId = req.params.postId
-        const refreshToken = req.cookies.refreshToken
-        const refreshTokenDetails = await this.jwtService.getRefreshTokenDetails(refreshToken)
+        try {
+            const postId = req.params.postId
+            // const refreshToken = req.cookies.refreshToken
+            // const refreshTokenDetails = await this.jwtService.getRefreshTokenDetails(refreshToken)
+            //
+            // const {userId} = refreshTokenDetails
+            const user = req.user
+            let  userId = null
+            if (user) {
+                userId = req.user!._id.toString()
+            }
+            const post = await this.postsQueryRepository.getPostById(postId)
+            if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
-        const {userId} = refreshTokenDetails
-        const post = await this.postsQueryRepository.getPostById(postId)
-        if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
+            const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
 
-        const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
+            const getCommentsParams: PostQueryParams = {
+                sortBy,
+                sortDirection,
+                pageSize,
+                pageNumber
+            }
 
-        const getCommentsParams: PostQueryParams = {
-            sortBy,
-            sortDirection,
-            pageSize,
-            pageNumber
+            const comments = await this.commentsQueryRepository.getCommentsByPost(postId, getCommentsParams, userId)
+            if (comments) {
+                return res.status(HTTP_STATUS.NO_CONTENT).send(comments)
+            } else {
+                return res.sendStatus(HTTP_STATUS.NOT_FOUND);
+            }
+        } catch (error) {
+            console.error('Failed in getting comments:', error)
+            return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         }
 
-        const comments = await this.commentsQueryRepository.getCommentsByPost(postId, getCommentsParams, userId)
-        res.send(comments)
     }
 }
