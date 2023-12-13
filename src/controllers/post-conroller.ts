@@ -110,7 +110,7 @@ export class PostController {
 
             const comments = await this.commentsQueryRepository.getCommentsByPost(postId, getCommentsParams, userId)
             if (comments) {
-                return res.status(HTTP_STATUS.NO_CONTENT).send(comments)
+                return res.status(HTTP_STATUS.OK).send(comments)
             } else {
                 return res.sendStatus(HTTP_STATUS.NOT_FOUND);
             }
