@@ -1,4 +1,4 @@
-import {runDb} from "./repositories/db";
+import {runDb} from "./infrastructure/repositories/db";
 import {initApp} from "./initApp";
 
 const app = initApp();

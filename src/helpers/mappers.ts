@@ -1,10 +1,10 @@
 import {WithId} from "mongodb";
-import {Blog, BlogOutput} from "../models/Blogs";
-import {Post, PostOutput} from "../models/Posts";
-import {SanitizedUserOutput, User} from "../models/Users";
-import {BlogComment, CommentOutput} from "../models/Comments";
-import {ActiveDevicesOutput, RefreshToken} from "../models/refreshToken";
-import {LikesInfo} from "../models/CommentsLikesDislikes";
+import {Blog, BlogOutput} from "../domain/Blogs";
+import {Post, PostOutput} from "../domain/Posts";
+import {SanitizedUserOutput, User} from "../domain/Users";
+import {BlogComment, CommentOutput} from "../domain/Comments";
+import {ActiveDevicesOutput, RefreshToken} from "../domain/refreshToken";
+import {LikesInfo} from "../domain/Likes";
 
 export const blogMapper = (blog: WithId<Blog>): BlogOutput => {
     return {

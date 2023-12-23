@@ -1,5 +1,13 @@
 import {ObjectId} from "mongodb";
 
+export type Paginated<T> = {
+    pagesCount: number;
+    page: number
+    pageSize: number
+    totalCount: number
+    items: T[]
+}
+
 export type AddBlogAttr = {
     name: string
     description: string
@@ -82,10 +90,11 @@ export type UpdatedCommentAttr = {
     content: string
 }
 
-export type UpdateCommentLikeParams = {
-    commentId: string,
+export type UpdateLikeParams = {
+    entityId: string,
     userId: string,
-    likeStatus: string
+    likeStatus: string,
+    createdAt: string
 }
 
 export type RefreshTokenParams = {
@@ -108,3 +117,5 @@ export type RefreshTokenArgs = {
     deviceId: string
     userId: ObjectId
 }
+
+

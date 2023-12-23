@@ -1,14 +1,18 @@
-import {CommentsQueryRepository} from "../repositories/comments/comments-query-repo";
-import {CommentsService} from "../domain/comments-service";
+import {CommentsQueryRepository} from "../infrastructure/repositories/comments/comments-query-repo";
+import {CommentsService} from "../application/services/comments-service";
 import {Request, Response} from "express";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
-import {UpdateCommentLikeParams} from "../types/types";
-import {JwtService} from "../application/jwt-service";
+import {UpdateLikeParams} from "../types/types";
+import {JwtService} from "../application/services/jwt-service";
+import {inject, injectable} from "inversify";
+import {UsersService} from "../application/services/users-service";
 
+
+@injectable()
 export class CommentController {
-    constructor(protected commentsQueryRepository: CommentsQueryRepository,
-                protected commentsService: CommentsService,
-                protected jwtService: JwtService) {
+    constructor(@inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository,
+                @inject(CommentsService) protected commentsService: CommentsService,
+                @inject(JwtService) protected jwtService: JwtService) {
     }
 
     async getCommentById(req: Request, res: Response) {
@@ -38,7 +42,7 @@ export class CommentController {
         if (comment.commentatorInfo.userId !== userId) {
             return res.sendStatus(HTTP_STATUS.FORBIDDEN);
         }
-        const updatedComment = await this.commentsService.updateComment({commentId, userId, ...req.body})
+        const updatedComment = await this.commentsService.updateComment({entityId: commentId, userId, ...req.body})
         if (updatedComment) {
             res.status(HTTP_STATUS.NO_CONTENT).send(updatedComment)
         } else {
@@ -80,10 +84,11 @@ export class CommentController {
                 return res.sendStatus(HTTP_STATUS.NOT_FOUND);
             }
 
-            const likeStatusData: UpdateCommentLikeParams = {
-                commentId: commentId.toString(),
+            const likeStatusData: UpdateLikeParams = {
+                entityId: commentId.toString(),
                 userId: userId,
-                likeStatus: req.body.likeStatus
+                likeStatus: req.body.likeStatus,
+                createdAt: new Date().toISOString()
             }
 
             const updatedLikeStatus = await this.commentsService.updateLikeStatus(likeStatusData)
@@ -95,7 +100,7 @@ export class CommentController {
             }
 
         } catch (error) {
-            console.error('Failed in addComment like status:', error)
+            console.error('Failed in add Comment like status:', error)
             return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         }
     }

@@ -2,7 +2,10 @@ import express from "express";
 import {blogValidationPost} from "../middleware/blogs/blogInputValidations";
 import {basicAuth} from "../middleware/auth/basicAuth";
 import {CreatePostValidation,} from "../middleware/posts/postsInputValidation";
-import {blogController} from "../composition-root";
+import {container} from "../composition-root";
+import {BlogController} from "../controllers/blog-controller";
+
+const blogController = container.resolve(BlogController)
 
 const blogRouter = express.Router();
 

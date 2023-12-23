@@ -3,8 +3,8 @@ import {RouterPath} from "../../src/routerPaths";
 import {AddUserParams} from "../../src/types/types";
 import {HttpStatusCodes as HTTP_STATUS} from "../../src/helpers/httpStatusCodes";
 import {initApp} from "../../src/initApp";
-import {usersQueryRepository} from "../../src/repositories/users/users-query-repo";
-import {runDb} from "../../src/repositories/db";
+import {usersQueryRepository} from "../../src/infrastructure/repositories/users/users-query-repo";
+import {runDb} from "../../src/infrastructure/repositories/db";
 
 const app = initApp();
 

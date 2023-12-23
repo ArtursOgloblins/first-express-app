@@ -1,13 +1,16 @@
-import {UsersQueryRepository} from "../repositories/users/users-query-repo";
-import {UsersService} from "../domain/users-service";
+import {UsersQueryRepository} from "../infrastructure/repositories/users/users-query-repo";
+import {UsersService} from "../application/services/users-service";
 import {Request, Response} from "express";
 import {getQueryParams} from "../helpers/query-params";
 import {UsersQueryParams} from "../types/types";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class UserController {
-    constructor(protected usersQueryRepository: UsersQueryRepository,
-                protected usersService: UsersService) {}
+    constructor(@inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
+                @inject(UsersService) protected usersService: UsersService) {}
 
     async getAllUsers(req: Request, res: Response){
         const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);

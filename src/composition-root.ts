@@ -1,68 +1,76 @@
-import {UsersQueryRepository} from "./repositories/users/users-query-repo";
-import {UsersRepository} from "./repositories/users/users-db-repo";
-import {UsersService} from "./domain/users-service";
+import "reflect-metadata";
+import {UsersQueryRepository} from "./infrastructure/repositories/users/users-query-repo";
+import {UsersRepository} from "./infrastructure/repositories/users/users-db-repo";
+import {UsersService} from "./application/services/users-service";
 import {UserController} from "./controllers/user-controller";
-import {AuthRepository} from "./repositories/auth/auth-db-repo";
-import {AuthService} from "./domain/auth-service";
-import {JwtService} from "./application/jwt-service";
+import {AuthRepository} from "./infrastructure/repositories/auth/auth-db-repo";
+import {AuthService} from "./application/services/auth-service";
+import {JwtService} from "./application/services/jwt-service";
 import {AuthController} from "./controllers/auth-controller";
-import {BlogsService} from "./domain/blogs-service";
-import {BlogsRepository} from "./repositories/blogs/blogs-db-repository";
-import {BlogsQueryRepository} from "./repositories/blogs/blogs-query-repo";
-import {PostsService} from "./domain/posts-service";
-import {PostsRepository} from "./repositories/posts/posts-db-repository";
+import {BlogsService} from "./application/services/blogs-service";
+import {BlogsRepository} from "./infrastructure/repositories/blogs/blogs-db-repository";
+import {BlogsQueryRepository} from "./infrastructure/repositories/blogs/blogs-query-repo";
+import {PostsService} from "./application/services/posts-service";
+import {PostsRepository} from "./infrastructure/repositories/posts/posts-db-repository";
 import {BlogController} from "./controllers/blog-controller";
-import {CommentsRepository} from "./repositories/comments/comments-db-repo";
-import {CommentsQueryRepository} from "./repositories/comments/comments-query-repo";
-import {CommentsService} from "./domain/comments-service";
+import {CommentsRepository} from "./infrastructure/repositories/comments/comments-db-repo";
+import {CommentsQueryRepository} from "./infrastructure/repositories/comments/comments-query-repo";
+import {CommentsService} from "./application/services/comments-service";
 import {CommentController} from "./controllers/comment-controller";
-import {PostsQueryRepository} from "./repositories/posts/posts-query-repo";
+import {PostsQueryRepository} from "./infrastructure/repositories/posts/posts-query-repo";
 import {PostController} from "./controllers/post-conroller";
-import {SecurityService} from "./domain/security-service";
+import {SecurityService} from "./application/services/security-service";
 import {SecurityController} from "./controllers/security-controller";
-import {TestRepository} from "./repositories/testRepository";
+import {TestRepository} from "./infrastructure/repositories/testRepository";
 import {TestController} from "./controllers/test-controller";
 import {RateLimit} from "./middleware/rateLimit";
 import {TokenAuthenticator} from "./middleware/auth/authWithToken";
 import {AccessTokenChecker} from "./middleware/auth/accessTokenChecker";
+import {Container} from "inversify";
+import {LikesService} from "./application/services/likes-service";
+import {LikesRepository} from "./infrastructure/repositories/likes/likes-db-reposiry";
 
 
-const usersQueryRepository = new UsersQueryRepository()
-const usersRepository = new UsersRepository()
-const authRepository = new AuthRepository()
+export const container = new Container()
 
-const blogsQueryRepository = new BlogsQueryRepository()
-const blogsRepository = new BlogsRepository()
-const postsQueryRepository = new PostsQueryRepository()
-const postsRepository = new PostsRepository()
-
-const commentsQueryRepository = new CommentsQueryRepository()
-const commentsRepository = new CommentsRepository()
-const testRepository = new TestRepository()
-
-const usersService = new UsersService(usersRepository)
-const jwtService = new JwtService(authRepository)
-const authService = new AuthService(authRepository, usersService, usersRepository, usersQueryRepository, jwtService)
-const securityService = new SecurityService(authRepository, jwtService)
+// Controllers
+container.bind(UserController).to(UserController)
+container.bind(AuthController).to(AuthController)
+container.bind(SecurityController).to(SecurityController)
+container.bind(BlogController).to(BlogController)
+container.bind(PostController).to(PostController)
+container.bind(CommentController).to(CommentController)
+container.bind(TestController).to(TestController)
 
 
-const blogsService = new BlogsService(blogsRepository)
-const postsService = new PostsService(postsRepository, blogsQueryRepository)
-const commentsService  = new CommentsService(commentsRepository, commentsQueryRepository)
+// Services
+container.bind(BlogsService).to(BlogsService)
+container.bind(PostsService).to(PostsService)
+container.bind(UsersService).to(UsersService)
+container.bind(JwtService).to(JwtService)
+container.bind(AuthService).to(AuthService)
+container.bind(SecurityService).to(SecurityService)
+container.bind(CommentsService).to(CommentsService)
+container.bind(LikesService).to(LikesService)
 
 
-export const userController = new UserController(usersQueryRepository, usersService)
-export const authController = new AuthController(usersService, authRepository, authService, jwtService, usersQueryRepository)
-export const securityController = new SecurityController(authRepository, securityService, jwtService)
-export const blogController = new BlogController(blogsQueryRepository, blogsService, postsService)
-export const  postController = new PostController(postsQueryRepository, postsService, commentsService, commentsQueryRepository, jwtService)
-export const commentController = new CommentController(commentsQueryRepository, commentsService, jwtService)
+//Repositories
+container.bind(TestRepository).to(TestRepository)
+container.bind(UsersRepository).to(UsersRepository)
+container.bind(UsersQueryRepository).to(UsersQueryRepository)
+container.bind(AuthRepository).to(AuthRepository)
+container.bind(BlogsQueryRepository).to(BlogsQueryRepository)
+container.bind(BlogsRepository).to(BlogsRepository)
+container.bind(PostsRepository).to(PostsRepository)
+container.bind(PostsQueryRepository).to(PostsQueryRepository)
+container.bind(CommentsRepository).to(CommentsRepository)
+container.bind(CommentsQueryRepository).to(CommentsQueryRepository)
+container.bind(LikesRepository).to(LikesRepository)
 
-
-export const rateLimit = new RateLimit(usersService, usersQueryRepository)
-export const rateLimitValidation = rateLimit.rateLimitValidation.bind(rateLimit)
-export const tokenAuthenticator = new TokenAuthenticator(jwtService, usersQueryRepository)
-export const authWithToken = tokenAuthenticator.authWithToken.bind(tokenAuthenticator)
-export const accessTokenChecker = new AccessTokenChecker(jwtService, usersQueryRepository)
-export const checkAccessToken = accessTokenChecker.checkToken.bind(accessTokenChecker)
-export const testController = new TestController(testRepository)
+//Validations
+container.bind(RateLimit).to(RateLimit)
+container.bind(TokenAuthenticator).to(TokenAuthenticator)
+container.bind(AccessTokenChecker).to(AccessTokenChecker)
+export const rateLimiter = container.resolve(RateLimit).rateLimitMiddleware()
+export const tokenAuthenticator = container.resolve(TokenAuthenticator).authWithTokenMiddleware()
+export const accessTokenChecker = container.resolve(AccessTokenChecker).checkTokenMiddleware()

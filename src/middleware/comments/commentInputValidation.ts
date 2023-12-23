@@ -11,26 +11,12 @@ class CommentsValidator {
             .isLength({min: 20, max:300}).withMessage('Comment length should be between 20 and 300')
     }
 
-    commentLikeValidation() {
-        return body('likeStatus')
-            .trim()
-            .exists().withMessage('Like status is required')
-            .isIn(['None', 'Like', 'Dislike']).withMessage('Invalid like status')
-    }
 }
 
 const commentValidator = new CommentsValidator()
 export const commentValidation = () => {
     const validation: any = [
         commentValidator.contentValidation()
-    ]
-    validation.push(InputValidationResult)
-    return validation
-}
-
-export const commentLikeValidation = () => {
-    const validation: any = [
-        commentValidator.commentLikeValidation()
     ]
     validation.push(InputValidationResult)
     return validation

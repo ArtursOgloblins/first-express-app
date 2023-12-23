@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {BlogsQueryRepository} from "../../repositories/blogs/blogs-query-repo";
+import {BlogsQueryRepository} from "../../infrastructure/repositories/blogs/blogs-query-repo";
 import {InputValidationResult} from "../inputValidationResult";
 
 class PostsInputValidation {

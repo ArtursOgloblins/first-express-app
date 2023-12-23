@@ -1,9 +1,12 @@
-import {TestRepository} from "../repositories/testRepository";
+import {TestRepository} from "../infrastructure/repositories/testRepository";
 import {Request, Response} from "express";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
+import {inject, injectable} from "inversify";
 
+
+@injectable()
 export class TestController {
-    constructor(protected testRepository: TestRepository) {
+    constructor(@inject(TestRepository) protected testRepository: TestRepository) {
     }
     async deleteAllBeforeTest (req: Request, res: Response) {
         await this.testRepository.deleteAllBlogs()

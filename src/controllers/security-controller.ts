@@ -1,13 +1,17 @@
-import {AuthRepository} from "../repositories/auth/auth-db-repo";
-import {SecurityService} from "../domain/security-service";
-import {JwtService} from "../application/jwt-service";
+import {AuthRepository} from "../infrastructure/repositories/auth/auth-db-repo";
+import {SecurityService} from "../application/services/security-service";
+import {JwtService} from "../application/services/jwt-service";
 import {Request, Response} from "express";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
+import {inject, injectable} from "inversify";
+import {PostsQueryRepository} from "../infrastructure/repositories/posts/posts-query-repo";
 
+
+@injectable()
 export class SecurityController {
-    constructor(protected authRepository: AuthRepository,
-                protected securityService: SecurityService,
-                protected jwtService: JwtService) {
+    constructor(@inject(AuthRepository) protected authRepository: AuthRepository,
+                @inject(SecurityService) protected securityService: SecurityService,
+                @inject(JwtService) protected jwtService: JwtService) {
     }
 
     async getActiveDevices(req: Request, res: Response) {

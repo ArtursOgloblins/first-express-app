@@ -1,6 +1,6 @@
 import {body} from "express-validator";
 import {InputValidationResult} from "../inputValidationResult";
-import {AuthRepository} from "../../repositories/auth/auth-db-repo";
+import {AuthRepository} from "../../infrastructure/repositories/auth/auth-db-repo";
 
 class PasswordRecoveryValidations {
     authRepository: AuthRepository

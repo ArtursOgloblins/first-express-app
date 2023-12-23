@@ -1,4 +1,4 @@
-import {User} from "../models/Users";
+import {User} from "../domain/Users";
 import {WithId} from "mongodb";
 
 declare global {

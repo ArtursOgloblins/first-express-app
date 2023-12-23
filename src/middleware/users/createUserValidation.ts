@@ -1,6 +1,6 @@
 import {body} from "express-validator";
 import {InputValidationResult} from "../inputValidationResult";
-import {UsersQueryRepository} from "../../repositories/users/users-query-repo";
+import {UsersQueryRepository} from "../../infrastructure/repositories/users/users-query-repo";
 
 class CreateUserValidation {
     usersQueryRepository: UsersQueryRepository

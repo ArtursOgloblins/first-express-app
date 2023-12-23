@@ -1,19 +1,21 @@
-import {UsersService} from "../domain/users-service";
-import {AuthRepository} from "../repositories/auth/auth-db-repo";
-import {AuthService} from "../domain/auth-service";
-import {JwtService} from "../application/jwt-service";
-import {UsersQueryRepository} from "../repositories/users/users-query-repo";
+import {UsersService} from "../application/services/users-service";
+import {AuthRepository} from "../infrastructure/repositories/auth/auth-db-repo";
+import {AuthService} from "../application/services/auth-service";
+import {JwtService} from "../application/services/jwt-service";
+import {UsersQueryRepository} from "../infrastructure/repositories/users/users-query-repo";
 import {Request, Response} from "express";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {helperMethods} from "../helpers/helperMethods";
+import {inject, injectable} from "inversify";
 
 
+@injectable()
 export class AuthController {
-    constructor(protected usersService: UsersService,
-                protected authRepository: AuthRepository,
-                protected authService: AuthService,
-                protected jwtService: JwtService,
-                protected usersQueryRepository: UsersQueryRepository) {
+    constructor(@inject(UsersService) protected usersService: UsersService,
+                @inject(AuthRepository) protected authRepository: AuthRepository,
+                @inject(AuthService) protected authService: AuthService,
+                @inject(JwtService) protected jwtService: JwtService,
+                @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository) {
     }
 
     async userRegistration(req: Request, res: Response) {

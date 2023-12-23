@@ -1,7 +1,10 @@
 import express from "express";
 import {createUserValidation} from "../middleware/users/createUserValidation";
 import {basicAuth} from "../middleware/auth/basicAuth";
-import {userController} from "../composition-root";
+import {container} from "../composition-root";
+import {UserController} from "../controllers/user-controller";
+
+const userController = container.resolve(UserController)
 
 const usersRouter =  express.Router();
 

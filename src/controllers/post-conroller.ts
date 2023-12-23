@@ -1,19 +1,23 @@
-import {PostsQueryRepository} from "../repositories/posts/posts-query-repo";
-import {PostsService} from "../domain/posts-service";
-import {CommentsService} from "../domain/comments-service";
-import {CommentsQueryRepository} from "../repositories/comments/comments-query-repo";
+import {PostsQueryRepository} from "../infrastructure/repositories/posts/posts-query-repo";
+import {PostsService} from "../application/services/posts-service";
+import {CommentsService} from "../application/services/comments-service";
+import {CommentsQueryRepository} from "../infrastructure/repositories/comments/comments-query-repo";
 import {Request, Response} from "express";
 import {getQueryParams} from "../helpers/query-params";
-import {PostQueryParams} from "../types/types";
+import {PostQueryParams, UpdateLikeParams} from "../types/types";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
-import {JwtService} from "../application/jwt-service";
+import {JwtService} from "../application/services/jwt-service";
+import {inject, injectable} from "inversify";
+import {LikesService} from "../application/services/likes-service";
 
+@injectable()
 export class PostController {
-    constructor(protected postsQueryRepository: PostsQueryRepository,
-                protected postsService: PostsService,
-                protected commentsService: CommentsService,
-                protected commentsQueryRepository: CommentsQueryRepository,
-                protected jwtService: JwtService) {
+    constructor(@inject(PostsQueryRepository) protected postsQueryRepository: PostsQueryRepository,
+                @inject(PostsService) protected postsService: PostsService,
+                @inject(CommentsService) protected commentsService: CommentsService,
+                @inject(LikesService) protected likesService: LikesService,
+                @inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository,
+                @inject(JwtService) protected jwtService: JwtService) {
     }
     async getPosts(req: Request, res: Response) {
         const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
@@ -87,16 +91,15 @@ export class PostController {
     async getCommentsByPostId(req: Request, res: Response) {
         try {
             const postId = req.params.postId
-            // const refreshToken = req.cookies.refreshToken
-            // const refreshTokenDetails = await this.jwtService.getRefreshTokenDetails(refreshToken)
-            //
-            // const {userId} = refreshTokenDetails
             const user = req.user
             let  userId = null
+
             if (user) {
                 userId = req.user!._id.toString()
             }
+
             const post = await this.postsQueryRepository.getPostById(postId)
+
             if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
             const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
@@ -119,5 +122,37 @@ export class PostController {
             return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         }
 
+    }
+
+    async addLikeStatus(req: Request, res: Response) {
+        try {
+            const {postId} = req.params
+            const userId = req.user!._id.toString()
+
+            const post  = await this.postsQueryRepository.getPostById(postId)
+
+            if (!post) {
+                return res.sendStatus(HTTP_STATUS.NOT_FOUND);
+            }
+
+            const likeStatusData: UpdateLikeParams = {
+                entityId: postId.toString(),
+                userId: userId,
+                likeStatus: req.body.likeStatus,
+                createdAt: new Date().toISOString()
+            }
+
+            const updatedLikeStatus = await this.likesService.updateLikeStatus(likeStatusData)
+
+            if (!updatedLikeStatus) {
+                return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+            } else {
+                return res.sendStatus(HTTP_STATUS.NO_CONTENT)
+            }
+
+        } catch (error) {
+            console.error('Failed in add Post like status:', error)
+            return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+        }
     }
 }

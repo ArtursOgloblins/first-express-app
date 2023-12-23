@@ -1,5 +1,8 @@
 import express from "express";
-import {testController} from "../composition-root";
+import {container} from "../composition-root";
+import {TestController} from "../controllers/test-controller";
+
+const testController = container.resolve(TestController)
 
 const testRouter = express.Router();
 
