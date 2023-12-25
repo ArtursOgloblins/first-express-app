@@ -18,6 +18,8 @@ export class UsersRepository {
         return UserModel.findOne({$or: [{'accountData.email': loginOrEmail}, {'accountData.login': loginOrEmail}]})
     }
 
+
+
     async registerUser(newUser: User)  {
         const res = await UserModel.create(newUser)
         console.log('new user', newUser)

@@ -1,7 +1,7 @@
-import {Post, PostModelClass} from "../../domain/Posts";
+import {Post, PostModel} from "../../domain/Posts";
 import {Blog, BlogModelClass} from "../../domain/Blogs";
 import {User, UserModel} from "../../domain/Users";
-import {BlogComment, CommentModel} from "../../domain/Comments";
+import {PostComment, CommentModel} from "../../domain/Comments";
 import {RefreshToken, RefreshTokenModelClass} from "../../domain/refreshToken";
 import {ApiRequest, ApiRequestModelClass} from "../../domain/Requests";
 import {CommentLikesModel, LikesInfo} from "../../domain/Likes";
@@ -16,7 +16,7 @@ export class TestRepository {
     }
 
     async deleteAllPosts(): Promise<Post[]> {
-        await PostModelClass.deleteMany({})
+        await PostModel.deleteMany({})
         return []
     }
 
@@ -25,7 +25,7 @@ export class TestRepository {
         return []
     }
 
-    async deleteAllComments(): Promise<BlogComment[]> {
+    async deleteAllComments(): Promise<PostComment[]> {
         await CommentModel.deleteMany({})
         return []
     }

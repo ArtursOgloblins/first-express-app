@@ -52,7 +52,7 @@ export class UsersQueryRepository {
         if (!ObjectId.isValid(id)) {
             return null
         }
-        const user = await UserModel.findOne({_id: id})
+        const user = await UserModel.findOne({_id: id}).lean()
         if (!user) {
             return null
         }

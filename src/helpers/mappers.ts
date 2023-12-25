@@ -2,9 +2,9 @@ import {WithId} from "mongodb";
 import {Blog, BlogOutput} from "../domain/Blogs";
 import {Post, PostOutput} from "../domain/Posts";
 import {SanitizedUserOutput, User} from "../domain/Users";
-import {BlogComment, CommentOutput} from "../domain/Comments";
+import {PostComment, CommentOutput} from "../domain/Comments";
 import {ActiveDevicesOutput, RefreshToken} from "../domain/refreshToken";
-import {LikesInfo} from "../domain/Likes";
+import {Likes} from "../domain/Likes";
 
 export const blogMapper = (blog: WithId<Blog>): BlogOutput => {
     return {
@@ -25,12 +25,21 @@ export const postMapper = (post: WithId<Post>): PostOutput => {
         content: post.content,
         blogId: post.blogId,
         blogName: post.blogName,
-        createdAt: post.createdAt
-
+        createdAt: post.createdAt,
+        extendedLikesInfo: {
+            likesCount: post.extendedLikesInfo.likesCount,
+            dislikesCount: post.extendedLikesInfo.dislikesCount,
+            myStatus: post.extendedLikesInfo.myStatus,
+            newestLikes: post.extendedLikesInfo.newestLikes.map(like => ({
+                addedAt: like.addedAt,
+                userId: like.userId,
+                login: like.login
+            }))
+        }
     }
 }
 
-export const commentsMapper = (comment: WithId<BlogComment>, likesInfo: LikesInfo): CommentOutput => {
+export const commentsMapper = (comment: WithId<PostComment>, likeStatus: string): CommentOutput => {
     return {
         id: comment._id.toString(),
         content: comment.content,
@@ -39,7 +48,11 @@ export const commentsMapper = (comment: WithId<BlogComment>, likesInfo: LikesInf
             userLogin: comment.commentatorInfo.userLogin
         },
         createdAt: comment.createdAt,
-        likesInfo: likesInfo
+        likesInfo: {
+            likesCount: comment.likesInfo.likesCount,
+            dislikesCount: comment.likesInfo.dislikesCount,
+            myStatus: likeStatus
+        }
     }
 }
 
@@ -64,3 +77,12 @@ export const activeDeviceMapper = (refreshToken: WithId<RefreshToken>): ActiveDe
         deviceId: refreshToken.deviceId
     }
 }
+
+export const newestLikesMapper = (like: WithId<Likes>) => {
+    return {
+        addedAt: like.createdAt,
+        userId: like.userId,
+        login: like.userLogin
+    }
+}
+

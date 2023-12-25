@@ -1,4 +1,4 @@
-import {PagedPostOutput, PostModelClass, PostOutput} from "../../../domain/Posts";
+import {PagedPostOutput, PostModel, PostOutput} from "../../../domain/Posts";
 import {postMapper} from "../../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {PostQueryParams} from "../../../types/types";
@@ -11,9 +11,9 @@ export class PostsQueryRepository {
 
         const sortDir = params.sortDirection === 'asc' ? 1 : -1
         const skipAmount = (params.pageNumber - 1) * params.pageSize
-        const totalCount = await PostModelClass.countDocuments()
+        const totalCount = await PostModel.countDocuments()
 
-        const posts = await PostModelClass
+        const posts = await PostModel
             .find({})
             .sort({[params.sortBy]: sortDir})
             .skip(skipAmount)
@@ -31,7 +31,7 @@ export class PostsQueryRepository {
     }
 
     async getPostById(id: string): Promise<PostOutput | null> {
-        const post = await PostModelClass.findOne({_id: new ObjectId(id)})
+        const post = await PostModel.findOne({_id: new ObjectId(id)})
 
         if (!post) {
             return null
@@ -41,7 +41,7 @@ export class PostsQueryRepository {
     }
 
     async deletePostById(id: string): Promise<boolean> {
-        const result = await PostModelClass.deleteOne({_id: new ObjectId(id)})
+        const result = await PostModel.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     }
 }

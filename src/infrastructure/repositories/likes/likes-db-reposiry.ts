@@ -1,4 +1,4 @@
-import {CommentLikesModel, Likes} from "../../../domain/Likes";
+import {CommentLikesModel, Likes, LikeStatuses} from "../../../domain/Likes";
 import {UpdateLikeParams} from "../../../types/types";
 import {injectable} from "inversify";
 
@@ -26,6 +26,26 @@ export class LikesRepository {
             {returnDocument: 'after'}
         )
         return updatedLikeStatus
+    }
+
+    async getLikeCountByEntityId(id: string){
+        return CommentLikesModel.countDocuments({commentId: id, likeStatus: LikeStatuses.Like});
+    }
+
+    async getDislikeCountByEntityId(id: string){
+        return CommentLikesModel.countDocuments({ commentId: id, likeStatus: LikeStatuses.Dislike })
+    }
+
+    async getMyLikeStatus(commentId: string, userId: string | null) {
+        const userLikeStatus = await CommentLikesModel.findOne({ commentId: commentId, userId: userId })
+        return userLikeStatus ? userLikeStatus.likeStatus : LikeStatuses.None
+    }
+
+    async getNewestLikes(id: string, count: number) {
+        return CommentLikesModel
+            .find({entityId: id, likeStatus: LikeStatuses.Like})
+            .sort({createdAt: -1})
+            .limit(count).lean()
     }
 }
 

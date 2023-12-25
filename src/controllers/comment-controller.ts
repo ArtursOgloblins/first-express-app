@@ -5,13 +5,16 @@ import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {UpdateLikeParams} from "../types/types";
 import {JwtService} from "../application/services/jwt-service";
 import {inject, injectable} from "inversify";
-import {UsersService} from "../application/services/users-service";
+import {LikesService} from "../application/services/likes-service";
+import {UsersQueryRepository} from "../infrastructure/repositories/users/users-query-repo";
 
 
 @injectable()
 export class CommentController {
     constructor(@inject(CommentsQueryRepository) protected commentsQueryRepository: CommentsQueryRepository,
+                @inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
                 @inject(CommentsService) protected commentsService: CommentsService,
+                @inject (LikesService) protected likesService: LikesService,
                 @inject(JwtService) protected jwtService: JwtService) {
     }
 
@@ -78,6 +81,7 @@ export class CommentController {
         try {
             const {commentId} = req.params
             const userId = req.user!._id.toString()
+            const userLogin = req.user!.accountData.login
 
             const comment = await this.commentsQueryRepository.getCommentById(commentId,  userId)
             if (!comment) {
@@ -87,13 +91,15 @@ export class CommentController {
             const likeStatusData: UpdateLikeParams = {
                 entityId: commentId.toString(),
                 userId: userId,
+                userLogin: userLogin,
                 likeStatus: req.body.likeStatus,
                 createdAt: new Date().toISOString()
             }
 
-            const updatedLikeStatus = await this.commentsService.updateLikeStatus(likeStatusData)
+            await this.likesService.updateLikeStatus(likeStatusData)
+            const updateCommentLikesInfo = await this.commentsService.updateCommentLikes(commentId)
 
-            if (!updatedLikeStatus) {
+            if (!updateCommentLikesInfo) {
                 return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
             } else {
                 return res.sendStatus(HTTP_STATUS.NO_CONTENT)

@@ -2,7 +2,7 @@ import {BlogModelClass, BlogOutput, PagedBlogOutput} from "../../../domain/Blogs
 import {blogMapper, postMapper} from "../../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {BlogQueryParams, PostQueryParams} from "../../../types/types";
-import {PostModelClass, PostOutput} from "../../../domain/Posts";
+import {PostModel, PostOutput} from "../../../domain/Posts";
 import {getPaginationDetails} from "../../../helpers/query-params";
 import {injectable} from "inversify";
 import "reflect-metadata"
@@ -53,9 +53,9 @@ export class BlogsQueryRepository {
     async getPostsByBlogId(id: string, params: PostQueryParams) {
         const { skipAmount, sortDir } = getPaginationDetails(params);
         const filter = {blogId: id}
-        const totalCount = await PostModelClass.countDocuments(filter)
+        const totalCount = await PostModel.countDocuments(filter)
 
-        const posts = await PostModelClass
+        const posts = await PostModel
             .find(filter)
             .sort({[params.sortBy]: sortDir} as any)
             .skip(skipAmount)

@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import {LikesInfo} from "./Likes";
+import mongoose, { Schema, model } from 'mongoose';
+import {LikesInfo, LikeStatuses} from "./Likes";
 
 
 export class CommentatorInfo {
@@ -8,7 +8,7 @@ export class CommentatorInfo {
     }
 }
 
-export class BlogComment {
+export class PostComment {
     constructor(public content: string,
                 public commentatorInfo: CommentatorInfo,
                 public createdAt: string,
@@ -29,15 +29,36 @@ export class CommentOutput {
     }
 }
 
-export const CommentSchema = new Schema<BlogComment>({
+interface CommentMethods {
+
+}
+
+interface CommentStaticMethods {
+    createComment: (comment: PostComment) => PostComment
+}
+
+interface CommentDocument extends Document, PostComment, CommentMethods {}
+interface CommentModelType extends mongoose.Model<CommentDocument>, CommentStaticMethods {}
+
+
+export const CommentSchema = new Schema<PostComment>({
     content: { type: String, required: true },
     commentatorInfo: {
         userId: { type: String, required: true },
         userLogin: { type: String, required: true },
     },
     createdAt: { type: String, required: true },
-    postId: { type: String, required: true }
+    postId: { type: String, required: true },
+    likesInfo: {
+        likesCount: {type: Number, required: true, default: 0},
+        dislikesCount: {type: Number, required: true, default: 0},
+        myStatus:{type: String, enum: Object.values(LikeStatuses), default: LikeStatuses.None}
+    }
 })
 
-export const CommentModel = model('comments', CommentSchema)
+CommentSchema.static('createComment', function createComment(PostComment) {
+    return new CommentModel({PostComment})
+})
+
+export const CommentModel = model<PostComment, CommentModelType>('comments', CommentSchema)
 

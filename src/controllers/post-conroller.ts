@@ -73,18 +73,28 @@ export class PostController {
     }
 
     async createComment(req: Request, res: Response) {
+        try {
+            const postId = req.params.postId
+            const post = await this.postsQueryRepository.getPostById(postId)
+            if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
-        const postId = req.params.postId
-        const post = await this.postsQueryRepository.getPostById(postId)
-        if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
+            const newCommentParams = {
+                content: req.body.content,
+                userId: req.user!._id,
+                userLogin: req.user!.accountData.login,
+                postId: postId
+            }
 
-        const newComment = await this.commentsService.createComment(
-            {content: req.body.content, userId: req.user!._id, userLogin: req.user!.accountData.login, postId: postId})
+            const newComment = await this.commentsService.createComment(newCommentParams)
 
-        if (!newComment) {
-            res.status(HTTP_STATUS.BAD_REQUEST)
-        } else {
-            res.status(HTTP_STATUS.CREATED).send(newComment)
+            if (!newComment) {
+                res.status(HTTP_STATUS.BAD_REQUEST)
+            } else {
+                res.status(HTTP_STATUS.CREATED).send(newComment)
+            }
+        } catch (error) {
+            console.error('Failed in creating comment:', error)
+            return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
         }
     }
 
@@ -128,8 +138,10 @@ export class PostController {
         try {
             const {postId} = req.params
             const userId = req.user!._id.toString()
+            const userLogin = req.user!.accountData.login
 
             const post  = await this.postsQueryRepository.getPostById(postId)
+            const newestLikesCountToDisplay = 3
 
             if (!post) {
                 return res.sendStatus(HTTP_STATUS.NOT_FOUND);
@@ -138,13 +150,15 @@ export class PostController {
             const likeStatusData: UpdateLikeParams = {
                 entityId: postId.toString(),
                 userId: userId,
+                userLogin: userLogin,
                 likeStatus: req.body.likeStatus,
                 createdAt: new Date().toISOString()
             }
 
-            const updatedLikeStatus = await this.likesService.updateLikeStatus(likeStatusData)
+            await this.likesService.updateLikeStatus(likeStatusData)
+            const updatePostLikesInfo = await this.postsService.updatePostLikes(postId, newestLikesCountToDisplay)
 
-            if (!updatedLikeStatus) {
+            if (!updatePostLikesInfo) {
                 return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
             } else {
                 return res.sendStatus(HTTP_STATUS.NO_CONTENT)

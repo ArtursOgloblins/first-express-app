@@ -31,10 +31,14 @@ export class UserController {
     }
 
     async addUser(req: Request, res: Response) {
-
-        const {login, password, email} = req.body
-        const newUser = await this.usersService.createUser({login, password, email})
-        res.status(HTTP_STATUS.CREATED).send(newUser)
+        try {
+            const {login, password, email} = req.body
+            const newUser = await this.usersService.createUser({login, password, email})
+            res.status(HTTP_STATUS.CREATED).send(newUser)
+        } catch (error) {
+            console.error('Failed in creating user:', error)
+            return res.sendStatus(HTTP_STATUS.BAD_REQUEST)
+        }
     }
 
     async deleteUserById(req: Request, res: Response) {

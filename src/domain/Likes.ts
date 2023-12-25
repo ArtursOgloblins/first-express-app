@@ -16,6 +16,7 @@ export class LikesInfo {
 export class Likes {
     constructor(public entityId: string,
                 public userId: string,
+                public userLogin: string,
                 public likeStatus: string,
                 public createdAt: string) {
     }

@@ -3,22 +3,13 @@ import {Paginated, PostQueryParams} from "../../../types/types";
 import {getPaginationDetails} from "../../../helpers/query-params";
 import {commentsMapper} from "../../../helpers/mappers";
 import {ObjectId} from "mongodb";
-import {CommentLikesModel, LikeStatuses} from "../../../domain/Likes";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
+import {LikesRepository} from "../likes/likes-db-reposiry";
 
 
 @injectable()
 export class CommentsQueryRepository {
-
-    async fetchLikesInfo(commentId: string, userId: string | null) {
-        const likesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: LikeStatuses.Like })
-        const dislikesCount = await CommentLikesModel.countDocuments({ commentId: commentId, likeStatus: LikeStatuses.Dislike })
-        const userLikeStatus = await CommentLikesModel.findOne({ commentId: commentId, userId: userId })
-        return {
-            likesCount,
-            dislikesCount,
-            myStatus: userLikeStatus ? userLikeStatus.likeStatus : LikeStatuses.None
-        }
+    constructor( @inject(LikesRepository) protected likesRepository: LikesRepository) {
     }
 
     async getCommentsByPost(postId: string, params: PostQueryParams, userId: string | null): Promise<Paginated<CommentOutput>> {
@@ -35,8 +26,8 @@ export class CommentsQueryRepository {
             .limit(params.pageSize)
 
         const mappedComments: CommentOutput[] = await Promise.all(comments.map(async (comment) => {
-            const likesInfo = await this.fetchLikesInfo(comment._id.toString(), userId)
-            return commentsMapper(comment, likesInfo)
+            const likeStatus = await this.likesRepository.getMyLikeStatus(comment._id.toString(), userId)
+            return commentsMapper(comment, likeStatus)
         }))
 
         return {
@@ -58,9 +49,8 @@ export class CommentsQueryRepository {
             return null
         }
 
-        const likesInfo = await this.fetchLikesInfo(commentId, userId)
-        console.log('likesInfo', likesInfo)
-        return commentsMapper(comment, likesInfo)
+        const likeStatus = await this.likesRepository.getMyLikeStatus(commentId, userId)
+        return commentsMapper(comment, likeStatus)
     }
 
     async removeCommentById(commentId: string): Promise<boolean> {

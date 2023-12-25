@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import {NewestLike} from "../domain/Posts";
 
 export type Paginated<T> = {
     pagesCount: number;
@@ -41,6 +42,13 @@ export type UpdatePostAttr = {
     content: string,
     blogId: string
 }
+
+export type UpdatePostLikesParams = {
+    likesCount: number
+    dislikesCount: number
+    mappedNewestLikes: NewestLike[] | null
+}
+
 
 export type BlogQueryParams = {
     searchNameTerm: string | null;
@@ -93,6 +101,7 @@ export type UpdatedCommentAttr = {
 export type UpdateLikeParams = {
     entityId: string,
     userId: string,
+    userLogin: string
     likeStatus: string,
     createdAt: string
 }
