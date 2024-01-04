@@ -4,7 +4,7 @@ import {User, UserModel} from "../../domain/Users";
 import {PostComment, CommentModel} from "../../domain/Comments";
 import {RefreshToken, RefreshTokenModelClass} from "../../domain/refreshToken";
 import {ApiRequest, ApiRequestModelClass} from "../../domain/Requests";
-import {CommentLikesModel, LikesInfo} from "../../domain/Likes";
+import {LikesModel, LikesInfo} from "../../domain/Likes";
 import {injectable} from "inversify";
 
 
@@ -42,7 +42,7 @@ export class TestRepository {
     }
 
     async deleteAllCommentLikeStatuses(): Promise<LikesInfo[]>{
-        await CommentLikesModel.deleteMany({})
+        await LikesModel.deleteMany({})
         return []
     }
 }

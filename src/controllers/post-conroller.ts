@@ -20,6 +20,11 @@ export class PostController {
                 @inject(JwtService) protected jwtService: JwtService) {
     }
     async getPosts(req: Request, res: Response) {
+        const user = req.user
+        let userId = null
+        if (user) {
+            userId = req.user!._id.toString()
+        }
         const {sortBy, sortDirection, pageSize, pageNumber} = getQueryParams(req);
 
         const getPostsParams: PostQueryParams = {
@@ -29,12 +34,17 @@ export class PostController {
             pageNumber
         }
 
-        const posts = await this.postsQueryRepository.getPosts(getPostsParams)
+        const posts = await this.postsQueryRepository.getPosts(getPostsParams, userId)
         res.send(posts)
     }
 
     async getPostById(req: Request, res: Response) {
-        const post = await this.postsQueryRepository.getPostById(req.params.id)
+        const user = req.user
+        let userId = null
+        if (user) {
+            userId = req.user!._id.toString()
+        }
+        const post = await this.postsQueryRepository.getPostById(req.params.id, userId)
         if (post) {
             res.send(post)
         } else {
@@ -75,7 +85,8 @@ export class PostController {
     async createComment(req: Request, res: Response) {
         try {
             const postId = req.params.postId
-            const post = await this.postsQueryRepository.getPostById(postId)
+            const userId = req.user!._id.toString()
+            const post = await this.postsQueryRepository.getPostById(postId, userId)
             if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
             const newCommentParams = {
@@ -101,14 +112,9 @@ export class PostController {
     async getCommentsByPostId(req: Request, res: Response) {
         try {
             const postId = req.params.postId
-            const user = req.user
-            let  userId = null
+            const userId = req.user!._id.toString()
 
-            if (user) {
-                userId = req.user!._id.toString()
-            }
-
-            const post = await this.postsQueryRepository.getPostById(postId)
+            const post = await this.postsQueryRepository.getPostById(postId, userId)
 
             if (!post) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
 
@@ -140,8 +146,8 @@ export class PostController {
             const userId = req.user!._id.toString()
             const userLogin = req.user!.accountData.login
 
-            const post  = await this.postsQueryRepository.getPostById(postId)
-            const newestLikesCountToDisplay = 3
+            const post  = await this.postsQueryRepository.getPostById(postId, userId)
+            console.log('post', post)
 
             if (!post) {
                 return res.sendStatus(HTTP_STATUS.NOT_FOUND);
@@ -150,12 +156,14 @@ export class PostController {
             const likeStatusData: UpdateLikeParams = {
                 entityId: postId.toString(),
                 userId: userId,
-                userLogin: userLogin,
+                login: userLogin,
                 likeStatus: req.body.likeStatus,
                 createdAt: new Date().toISOString()
             }
 
             await this.likesService.updateLikeStatus(likeStatusData)
+            const newestLikesCountToDisplay = 3
+
             const updatePostLikesInfo = await this.postsService.updatePostLikes(postId, newestLikesCountToDisplay)
 
             if (!updatePostLikesInfo) {

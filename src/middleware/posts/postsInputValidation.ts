@@ -1,11 +1,12 @@
 import {body} from "express-validator";
 import {BlogsQueryRepository} from "../../infrastructure/repositories/blogs/blogs-query-repo";
 import {InputValidationResult} from "../inputValidationResult";
+import {inject, injectable} from "inversify";
+import {LikesRepository} from "../../infrastructure/repositories/likes/likes-db-reposiry";
 
-class PostsInputValidation {
-    blogsQueryRepository: BlogsQueryRepository
-    constructor() {
-        this.blogsQueryRepository = new BlogsQueryRepository()
+@injectable()
+export class PostsInputValidation {
+    constructor(@inject(BlogsQueryRepository) protected blogsQueryRepository: BlogsQueryRepository) {
     }
 
     titleValidation() {
@@ -48,8 +49,9 @@ class PostsInputValidation {
             })
     }
 }
-
-const postsInputValidation = new PostsInputValidation()
+const likesRepo = new LikesRepository
+const blogsQueryRepository = new BlogsQueryRepository(likesRepo);
+const postsInputValidation = new PostsInputValidation(blogsQueryRepository);
 
 export const CreatePostValidation = (withBlogId: boolean) => {
     const validation: any = [

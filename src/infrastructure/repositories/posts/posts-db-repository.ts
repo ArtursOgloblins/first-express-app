@@ -3,6 +3,7 @@ import {UpdatePostAttr, UpdatePostLikesParams} from "../../../types/types";
 import {postMapper} from "../../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {injectable} from "inversify";
+import {LikeStatuses} from "../../../domain/Likes";
 
 
 @injectable()
@@ -11,26 +12,22 @@ export class PostsRepository {
 
         const res = await PostModel.create(newPost)
 
-        return postMapper({...newPost, _id: res._id})
+        return postMapper({...newPost, _id: res._id}, LikeStatuses.None)
     }
 
-    async save(model: any) {
-        await model.save()
+    async save(model: any): Promise<any> {
+        return await model.save()
     }
 
-    async updatePost(inputData: UpdatePostAttr): Promise<PostOutput | null> {
+    async updatePost(inputData: UpdatePostAttr) {
         const {id, ...dataToUpdate} = inputData
 
-        const post = await PostModel.findOneAndUpdate(
+        const res = await PostModel.findOneAndUpdate(
             {_id: new ObjectId(id)},
             {$set: dataToUpdate},
             {returnDocument: 'after'}
         )
-        if(!post) {
-            return null
-        }
-
-        return postMapper(post)
+        return res
     }
 
     async updatePostLikes(postId: string, inputData: UpdatePostLikesParams) {

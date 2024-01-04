@@ -3,7 +3,7 @@ import {Schema, model} from 'mongoose';
 export enum LikeStatuses {
     Like = 'Like',
     Dislike = 'Dislike',
-    None = 'none'
+    None = 'None'
 }
 
 export class LikesInfo {
@@ -16,17 +16,18 @@ export class LikesInfo {
 export class Likes {
     constructor(public entityId: string,
                 public userId: string,
-                public userLogin: string,
+                public login: string,
                 public likeStatus: string,
                 public createdAt: string) {
     }
 }
 
-export const CommentLikesSchema = new Schema<Likes>({
-    entityId: { type: String, required: true },// entityID
+export const LikesSchema = new Schema<Likes>({
+    entityId: { type: String, required: true },
     userId: { type: String, required: true },
+    login: { type: String, required: true },
     likeStatus: {type: String, required: true, enum: Object.values(LikeStatuses)},
     createdAt: {type: String, required: true}
 })
 
-export const CommentLikesModel = model('commentLikes', CommentLikesSchema)
+export const LikesModel = model('likes', LikesSchema)

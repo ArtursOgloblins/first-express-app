@@ -1,10 +1,11 @@
-import {ExtendedLikesInfo, NewestLike, Post, PostModel} from "../../domain/Posts";
+import {ExtendedLikesInfo, NewestLike, Post, PostDb, PostModel} from "../../domain/Posts";
 import {AddPostAttr, UpdatePostAttr} from "../../types/types";
 import {PostsRepository} from "../../infrastructure/repositories/posts/posts-db-repository";
 import {BlogsQueryRepository} from "../../infrastructure/repositories/blogs/blogs-query-repo";
 import {inject, injectable} from "inversify";
-import {newestLikesMapper} from "../../helpers/mappers";
+import {newestLikesMapper, postMapper} from "../../helpers/mappers";
 import {LikesService} from "./likes-service";
+import {LikeStatuses} from "../../domain/Likes";
 
 
 @injectable()
@@ -25,10 +26,10 @@ export class PostsService {
             const extendedLikesInfo = new ExtendedLikesInfo(0,0, 'None', [])
             const newPostInstance = new Post(title, shortDescription, content, blogId, name, createdAt, extendedLikesInfo)
 
-            const newPost = PostModel.createPost(newPostInstance)
+            const newPost = PostModel.createPost(newPostInstance as PostDb)
 
-            await this.postsRepository.save(newPost)
-            return newPost
+            const savedPost = await this.postsRepository.save(newPost)
+            return postMapper(savedPost, LikeStatuses.None)
         } catch (error) {
             console.log(error)
             return null
@@ -42,6 +43,7 @@ export class PostsService {
         const likesCount = await this.likesService.getLikeCountByEntityId(postId)
         const dislikesCount = await this.likesService.getDislikeCountByEntityId(postId)
         const newestLikes = await this.likesService.getLastLikesByNumber(postId, newestLikesCount)
+        console.log('newestLikes', newestLikes)
 
         if (newestLikes) {
             const mappedNewestLikes: NewestLike[] = newestLikes.map((like) => newestLikesMapper(like))
@@ -50,6 +52,7 @@ export class PostsService {
                 dislikesCount,
                 mappedNewestLikes
             }
+            console.log('updatePostLikesParams', updatePostLikesParams)
             return await this.postsRepository.updatePostLikes(postId, updatePostLikesParams)
         }
     }

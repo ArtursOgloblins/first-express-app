@@ -4,11 +4,15 @@ import {ObjectId} from "mongodb";
 import {BlogQueryParams, PostQueryParams} from "../../../types/types";
 import {PostModel, PostOutput} from "../../../domain/Posts";
 import {getPaginationDetails} from "../../../helpers/query-params";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 import "reflect-metadata"
+import {LikesRepository} from "../likes/likes-db-reposiry";
 
 @injectable()
 export class BlogsQueryRepository {
+
+    constructor( @inject(LikesRepository) protected likesRepository: LikesRepository) {
+    }
     async getBlogs(params: BlogQueryParams): Promise<PagedBlogOutput> {
         let filter = {}
         if (params.searchNameTerm) {
@@ -50,7 +54,7 @@ export class BlogsQueryRepository {
         return blogMapper(blog);
     }
 
-    async getPostsByBlogId(id: string, params: PostQueryParams) {
+    async getPostsByBlogId(id: string, params: PostQueryParams, userId: string) {
         const { skipAmount, sortDir } = getPaginationDetails(params);
         const filter = {blogId: id}
         const totalCount = await PostModel.countDocuments(filter)
@@ -61,7 +65,10 @@ export class BlogsQueryRepository {
             .skip(skipAmount)
             .limit(params.pageSize)
 
-        const mappedPosts: PostOutput[] =  posts.map((p) => postMapper(p))
+        const mappedPosts: PostOutput[] = await Promise.all(posts.map(async (post) => {
+            const likeStatus = await this.likesRepository.getMyLikeStatus(post._id.toString(), userId)
+            return postMapper(post, likeStatus)
+        }))
 
         return {
             pagesCount: Math.ceil(totalCount / params.pageSize),

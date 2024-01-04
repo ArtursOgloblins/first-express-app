@@ -91,7 +91,7 @@ export class CommentController {
             const likeStatusData: UpdateLikeParams = {
                 entityId: commentId.toString(),
                 userId: userId,
-                userLogin: userLogin,
+                login: userLogin,
                 likeStatus: req.body.likeStatus,
                 createdAt: new Date().toISOString()
             }

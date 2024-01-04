@@ -29,6 +29,7 @@ import {AccessTokenChecker} from "./middleware/auth/accessTokenChecker";
 import {Container} from "inversify";
 import {LikesService} from "./application/services/likes-service";
 import {LikesRepository} from "./infrastructure/repositories/likes/likes-db-reposiry";
+import {PostsInputValidation} from "./middleware/posts/postsInputValidation";
 
 
 export const container = new Container()
@@ -71,6 +72,7 @@ container.bind(LikesRepository).to(LikesRepository)
 container.bind(RateLimit).to(RateLimit)
 container.bind(TokenAuthenticator).to(TokenAuthenticator)
 container.bind(AccessTokenChecker).to(AccessTokenChecker)
+container.bind(PostsInputValidation).to(PostsInputValidation)
 export const rateLimiter = container.resolve(RateLimit).rateLimitMiddleware()
 export const tokenAuthenticator = container.resolve(TokenAuthenticator).authWithTokenMiddleware()
 export const accessTokenChecker = container.resolve(AccessTokenChecker).checkTokenMiddleware()

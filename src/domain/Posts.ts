@@ -1,7 +1,6 @@
 import {WithId} from "mongodb";
 import mongoose, {Schema, model} from 'mongoose';
 import {LikeStatuses} from "./Likes";
-import {CommentModel} from "./Comments";
 
 export class NewestLike {
     constructor(public addedAt: string,
@@ -46,7 +45,7 @@ interface PostMethods {
 }
 
 interface PostStaticMethods {
-    createPost: (comment: Post) => Post
+    createPost: (post: Post) => Post
 }
 
 interface PostDocument extends Document, Post, PostMethods {}
@@ -71,8 +70,8 @@ export const PostSchema = new Schema<Post>({
     }
 })
 
-PostSchema.static('createPost', function createPost(Post) {
-    return new CommentModel({Post})
+PostSchema.static('createPost', function createPost(postData) {
+    return new this(postData)
 })
 
 export const PostModel = model<Post, PostModelType>('posts', PostSchema)

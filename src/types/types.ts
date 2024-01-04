@@ -101,7 +101,7 @@ export type UpdatedCommentAttr = {
 export type UpdateLikeParams = {
     entityId: string,
     userId: string,
-    userLogin: string
+    login: string
     likeStatus: string,
     createdAt: string
 }

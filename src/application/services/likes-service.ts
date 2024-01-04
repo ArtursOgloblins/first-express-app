@@ -9,14 +9,11 @@ export class LikesService {
 
     async updateLikeStatus(inputData: UpdateLikeParams) {
         try {
-            const {entityId, userId, likeStatus} = inputData
+            const {entityId, userId} = inputData
             const like = await this.likesRepository.getLikeStatus(entityId, userId)
-            console.log('like', like)
             if (!like) {
-                console.log('CreateLikeDislike')
                 return await this.likesRepository.createLikeStatus(inputData)
             } else {
-                console.log('AddLikeDislike')
                 return await this.likesRepository.updateLikeStatus(inputData)
             }
         } catch (error) {

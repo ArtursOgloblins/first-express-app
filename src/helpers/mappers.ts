@@ -1,6 +1,6 @@
 import {WithId} from "mongodb";
 import {Blog, BlogOutput} from "../domain/Blogs";
-import {Post, PostOutput} from "../domain/Posts";
+import {PostDb, PostOutput} from "../domain/Posts";
 import {SanitizedUserOutput, User} from "../domain/Users";
 import {PostComment, CommentOutput} from "../domain/Comments";
 import {ActiveDevicesOutput, RefreshToken} from "../domain/refreshToken";
@@ -17,7 +17,7 @@ export const blogMapper = (blog: WithId<Blog>): BlogOutput => {
     }
 }
 
-export const postMapper = (post: WithId<Post>): PostOutput => {
+export const postMapper = (post: PostDb, likeStatus: string): PostOutput => {
     return {
         id: post._id.toString(),
         title: post.title,
@@ -29,7 +29,7 @@ export const postMapper = (post: WithId<Post>): PostOutput => {
         extendedLikesInfo: {
             likesCount: post.extendedLikesInfo.likesCount,
             dislikesCount: post.extendedLikesInfo.dislikesCount,
-            myStatus: post.extendedLikesInfo.myStatus,
+            myStatus: likeStatus,
             newestLikes: post.extendedLikesInfo.newestLikes.map(like => ({
                 addedAt: like.addedAt,
                 userId: like.userId,
@@ -79,10 +79,11 @@ export const activeDeviceMapper = (refreshToken: WithId<RefreshToken>): ActiveDe
 }
 
 export const newestLikesMapper = (like: WithId<Likes>) => {
+    console.log("Like object:", like);
     return {
         addedAt: like.createdAt,
         userId: like.userId,
-        login: like.userLogin
+        login: like.login
     }
 }
 

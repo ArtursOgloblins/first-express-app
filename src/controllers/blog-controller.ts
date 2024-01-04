@@ -6,7 +6,6 @@ import {getQueryParams} from "../helpers/query-params";
 import {BlogQueryParams, PostQueryParams} from "../types/types";
 import {HttpStatusCodes as HTTP_STATUS} from "../helpers/httpStatusCodes";
 import {inject, injectable} from "inversify";
-import {AuthRepository} from "../infrastructure/repositories/auth/auth-db-repo";
 
 @injectable()
 export class BlogController {
@@ -53,6 +52,7 @@ export class BlogController {
 
     async getPostsByBlogId(req: Request, res: Response) {
         try {
+            const userId = req.user!._id.toString()
             const blogId = req.params.id
             const blog = await this.blogsQueryRepository.getBlogById(blogId)
             if (!blog) return res.sendStatus(HTTP_STATUS.NOT_FOUND)
@@ -66,7 +66,7 @@ export class BlogController {
                 pageNumber
             }
 
-            const posts = await this.blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams)
+            const posts = await this.blogsQueryRepository.getPostsByBlogId(blogId, getPostsParams, userId)
             return res.send(posts)
         } catch (error) {
             console.error('Failed in getting post by blog id:', error)

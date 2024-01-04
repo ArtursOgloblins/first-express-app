@@ -70,7 +70,7 @@ UserSchema.method('canBeConfirmed', function(this: UserDocument, code: string) {
 })
 
 UserSchema.method('confirmRegistration', function confirmRegistration (this: UserDocument, code: string){
-    if (this.canBeConfirmed(code)) throw new Error(`User can't be confirmed`)
+    if (!this.canBeConfirmed(code)) throw new Error(`User can't be confirmed`)
     if (this.emailConfirmation.isConfirmed) throw new Error('User already confirmed')
     this.emailConfirmation.isConfirmed = true
 })

@@ -2,12 +2,16 @@ import {PagedPostOutput, PostModel, PostOutput} from "../../../domain/Posts";
 import {postMapper} from "../../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {PostQueryParams} from "../../../types/types";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
+import {LikesRepository} from "../likes/likes-db-reposiry";
 
 
 @injectable()
 export class PostsQueryRepository {
-    async getPosts(params: PostQueryParams): Promise<PagedPostOutput> {
+
+    constructor( @inject(LikesRepository) protected likesRepository: LikesRepository) {
+    }
+    async getPosts(params: PostQueryParams, userId: string | null): Promise<PagedPostOutput> {
 
         const sortDir = params.sortDirection === 'asc' ? 1 : -1
         const skipAmount = (params.pageNumber - 1) * params.pageSize
@@ -19,7 +23,10 @@ export class PostsQueryRepository {
             .skip(skipAmount)
             .limit(params.pageSize)
 
-        const mappedPosts: PostOutput[] =  posts.map((p) => postMapper(p))
+        const mappedPosts: PostOutput[] = await Promise.all(posts.map(async (post) => {
+            const likeStatus = await this.likesRepository.getMyLikeStatus(post._id.toString(), userId)
+            return postMapper(post, likeStatus)
+        }))
 
         return {
             pagesCount: Math.ceil(totalCount / params.pageSize),
@@ -30,14 +37,15 @@ export class PostsQueryRepository {
         }
     }
 
-    async getPostById(id: string): Promise<PostOutput | null> {
+    async getPostById(id: string, userId: string | null): Promise<PostOutput | null> {
         const post = await PostModel.findOne({_id: new ObjectId(id)})
-
+        console.log('post', post)
         if (!post) {
             return null
         }
+        const likeStatus = await this.likesRepository.getMyLikeStatus(id, userId)
 
-        return postMapper(post)
+        return postMapper(post, likeStatus)
     }
 
     async deletePostById(id: string): Promise<boolean> {

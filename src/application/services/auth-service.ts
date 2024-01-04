@@ -11,7 +11,7 @@ import {AuthRepository} from "../../infrastructure/repositories/auth/auth-db-rep
 import {jwtDateMapper} from "../../helpers/mappers";
 import {ObjectId} from "mongodb";
 import {PasswordRecovery} from "../../domain/passwordRecovery";
-import {AccountData, EmailConfirmation, User, UserModel} from "../../domain/Users";
+import {AccountData, EmailConfirmation, UserModel} from "../../domain/Users";
 import {RefreshToken} from "../../domain/refreshToken";
 import {inject, injectable} from "inversify";
 
@@ -61,7 +61,8 @@ export class AuthService {
 
         if (user.canBeConfirmed(code)) {
             user.confirmRegistration(code)
-            return await this.usersRepository.save(user)
+            await this.usersRepository.save(user)
+            return true
         }
     }
 

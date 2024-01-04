@@ -10,8 +10,8 @@ const postController = container.resolve(PostController)
 
 const postRouter = express.Router()
 
-postRouter.get('/', postController.getPosts.bind(postController))
-postRouter.get('/:id', postController.getPostById.bind(postController))
+postRouter.get('/',accessTokenChecker, postController.getPosts.bind(postController))
+postRouter.get('/:id', accessTokenChecker, postController.getPostById.bind(postController))
 postRouter.post('/', basicAuth, CreatePostValidation(true), postController.createPost.bind(postController))
 postRouter.put('/:id', basicAuth, UpdatePostValidation(), postController.updatePost.bind(postController))
 postRouter.delete('/:id', basicAuth, postController.deletePost.bind(postController))
