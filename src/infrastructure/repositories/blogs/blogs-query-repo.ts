@@ -54,7 +54,7 @@ export class BlogsQueryRepository {
         return blogMapper(blog);
     }
 
-    async getPostsByBlogId(id: string, params: PostQueryParams, userId: string) {
+    async getPostsByBlogId(id: string, params: PostQueryParams, userId: string | null) {
         const { skipAmount, sortDir } = getPaginationDetails(params);
         const filter = {blogId: id}
         const totalCount = await PostModel.countDocuments(filter)
