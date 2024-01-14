@@ -37,6 +37,7 @@ export class CommentController {
     async updateComment(req: Request, res: Response) {
         const {commentId} = req.params
         const userId = req.user!._id.toString()
+        const {content} = req.body
 
         const comment = await this.commentsQueryRepository.getCommentById(commentId, userId);
         if (!comment) {
@@ -45,7 +46,8 @@ export class CommentController {
         if (comment.commentatorInfo.userId !== userId) {
             return res.sendStatus(HTTP_STATUS.FORBIDDEN);
         }
-        const updatedComment = await this.commentsService.updateComment({entityId: commentId, userId, ...req.body})
+
+        const updatedComment = await this.commentsService.updateComment({commentId, content})
         if (updatedComment) {
             res.status(HTTP_STATUS.NO_CONTENT).send(updatedComment)
         } else {

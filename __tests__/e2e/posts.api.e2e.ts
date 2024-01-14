@@ -1,7 +1,8 @@
 import request from 'supertest'
+import mongoose from 'mongoose';
 import {RouterPath} from "../../src/routerPaths";
 import {HttpStatusCodes as HTTP_STATUS} from "../../src/helpers/httpStatusCodes";
-import {AddBlogAttr, AddPostAttr} from "../../src/types/types";
+import {AddPostAttr} from "../../src/types/types";
 import {initApp} from "../../src/initApp";
 // @ts-ignore
 import {blogsTestManager} from "../utils/blogsTestManager";
@@ -11,67 +12,43 @@ const app = initApp();
 
 
 describe('tests for /blogs', () => {
-    const base64Credentials = Buffer.from('admin:qwerty').toString('base64');
+    const base64Credentials = Buffer.from('admin:qwerty').toString('base64')
+    const mongoURI = 'mongodb://0.0.0.0:27017/test_db'
 
     beforeAll(async () => {
+        await mongoose.connect(mongoURI)
+            .then(() => console.log("MongoDB successfully connected"))
+            .catch(err => console.error("MongoDB connection error: ", err))
+
         await request(app).delete(`${RouterPath.testing}/all-data`)
             //.set('Authorization', `Basic ${base64Credentials}`)
             .catch(err => console.error(err.message))
     })
 
+    afterAll(async () => {
+        await mongoose.connection.close();
+    })
+
     it('should return 200 and empty array', async () => {
-        await blogsTestManager.returnEmptyArray()
+        await  blogsTestManager.expectEmptyBlogList()
     })
 
     let newBlog: any = null
     it ('create entity with correct input data', async () => {
-        const data: AddBlogAttr =  {
-            name: "New Blog5",
-            description: "description",
-            websiteUrl: "https://youtube.com/"
-        }
-        const {createdEntity} = await blogsTestManager.createBlog(data)
+        const {createdEntity} = await blogsTestManager.createBlog(HTTP_STATUS.CREATED)
 
         newBlog = createdEntity
 
-        await request(app)
-            .get(RouterPath.blogs)
-            .expect(HTTP_STATUS.OK, {
-                "pagesCount": 1,
-                "page": 1,
-                "pageSize": 10,
-                "totalCount": 1,
-                "items": [newBlog]
-            })
+        await blogsTestManager.verifyBlogListContains(newBlog)
     })
 
     let newEntity: any = null
     it ('create entity with correct input data', async () => {
+        const {createdEntity} = await postsTestManager.createPost(newBlog.id, newBlog.name, HTTP_STATUS.CREATED)
 
-        const data: AddPostAttr =  {
-            title: "New Post4",
-            shortDescription: "Some description",
-            content: "Content",
-            blogId: newBlog.id
-        }
+        newEntity = createdEntity
 
-        const response = await request(app)
-            .post(RouterPath.posts)
-            .set('Authorization', `Basic ${base64Credentials}`)
-            .send(data)
-            .expect(HTTP_STATUS.CREATED)
-
-        newEntity = response.body;
-
-            expect(newEntity).toEqual({
-                id: expect.any(String),
-                title: "New Post4",
-                shortDescription: "Some description",
-                content: "Content",
-                blogId: newBlog.id,
-                blogName: newBlog.name,
-                createdAt: expect.any(String)
-            })
+        await postsTestManager.verifyPostListContains(newEntity)
     })
 
     it ('create entity with incorrect input data', async () => {
@@ -91,12 +68,7 @@ describe('tests for /blogs', () => {
     })
 
     it ('create entity with incorrect input data', async () => {
-        const data: AddBlogAttr =  {
-            name: "New Blog5",
-            description: "description",
-            websiteUrl: "whttps://youtube.com/" // incorrect
-        }
-        await blogsTestManager.createBlog(data, HTTP_STATUS.BAD_REQUEST)
+        await blogsTestManager.createBlogAndExpectFailure()
     })
 
     it ('update entity with correct input data', async () => {
@@ -173,7 +145,6 @@ describe('tests for /blogs', () => {
     })
 
     it('should return 200 and empty array', async()=> {
-        await blogsTestManager.returnEmptyArray()
+        await  blogsTestManager.expectEmptyBlogList()
     })
-
 })

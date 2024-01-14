@@ -1,7 +1,7 @@
 import request from 'supertest'
+import mongoose from 'mongoose';
 import {RouterPath} from "../../src/routerPaths";
 import { HttpStatusCodes as HTTP_STATUS }  from "../../src/helpers/httpStatusCodes";
-import {AddBlogAttr} from "../../src/types/types";
 
 import {initApp} from "../../src/initApp";
 // @ts-ignore
@@ -9,52 +9,45 @@ import {blogsTestManager} from "../utils/blogsTestManager";
 const app = initApp();
 
 describe('tests for /blogs', () => {
-    const base64Credentials = Buffer.from('admin:qwerty').toString('base64');
+    const base64Credentials = Buffer.from('admin:qwerty').toString('base64')
+    const mongoURI = 'mongodb://0.0.0.0:27017/test_db'
 
     beforeAll(async () => {
-        await request(app).delete(`${RouterPath.testing}/all-data`)
-            //.set('Authorization', `Basic ${base64Credentials}`)
-            .catch(err => console.error(err.message))
+        try {
+            await mongoose.connect(mongoURI);
+            console.log("MongoDB successfully connected");
+            await request(app).delete(`${RouterPath.testing}/all-data`);
+        } catch (error) {
+            console.error("Setup error: ", error)
+            throw error
+        }
+    })
+
+    afterAll(async () => {
+        await mongoose.connection.close();
     })
 
     it('should return 200 and empty array', async()=> {
-        await  blogsTestManager.returnEmptyArray()
+        await  blogsTestManager.expectEmptyBlogList()
     })
 
-    let newEntity: any = null
+    let newBlog: any = null
     it ('create entity with correct input data', async () => {
-        const data: AddBlogAttr =  {
-            name: "New Blog5",
-            description: "description",
-            websiteUrl: "https://youtube.com/"
-        }
-        const {createdEntity} = await blogsTestManager.createBlog(data)
+        const {createdEntity} = await blogsTestManager.createBlog(HTTP_STATUS.CREATED)
 
-        newEntity = createdEntity
+        newBlog = createdEntity
 
-        await request(app)
-            .get(RouterPath.blogs)
-            .expect(HTTP_STATUS.OK, {
-                "pagesCount": 1,
-                "page": 1,
-                "pageSize": 10,
-                "totalCount": 1,
-                "items": [newEntity]
-            })
+        await blogsTestManager.verifyBlogListContains(newBlog)
     })
 
     it ('create entity with incorrect input data', async () => {
-        const data: AddBlogAttr =  {
-            name: "New Blog5",
-            description: "description",
-            websiteUrl: "whttps://youtube.com/" // incorrect
-        }
-        await blogsTestManager.createBlog(data, HTTP_STATUS.BAD_REQUEST)
+
+        await blogsTestManager.createBlogAndExpectFailure()
     })
 
     it ('update entity with correct input data', async () => {
         await request(app)
-            .put (`${RouterPath.blogs}/${newEntity.id}`)
+            .put (`${RouterPath.blogs}/${newBlog.id}`)
             .set('Authorization', `Basic ${base64Credentials}`)
             .send ({
                 name: "Updated",
@@ -63,7 +56,7 @@ describe('tests for /blogs', () => {
             })
             .expect(HTTP_STATUS.NO_CONTENT)
 
-            expect({...newEntity,
+            expect({...newBlog,
                     "pagesCount": 1,
                     "page": 1,
                     "pageSize": 10,
@@ -81,7 +74,7 @@ describe('tests for /blogs', () => {
 
     it ('update video with incorrect input data', async () => {
         await request(app)
-            .put (`${RouterPath.blogs}/${newEntity.id}`)
+            .put (`${RouterPath.blogs}/${newBlog.id}`)
             .set('Authorization', `Basic ${base64Credentials}`)
             .send ({
                 "name": "Updated",
@@ -93,7 +86,7 @@ describe('tests for /blogs', () => {
 
     it ('update entity with incorrect input data', async () => {
         await request(app)
-            .put (`${RouterPath.blogs}/${newEntity.id}`)
+            .put (`${RouterPath.blogs}/${newBlog.id}`)
             .set('Authorization', `Basic ${base64Credentials}`)
             .send ({
                 "name": "Updated",
@@ -112,18 +105,19 @@ describe('tests for /blogs', () => {
                 "description": "desc3",
                 "websiteUrl": "https://mongodb.com" // incorrect
             })
-            .expect(HTTP_STATUS.BAD_REQUEST)
+            .expect(HTTP_STATUS.NOT_FOUND
+            )
     })
 
     it ('delete one entity by ID', async () =>{
         await request(app)
-            .delete(`${RouterPath.blogs}/${newEntity.id}`)
+            .delete(`${RouterPath.blogs}/${newBlog.id}`)
             .set('Authorization', `Basic ${base64Credentials}`)
             .expect(HTTP_STATUS.NO_CONTENT)
     })
 
     it('should return 200 and empty array', async()=> {
-        await  blogsTestManager.returnEmptyArray()
+        await  blogsTestManager.expectEmptyBlogList()
     })
 })
 

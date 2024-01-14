@@ -99,9 +99,9 @@ export class PostController {
             const newComment = await this.commentsService.createComment(newCommentParams)
 
             if (!newComment) {
-                res.status(HTTP_STATUS.BAD_REQUEST)
+                return res.status(HTTP_STATUS.BAD_REQUEST)
             } else {
-                res.status(HTTP_STATUS.CREATED).send(newComment)
+                return res.status(HTTP_STATUS.CREATED).send(newComment)
             }
         } catch (error) {
             console.error('Failed in creating comment:', error)

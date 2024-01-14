@@ -8,7 +8,7 @@ export class CommentatorInfo {
     }
 }
 
-export class PostComment {
+export class PostComment  {
     constructor(public content: string,
                 public commentatorInfo: CommentatorInfo,
                 public createdAt: string,
@@ -56,8 +56,8 @@ export const CommentSchema = new Schema<PostComment>({
     }
 })
 
-CommentSchema.static('createComment', function createComment(PostComment) {
-    return new CommentModel({PostComment})
+CommentSchema.static('createComment', function createComment(commentData) {
+    return new this(commentData)
 })
 
 export const CommentModel = model<PostComment, CommentModelType>('comments', CommentSchema)

@@ -1,4 +1,5 @@
 import request from 'supertest'
+import mongoose from 'mongoose';
 import {RouterPath} from "../../src/routerPaths";
 import { HttpStatusCodes as HTTP_STATUS }  from "../../src/helpers/httpStatusCodes";
 import {AddBlogAttr, AddPostAttr, AddPostByBlogIdtAttr} from "../../src/types/types";
@@ -10,11 +11,20 @@ const app = initApp();
 
 
 describe('tests for /blogs/posts', () => {
-    const base64Credentials = Buffer.from('admin:qwerty').toString('base64');
+    const base64Credentials = Buffer.from('admin:qwerty').toString('base64')
+    const mongoURI = 'mongodb://0.0.0.0:27017/test_db'
 
     beforeAll(async () => {
+        await mongoose.connect(mongoURI)
+            .then(() => console.log("MongoDB successfully connected"))
+            .catch(err => console.error("MongoDB connection error: ", err))
+
         await request(app).delete(`${RouterPath.testing}/all-data`)
             .catch(err => console.error(err.message))
+    })
+
+    afterAll(async () => {
+        await mongoose.connection.close()
     })
 
     let newBlog: any = null
@@ -64,7 +74,13 @@ describe('tests for /blogs/posts', () => {
             content: "Content",
             blogId: newBlog.id,
             blogName: newBlog.name,
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 0,
+                myStatus: "None",
+                newestLikes: [],
+            }
         })
     })
 
@@ -102,7 +118,13 @@ describe('tests for /blogs/posts', () => {
             content: "Content",
             blogId: newBlog.id,
             blogName: newBlog.name,
-            createdAt: expect.any(String)
+            createdAt: expect.any(String),
+            extendedLikesInfo: {
+                dislikesCount: 0,
+                likesCount: 0,
+                myStatus: "None",
+                newestLikes: [],
+            }
         })
     })
 })

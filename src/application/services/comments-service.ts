@@ -16,20 +16,20 @@ export class CommentsService {
 
     async createComment (inputData: AddCommentAttr) {
         try {
-            const {content, postId} = inputData
+            const {content, postId, userLogin, userId} = inputData
             const createdAt = new Date().toISOString()
-            const userId = inputData.userId.toString()
-            const userLogin = inputData.userLogin
 
-            const commentatorInfo = new CommentatorInfo(userId, userLogin)
+            const commentatorInfo = new CommentatorInfo(userId.toString(), userLogin)
             const likesInfo = new LikesInfo(0,0, 'None')
 
-            const newCommentInstance = new PostComment(content, commentatorInfo, createdAt, postId, likesInfo)
+            const newCommentData = new PostComment(content, commentatorInfo, createdAt, postId, likesInfo)
 
-            const newComment = CommentModel.createComment(newCommentInstance)
+            const newComment = CommentModel.createComment(newCommentData)
 
             await this.commentsRepository.save(newComment)
+
             return newComment
+
         } catch (error) {
             console.log(error)
             return null

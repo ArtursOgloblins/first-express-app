@@ -53,6 +53,7 @@ export class CommentsQueryRepository {
         return commentsMapper(comment, likeStatus)
     }
 
+
     async removeCommentById(commentId: string): Promise<boolean> {
         const result = await CommentModel.deleteOne({ _id: new ObjectId(commentId)})
         return result.deletedCount === 1
